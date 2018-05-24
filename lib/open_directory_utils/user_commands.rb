@@ -1,15 +1,43 @@
 module OpenDirectoryUtils
+  # https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man1/dscl.1.html
+  # https://superuser.com/questions/592921/mac-osx-users-vs-dscl-command-to-list-user/621055?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
   module UserCommands
 
+    # get all usernames -- dscl . -list /Users
+    # get all user details -- dscl . -readall /Users
     def user_exists?
     end
 
+    # get user record -- dscl . -read /Users/<username>
+    # get user value  -- dscl . -read /Users/<username> <key>
+    # search od user  -- dscl . -search /Users RealName "Andrew Garrett"
+    # return as xml   -- dscl -plist . -search /Users RealName "Andrew Garrett"
     def user_get_info
     end
 
+    # https://images.apple.com/server/docs/Command_Line.pdf
+    # https://serverfault.com/questions/20702/how-do-i-create-user-accounts-from-the-terminal-in-mac-os-x-10-5?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+    # https://superuser.com/questions/1154564/how-to-create-a-user-from-the-macos-command-line
+    # There are a few steps to create a user account from the command line. The good news is that you're using the right tool, dscl. What you're missing are the separate components that comprise a user account. You have to create these manually.
+    # sudo dscl . -create /Users/someuser
+    # sudo dscl . -create /Users/someuser UserShell /bin/bash
+    # sudo dscl . -create /Users/someuser RealName "Lucius Q. User"
+    # sudo dscl . -create /Users/someuser UniqueID "1010"  #use something not already in use
+    # sudo dscl . -create /Users/someuser PrimaryGroupID 80
+    # sudo dscl . -create /Users/someuser NFSHomeDirectory /Users/soemuser
+    #
+    # You can then use passwd to change the user's password, or use:
+    # sudo dscl . -passwd /Users/someuser password
+
+    # You'll also have to create the user's home directory and change ownership so the user can access it. And be sure that the UniqueID is, in fact, unique.
+    #
+    # This line will add the user to the administrator's group:
+    # sudo dscl . -append /Groups/admin GroupMembership someuser
     def user_create
     end
 
+    # add 1st user   -- dscl . create /Groups/ladmins GroupMembership localadmin
+    # add more users -- dscl . append /Groups/ladmins GroupMembership 2ndlocaladmin
     def user_add_to_group
     end
 
@@ -17,6 +45,8 @@ module OpenDirectoryUtils
     def user_remove_from_group
     end
 
+    # dscl . -delete /Users/yourUserName
+    # https://tutorialforlinux.com/2011/09/15/delete-users-and-groups-from-terminal/
     def user_delete
     end
 
