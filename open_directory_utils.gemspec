@@ -5,7 +5,7 @@ require "open_directory_utils/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "open_directory_utils"
-  spec.version       = OpenDirectoryUtils::VERSION
+  spec.version       = OpenDirectoryUtils::Version::VERSION
   spec.authors       = ["Bill Tihen", "Lee Weisbecker"]
   spec.email         = ["btihen@gmail.com", "leeweisbecker@gmail.com"]
 
