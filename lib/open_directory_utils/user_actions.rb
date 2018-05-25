@@ -4,6 +4,16 @@ module OpenDirectoryUtils
   # https://superuser.com/questions/592921/mac-osx-users-vs-dscl-command-to-list-user/621055?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
   module UserActions
 
+    def check_uid(action, attribs)
+      # attribs[:uid] = attribs[:uid].to_s.strip
+      attribs[:uid] = attribs[:uid]&.strip
+      answer = send(action, attribs)
+      raise ArgumentError, "missing uid"   if attribs[:uid].nil?
+      raise ArgumentError, "blank uid"     if attribs[:uid].empty?
+      raise ArgumentError, "uid has space" if attribs[:uid].include?(' ')
+      return answer
+    end
+
     # GET USER INFO
     ###############
     # get all usernames -- dscl . -list /Users
@@ -15,7 +25,8 @@ module OpenDirectoryUtils
     # get user value  -- dscl . -read /Users/<username> <key>
     # search od user  -- dscl . -search /Users RealName "Andrew Garrett"
     # return as xml   -- dscl -plist . -search /Users RealName "Andrew Garrett"
-    def user_get_info
+    def user_get_info(attribs)
+      "-read /Users/#{attribs[:uid]}"
     end
 
     # MAC OS REQUIRED Fields
@@ -38,7 +49,8 @@ module OpenDirectoryUtils
     end
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER RealName "$VALUE"
-    def user_set_real_name
+    def user_set_real_name(attribs)
+      # %Q{-create /Users/#{attribs[:uid]} RealName "#{attribs[:]}"}
     end
 
     # sudo dscl . -create /Users/someuser UniqueID "1010"  #use something not already in use
@@ -236,7 +248,6 @@ module OpenDirectoryUtils
     def user_comments
     end
     alias_method :user_description, :user_comments
-
 
   end
 end

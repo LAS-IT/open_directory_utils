@@ -8,7 +8,7 @@ module OpenDirectoryUtils
     attr_reader :dir_datapath, :dir_username, :dir_password
     attr_reader :dscl_cmdpath
 
-    # include OpenDirectoryUtils::UserActions
+    include OpenDirectoryUtils::UserActions
 
     def initialize(params={})
       config = defaults.merge(params)
@@ -30,15 +30,16 @@ module OpenDirectoryUtils
     end
 
     # def run(command:, attributes:, formatting: nil)
-    #   # unless attributes[:uid].nil? or attributes[:uid].empty?
-    #       # example: '-append /Users/$UID_USERNAME apple-keyword "$VALUE"'
-    #       # actions  = Array( send(command, attributes) )
-    #       # commands = prep_actions( action )
-    #       # answer = send_all_cmds(commands)
-    #       # process_answer(command, answer)
-    #       # return answer
-    #   # end
-    #   # return "Missing UserID (uid or username) -- #{attributes}"
+    #   result = ''
+    #   begin
+    #     action   = send(:check_uid, command, attributes)
+    #     ssh_cmd  = build_full_command(action)
+    #     response = send_eqcmd(ssh_cmd)
+    #     result   = post_processing(command, response)
+    #   rescue ArgumentError, NoMethodError => error
+    #     result   = "#{error.message} -- command: :#{command} with attribs: #{attributes}"
+    #   end
+    #   return result
     # end
 
     private
