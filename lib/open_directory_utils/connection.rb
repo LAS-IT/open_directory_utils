@@ -1,3 +1,6 @@
+require 'net/ssh'
+require "open_directory_utils/user_actions"
+
 module OpenDirectoryUtils
   class Connection
 
@@ -64,17 +67,17 @@ module OpenDirectoryUtils
     def send_all_cmds(cmds)
       cmd_array = Array( cmds )
       output = []
-      Net::SSH.start(hostname, username, ssh_options) do |ssh|
+      Net::SSH.start(srv_hostname, srv_username, ssh_options) do |ssh|
         cmd_array.each do |one_cmd|
-          output << ssh.exec!(one_cmd)
+          output << (ssh.exec!(one_cmd)).strip
         end
       end
       return output
     end
 
-    def process_answer(command, answer)
-      return answer
-    end
+    # def process_answer(command, answer)
+    #   return answer
+    # end
 
     def defaults
       {

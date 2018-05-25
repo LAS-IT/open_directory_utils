@@ -1,7 +1,8 @@
 module OpenDirectoryUtils
+  
   # http://krypted.com/mac-os-x/create-groups-using-dscl/
   # https://apple.stackexchange.com/questions/307173/creating-a-group-via-users-groups-in-command-line?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-  module GroupCommands
+  module GroupActions
 
     # dscl . read /Groups/ladmins
     def group_get_info
