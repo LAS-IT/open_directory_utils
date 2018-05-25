@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe OpenDirectoryUtils::UserCommands do
+RSpec.describe OpenDirectoryUtils::UserActions do
   context "retrieve user info" do
     describe "with valid input params" do
     end
