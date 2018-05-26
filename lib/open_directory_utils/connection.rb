@@ -80,8 +80,7 @@ module OpenDirectoryUtils
       # any Errors?
       # https://makandracards.com/makandra/31141-ruby-counting-occurrences-of-an-item-in-an-array-enumerable
       error_count = results.count { |r| r.include? 'Error' }
-      # return {success: results}  if error_count.eql? 0
-      # return {error: results}    if error_count >= 0
+
       if command.eql? :users_exists?
         # user found
         return { success:
@@ -92,6 +91,7 @@ module OpenDirectoryUtils
                   {response: false, command: command, attributes: attributes}
                 }  if results.first.include? 'eDSRecordNotFound'
       end
+
       # return success response - when no errors found
       return { success:
                 {response: results, command: command, attributes: attributes}
