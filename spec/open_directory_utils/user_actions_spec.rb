@@ -66,9 +66,9 @@ RSpec.describe OpenDirectoryUtils::UserActions do
         correct = "-read /Users/someone"
         expect( answer ).to eq( correct )
       end
-      it "user_get_info through check_uid" do
+      it "user_exists?" do
         attribs = {uid: 'someone'}
-        answer  = @od.send(:check_uid, :user_get_info, attribs)
+        answer  = @od.send(:user_exists?, attribs)
         correct = "-read /Users/someone"
         expect( answer ).to eq( correct )
       end

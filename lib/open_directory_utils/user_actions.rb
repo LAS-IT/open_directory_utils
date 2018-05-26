@@ -13,13 +13,8 @@ module OpenDirectoryUtils
       return answer
     end
 
-    # GET USER INFO
-    ###############
-    # get all usernames -- dscl . -list /Users
-    # get all user details -- dscl . -readall /Users
-    def user_exists?
-    end
-
+    # GET INFO
+    ##########
     # get user record -- dscl . -read /Users/<username>
     # get user value  -- dscl . -read /Users/<username> <key>
     # search od user  -- dscl . -search /Users RealName "Andrew Garrett"
@@ -28,8 +23,15 @@ module OpenDirectoryUtils
       "-read /Users/#{attribs[:uid]}"
     end
 
-    # MAC OS REQUIRED Fields
-    ########################
+    # get all usernames -- dscl . -list /Users
+    # get all user details -- dscl . -readall /Users
+    def user_exists?(attribs)
+      user_get_info(attribs)
+    end
+
+
+    # CHANGE OD
+    ###########
     # https://images.apple.com/server/docs/Command_Line.pdf
     # https://serverfault.com/questions/20702/how-do-i-create-user-accounts-from-the-terminal-in-mac-os-x-10-5?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
     # https://superuser.com/questions/1154564/how-to-create-a-user-from-the-macos-command-line

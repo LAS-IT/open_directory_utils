@@ -34,11 +34,10 @@ module OpenDirectoryUtils
       begin
         action  = send(:check_uid, command, attributes)
         ssh_cmd = build_full_command(action)
-        result  = send_od_cmds(ssh_cmd)
-        result  = process_answers(command, result) if command.eql? :user_exists?
-        answer[:success] = result
+        results = send_od_cmds(ssh_cmd)
+        answer  = format_results(results, command, attributes)
       rescue ArgumentError, NoMethodError => error
-        answer[:error]   =  "ERROR: #{error.message} -- command: :#{command} with attribs: #{attributes}"
+        answer[:error]   =  "#{error.message} -- command: :#{command} with attribs: #{attributes}"
       end
       return answer
     end
@@ -77,8 +76,29 @@ module OpenDirectoryUtils
       return output
     end
 
-    def process_answers(command, answer)
-      return answer
+    def format_results(results, command, attributes)
+      # look for Errors
+      error_count = results.count { |r| r.include? 'Error' }
+      # return {success: results}  if error_count.eql? 0
+      # return {error: results}    if error_count >= 0
+      if command.eql? :users_exists?
+        # user found
+        return { success:
+                  {response: true, command: command, attributes: attributes}
+                }  if error_count.eql? 0
+        # user not found
+        return { success:
+                  {response: false, command: command, attributes: attributes}
+                }  if results.first.include? 'eDSRecordNotFound'
+      end
+      # return success response - when no errors found
+      return { success:
+                {response: results, command: command, attributes: attributes}
+              }  if error_count.eql? 0
+      # return error response - when errors found
+      return { error:
+                {response: results, command: command, attributes: attributes}
+              }  if error_count >= 0
     end
 
     def defaults

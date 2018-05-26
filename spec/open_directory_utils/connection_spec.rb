@@ -188,11 +188,11 @@ RSpec.describe OpenDirectoryUtils::Connection do
     it "won't run commands if uid is missing for user commands?"
   end
 
-  context "send_all_cmds via ssh with ONE connection" do
+  context "send_od_cmds via ssh with ONE connection" do
     it "returns expected answer with one command" do
       od     = OpenDirectoryUtils::Connection.new
       action = 'echo "student"'
-      answer  = od.send(:send_all_cmds, action)
+      answer  = od.send(:send_od_cmds, action)
       correct = ['student']
       expect(answer).to eq(correct)
     end
@@ -202,7 +202,7 @@ RSpec.describe OpenDirectoryUtils::Connection do
         'echo "student"',
         'echo "departed"',
       ]
-      answer  = od.send(:send_all_cmds, actions)
+      answer  = od.send(:send_od_cmds, actions)
       correct = [
         'student',
         'departed',
