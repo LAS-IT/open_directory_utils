@@ -29,18 +29,19 @@ module OpenDirectoryUtils
                                                         srv_username.empty?
     end
 
-    # def run(command:, attributes:, formatting: nil)
-    #   result = ''
-    #   begin
-    #     action   = send(:check_uid, command, attributes)
-    #     ssh_cmd  = build_full_command(action)
-    #     response = send_eqcmd(ssh_cmd)
-    #     result   = post_processing(command, response)
-    #   rescue ArgumentError, NoMethodError => error
-    #     result   = "#{error.message} -- command: :#{command} with attribs: #{attributes}"
-    #   end
-    #   return result
-    # end
+    def run(command:, attributes:, formatting: nil)
+      answer = {}
+      begin
+        action  = send(:check_uid, command, attributes)
+        ssh_cmd = build_full_command(action)
+        result  = send_od_cmds(ssh_cmd)
+        result  = process_answers(command, result) if command.eql? :user_exists?
+        answer[:success] = result
+      rescue ArgumentError, NoMethodError => error
+        answer[:error]   =  "ERROR: #{error.message} -- command: :#{command} with attribs: #{attributes}"
+      end
+      return answer
+    end
 
     private
 
@@ -65,7 +66,7 @@ module OpenDirectoryUtils
       return ans
     end
 
-    def send_all_cmds(cmds)
+    def send_od_cmds(cmds)
       cmd_array = Array( cmds )
       output = []
       Net::SSH.start(srv_hostname, srv_username, ssh_options) do |ssh|
@@ -76,9 +77,9 @@ module OpenDirectoryUtils
       return output
     end
 
-    # def process_answer(command, answer)
-    #   return answer
-    # end
+    def process_answers(command, answer)
+      return answer
+    end
 
     def defaults
       {

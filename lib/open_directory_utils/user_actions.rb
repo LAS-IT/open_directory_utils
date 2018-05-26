@@ -5,7 +5,6 @@ module OpenDirectoryUtils
   module UserActions
 
     def check_uid(action, attribs)
-      # attribs[:uid] = attribs[:uid].to_s.strip
       attribs[:uid] = attribs[:uid]&.strip
       answer = send(action, attribs)
       raise ArgumentError, "missing uid"   if attribs[:uid].nil?
