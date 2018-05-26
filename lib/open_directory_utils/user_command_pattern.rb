@@ -1,4 +1,9 @@
 module OpenDirectoryUtils
+  # command pattern
+  # https://makandracards.com/alexander-m/43748-command-pattern
+  # https://stackoverflow.com/questions/43535421/command-pattern-in-ruby?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+  #
+  # DSCL
   # https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man1/dscl.1.html
   # https://superuser.com/questions/592921/mac-osx-users-vs-dscl-command-to-list-user/621055?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
   class Commands
@@ -12,11 +17,10 @@ module OpenDirectoryUtils
     end
   end
 
-    # # get all usernames -- dscl . -list /Users
-    # # get all user details -- dscl . -readall /Users
-    # def user_exists?
-    # end
-
+  # # get all usernames -- dscl . -list /Users
+  # # get all user details -- dscl . -readall /Users
+  # def user_exists?
+  # end
   class UserGetInfo
     # get user record -- dscl . -read /Users/<username>
     # get user value  -- dscl . -read /Users/<username> <key>

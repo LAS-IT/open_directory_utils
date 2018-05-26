@@ -32,27 +32,15 @@ module OpenDirectoryUtils
 
     # CHANGE OD
     ###########
-    # https://images.apple.com/server/docs/Command_Line.pdf
-    # https://serverfault.com/questions/20702/how-do-i-create-user-accounts-from-the-terminal-in-mac-os-x-10-5?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-    # https://superuser.com/questions/1154564/how-to-create-a-user-from-the-macos-command-line
-    # There are a few steps to create a user account from the command line. The good news is that you're using the right tool, dscl. What you're missing are the separate components that comprise a user account. You have to create these manually.
-    # sudo dscl . -create /Users/someuser
-    # sudo dscl . -create /Users/someuser UserShell /bin/bash
-    # sudo dscl . -create /Users/someuser RealName "Lucius Q. User"
-    # sudo dscl . -create /Users/someuser UniqueID "1010"  #use something not already in use
-    # sudo dscl . -create /Users/someuser PrimaryGroupID 80
-    # sudo dscl . -create /Users/someuser NFSHomeDirectory /Users/soemuser
-    # SET PASSWOR use:
-    # sudo dscl . -passwd /Users/someuser password
-    # SET USER GROUP (optional, but recommended - student / employee or whatever you have):
-    # sudo dscl . -append /Groups/admin GroupMembership someuser
-    def user_create
-    end
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER RealName "$VALUE"
-    def user_set_real_name(attribs)
+    def user_od_set_real_name(attribs)
       # %Q{-create /Users/#{attribs[:uid]} RealName "#{attribs[:]}"}
     end
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER cn "$NAME"
+    def user_ldap_set_common_name
+    end
+
 
     # sudo dscl . -create /Users/someuser UniqueID "1010"  #use something not already in use
     def user_set_unique_id
@@ -78,14 +66,28 @@ module OpenDirectoryUtils
     def user_disable_login
     end
 
+
+    # https://images.apple.com/server/docs/Command_Line.pdf
+    # https://serverfault.com/questions/20702/how-do-i-create-user-accounts-from-the-terminal-in-mac-os-x-10-5?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+    # https://superuser.com/questions/1154564/how-to-create-a-user-from-the-macos-command-line
+    # There are a few steps to create a user account from the command line. The good news is that you're using the right tool, dscl. What you're missing are the separate components that comprise a user account. You have to create these manually.
+    # sudo dscl . -create /Users/someuser
+    # sudo dscl . -create /Users/someuser UserShell /bin/bash
+    # sudo dscl . -create /Users/someuser RealName "Lucius Q. User"
+    # sudo dscl . -create /Users/someuser UniqueID "1010"  #use something not already in use
+    # sudo dscl . -create /Users/someuser PrimaryGroupID 80
+    # sudo dscl . -create /Users/someuser NFSHomeDirectory /Users/soemuser
+    # SET PASSWOR use:
+    # sudo dscl . -passwd /Users/someuser password
+    # SET USER GROUP (optional, but recommended - student / employee or whatever you have):
+    # sudo dscl . -append /Groups/admin GroupMembership someuser
+    def user_create
+    end
+
     # LDAP Fields
     #############
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER uidnumber "$VALUE"
     def user_set_uidnumber
-    end
-
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER cn "$NAME"
-    def user_set_common_name
     end
 
     # add 1st user   -- dscl . create /Groups/ladmins GroupMembership localadmin

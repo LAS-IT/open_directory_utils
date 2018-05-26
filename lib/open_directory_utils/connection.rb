@@ -77,7 +77,8 @@ module OpenDirectoryUtils
     end
 
     def format_results(results, command, attributes)
-      # look for Errors
+      # any Errors?
+      # https://makandracards.com/makandra/31141-ruby-counting-occurrences-of-an-item-in-an-array-enumerable
       error_count = results.count { |r| r.include? 'Error' }
       # return {success: results}  if error_count.eql? 0
       # return {error: results}    if error_count >= 0

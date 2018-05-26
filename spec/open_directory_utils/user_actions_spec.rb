@@ -3,12 +3,15 @@ require 'spec_helper'
 RSpec.describe OpenDirectoryUtils::UserActions do
 
   context "build commands" do
+
     before(:each) do
+      # test module without loading real objects
+      # https://www.ruby-forum.com/topic/171189
       @od = Object.new
       @od.extend(OpenDirectoryUtils::UserActions)
     end
 
-    describe "with missing or bad uid attribute" do
+    describe "error with missing or bad uid attribute" do
       it "uid = nil" do
         attribs = {uid: nil}
         expect { @od.send(:check_uid, :user_get_info, attribs) }.
@@ -26,7 +29,7 @@ RSpec.describe OpenDirectoryUtils::UserActions do
       end
     end
 
-    describe "fix extra spaces with uid" do
+    describe "build actions - fix extra spaces with uid" do
       it "fixes uid with trailing space" do
         attribs = {uid: 'someone '}
         answer  = @od.send(:check_uid, :user_get_info, attribs)
@@ -59,7 +62,7 @@ RSpec.describe OpenDirectoryUtils::UserActions do
       end
     end
 
-    describe " with valid attributes" do
+    describe "build actions with normal attributes" do
       it "user_get_info" do
         attribs = {uid: 'someone'}
         answer  = @od.send(:user_get_info, attribs)
@@ -72,11 +75,8 @@ RSpec.describe OpenDirectoryUtils::UserActions do
         correct = "-read /Users/someone"
         expect( answer ).to eq( correct )
       end
+
     end
 
-    describe "with invalid attributes" do
-      # it ""
-    end
   end
-
 end
