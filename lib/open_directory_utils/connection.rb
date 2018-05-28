@@ -5,7 +5,7 @@ module OpenDirectoryUtils
   class Connection
 
     attr_reader :srv_hostname, :srv_username, :ssh_options
-    attr_reader :diradmin_info, :command_paths
+    attr_reader :od_info #, :command_paths
 
     include OpenDirectoryUtils::UserActions
 
@@ -19,12 +19,14 @@ module OpenDirectoryUtils
       dir_username = config[:dir_username]
       dir_password = config[:dir_password]
       dir_datapath = config[:dir_datapath]
-      @diradmin_info = {username: dir_username, password: dir_password,
-                        data_path: dir_datapath}
 
-      dscl_cmdpath  = config[:dscl_cmdpath]
-      pwpol_cmdpath = config[:pwpol_cmdpath]
-      @command_paths = {dscl: dscl_cmdpath, pwpolicy: pwpol_cmdpath}
+      dscl_path  = config[:dscl_path]
+      pwpol_path = config[:pwpol_path]
+      # @command_paths = {dscl: dscl_cmdpath, pwpolicy: pwpol_cmdpath}
+      @od_info = {username: dir_username, password: dir_password,
+                  data_path: dir_datapath, dscl: dscl_path,
+                  pwpolicy: pwpol_path,
+                }
 
       raise ArgumentError, 'server hostname missing' if srv_hostname.nil? or
                                                         srv_hostname.empty?
@@ -35,7 +37,7 @@ module OpenDirectoryUtils
     def run(command:, attributes:, formatting: nil)
       answer = {}
       begin
-        ssh_cmd = send(command, attributes, diradmin_info)
+        ssh_cmd = send(command, attributes, od_info)
         results = send_od_cmds(ssh_cmd)
         answer  = format_results(results, command, attributes)
       rescue ArgumentError, NoMethodError => error
@@ -93,8 +95,8 @@ module OpenDirectoryUtils
         dir_password: ENV['DIR_PASSWORD'],
         dir_datapath: (ENV['DIR_DATAPATH'] || '/LDAPv3/127.0.0.1/'),
 
-        dscl_cmdpath:  ENV['DSCL_PATH']  || '/usr/bin/dscl',
-        pwpol_cmdpath: ENV['PWPOL_PATH'] || '/usr/bin/pwpolicy'
+        dscl_path:    ENV['DSCL_PATH']  || '/usr/bin/dscl',
+        pwpol_path:   ENV['PWPOL_PATH'] || '/usr/bin/pwpolicy'
       }
     end
 
