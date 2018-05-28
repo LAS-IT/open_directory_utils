@@ -184,8 +184,6 @@ RSpec.describe OpenDirectoryUtils::Connection do
       ]
       expect(answer).to eq(correct)
     end
-
-    it "won't run commands if uid is missing for user commands?"
   end
 
   context "send_od_cmds via ssh with ONE connection" do
