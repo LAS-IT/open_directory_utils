@@ -81,10 +81,16 @@ module OpenDirectoryUtils
     end
 
     # -create /Users/someuser NFSHomeDirectory /Users/someuser
-    def user_od_set_nfs_home_directory
+    def user_od_set_nfs_home_directory(attribs)
+      user_attrs = check_uid( attribs )
+      raise ArgumentError, "nfs_home_directory blank" if user_attrs[:nfs_home_directory].to_s.eql? ''
+      %Q{-create /Users/#{user_attrs[:uid]} NFSHomeDirectory #{user_attrs[:nfs_home_directory]}}
     end
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME homedirectory "$VALUE"
-    def user_set_home_directoy
+    def user_set_home_directory(attribs)
+      user_attrs = check_uid( attribs )
+      raise ArgumentError, "home_directory blank" if user_attrs[:home_directory].to_s.eql? ''
+      %Q{-create /Users/#{user_attrs[:uid]} homedirectory #{user_attrs[:home_directory]}}
     end
 
     # /usr/bin/dscl -plist -u diradmin -P #{adminpw} /LDAPv3/127.0.0.1/ -passwd /Users/#{uid} #{passwd}

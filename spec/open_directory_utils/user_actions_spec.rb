@@ -93,6 +93,12 @@ RSpec.describe OpenDirectoryUtils::UserActions do
         correct = '-create /Users/someone PrimaryGroupID 1043'
         expect( answer ).to eq( correct )
       end
+      it "user_od_set_nfs_home_directory" do
+        attribs = {uid: 'someone', nfs_home_directory: 1043}
+        answer  = @od.send(:user_od_set_nfs_home_directory, attribs)
+        correct = '-create /Users/someone NFSHomeDirectory 1043'
+        expect( answer ).to eq( correct )
+      end
     end
 
     describe "build ldap actions w/good data" do
@@ -112,6 +118,12 @@ RSpec.describe OpenDirectoryUtils::UserActions do
         attribs = {uid: 'someone', gidnumber: 1045}
         answer  = @od.send(:user_set_gidnumber, attribs)
         correct = '-create /Users/someone gidnumber 1045'
+        expect( answer ).to eq( correct )
+      end
+      it "user_set_home_directory" do
+        attribs = {uid: 'someone', home_directory: 1043}
+        answer  = @od.send(:user_set_home_directory, attribs)
+        correct = '-create /Users/someone homedirectory 1043'
         expect( answer ).to eq( correct )
       end
     end
@@ -182,6 +194,28 @@ RSpec.describe OpenDirectoryUtils::UserActions do
         attribs = {uid: 'someone', gidnumber: " "}
         expect { @od.send(:user_set_gidnumber, attribs) }.
             to raise_error(ArgumentError, /gidnumber/)
+      end
+      # user_od_set_nfs_home_directory
+      it "for user_od_set_nfs_home_directory when real_name key missing" do
+        attribs = {uid: 'someone'}
+        expect { @od.send(:user_od_set_nfs_home_directory, attribs) }.
+            to raise_error(ArgumentError, /nfs_home_directory/)
+      end
+      it "for user_od_set_nfs_home_directory when real_name blank" do
+        attribs = {uid: 'someone', nfs_home_directory: " "}
+        expect { @od.send(:user_od_set_nfs_home_directory, attribs) }.
+            to raise_error(ArgumentError, /nfs_home_directory/)
+      end
+      # user_set_home_directoy
+      it "for user_set_home_directory when real_name key missing" do
+        attribs = {uid: 'someone'}
+        expect { @od.send(:user_set_home_directory, attribs) }.
+            to raise_error(ArgumentError, /home_directory/)
+      end
+      it "for user_set_home_directory when real_name blank" do
+        attribs = {uid: 'someone', home_directory: " "}
+        expect { @od.send(:user_set_home_directory, attribs) }.
+            to raise_error(ArgumentError, /home_directory/)
       end
     end
 
