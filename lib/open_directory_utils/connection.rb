@@ -5,10 +5,8 @@ module OpenDirectoryUtils
   class Connection
 
     attr_reader :srv_hostname, :srv_username, :ssh_options
-    attr_reader :diradmin #:dir_datapath, :dir_username, :dir_password
-    attr_reader :command_paths #,:dscl_cmdpath
+    attr_reader :diradmin_info, :command_paths
 
-    # include OpenDirectoryUtils::Assertions
     include OpenDirectoryUtils::UserActions
 
     def initialize(params={})
@@ -38,8 +36,6 @@ module OpenDirectoryUtils
       answer = {}
       begin
         ssh_cmd = send(command, attributes, diradmin_info)
-        # action  = send(:check_action, command, attributes)
-        # ssh_cmd = build_full_command(action)
         results = send_od_cmds(ssh_cmd)
         answer  = format_results(results, command, attributes)
       rescue ArgumentError, NoMethodError => error
@@ -49,27 +45,6 @@ module OpenDirectoryUtils
     end
 
     private
-
-    def prep_actions(actions_in, formatting=nil)
-      actions = Array( actions_in )
-      od_cmds = []
-      actions.each do |act|
-        od_cmds << build_full_command(act, formatting)
-      end
-      od_cmds
-    end
-
-    # def build_full_command(cmd_actions, formatting=nil)
-    #   # /usr/bin/dscl -u diradmin -P "BigSecret" /LDAPv3/127.0.0.1/ -append /Users/$UID_USERNAME apple-keyword "$VALUE"
-    #   # "/usr/bin/dscl -plist -u #{od_username} -P #{od_password} #{od_dsclpath} -#{command} #{resource} #{params}"
-    #   ans  = "#{dscl_cmdpath}"
-    #   ans += ' -plist'                 unless formatting.nil? or formatting.empty?
-    #   ans += " -u #{dir_username}"     unless dir_username.nil? or dir_username.empty?
-    #   ans += %Q{ -P "#{dir_password}"} unless dir_password.nil? or dir_password.empty?
-    #   ans += " #{dir_datapath}"
-    #   ans += " #{cmd_actions}"
-    #   return ans
-    # end
 
     def send_od_cmds(cmds)
       cmd_array = Array( cmds )
