@@ -8,6 +8,7 @@ module OpenDirectoryUtils
     attr_reader :dir_datapath, :dir_username, :dir_password
     attr_reader :dscl_cmdpath
 
+    # include OpenDirectoryUtils::Assertions
     include OpenDirectoryUtils::UserActions
 
     def initialize(params={})
@@ -32,7 +33,8 @@ module OpenDirectoryUtils
     def run(command:, attributes:, formatting: nil)
       answer = {}
       begin
-        action  = send(:check_uid, command, attributes)
+        action  = send(command, attributes)
+        # action  = send(:check_action, command, attributes)
         ssh_cmd = build_full_command(action)
         results = send_od_cmds(ssh_cmd)
         answer  = format_results(results, command, attributes)

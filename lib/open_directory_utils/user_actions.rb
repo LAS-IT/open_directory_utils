@@ -4,13 +4,12 @@ module OpenDirectoryUtils
   # https://superuser.com/questions/592921/mac-osx-users-vs-dscl-command-to-list-user/621055?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
   module UserActions
 
-    def check_uid(action, attribs)
+    def check_uid(attribs)
       attribs[:uid] = attribs[:uid]&.strip
-      answer = send(action, attribs)
       raise ArgumentError, "missing uid"   if attribs[:uid].nil?
       raise ArgumentError, "blank uid"     if attribs[:uid].empty?
       raise ArgumentError, "uid has space" if attribs[:uid].include?(' ')
-      return answer
+      return attribs
     end
 
     # GET INFO
@@ -20,13 +19,15 @@ module OpenDirectoryUtils
     # search od user  -- dscl . -search /Users RealName "Andrew Garrett"
     # return as xml   -- dscl -plist . -search /Users RealName "Andrew Garrett"
     def user_get_info(attribs)
-      "-read /Users/#{attribs[:uid]}"
+      user_attrs = check_uid( attribs )
+      "-read /Users/#{user_attrs[:uid]}"
     end
 
     # get all usernames -- dscl . -list /Users
     # get all user details -- dscl . -readall /Users
     def user_exists?(attribs)
-      user_get_info(attribs)
+      user_attrs = check_uid( attribs )
+      user_get_info(user_attrs)
     end
 
 

@@ -11,20 +11,20 @@ RSpec.describe OpenDirectoryUtils::UserActions do
       @od.extend(OpenDirectoryUtils::UserActions)
     end
 
-    describe "error with missing or bad uid attribute" do
+    describe ":check_uid check errors with bad uid attribute" do
       it "uid = nil" do
         attribs = {uid: nil}
-        expect { @od.send(:check_uid, :user_get_info, attribs) }.
+        expect { @od.send(:check_uid, attribs) }.
             to raise_error(ArgumentError, /missing uid/)
       end
       it "uid = '' (empty)" do
         attribs = {uid: ''}
-        expect { @od.send(:check_uid, :user_get_info, attribs) }.
+        expect { @od.send(:check_uid, attribs) }.
             to raise_error(ArgumentError, /blank uid/)
       end
       it "uid = 'with space' (no space allowed)" do
         attribs = {uid: 'with space'}
-        expect { @od.send(:check_uid, :user_get_info, attribs) }.
+        expect { @od.send(:check_uid, attribs) }.
             to raise_error(ArgumentError, /uid has space/)
       end
     end
@@ -32,31 +32,31 @@ RSpec.describe OpenDirectoryUtils::UserActions do
     describe "build actions - fix extra spaces with uid" do
       it "fixes uid with trailing space" do
         attribs = {uid: 'someone '}
-        answer  = @od.send(:check_uid, :user_get_info, attribs)
+        answer  = @od.send(:user_get_info, attribs)
         correct = "-read /Users/someone"
         expect( answer ).to eq( correct )
       end
       it "fixes uid with trailing spaces" do
         attribs = {uid: 'someone  '}
-        answer  = @od.send(:check_uid, :user_get_info, attribs)
+        answer  = @od.send(:user_get_info, attribs)
         correct = "-read /Users/someone"
         expect( answer ).to eq( correct )
       end
       it "fixes uid with leading space" do
         attribs = {uid: ' someone'}
-        answer  = @od.send(:check_uid, :user_get_info, attribs)
+        answer  = @od.send(:user_get_info, attribs)
         correct = "-read /Users/someone"
         expect( answer ).to eq( correct )
       end
       it "fixes uid with trailing spaces" do
         attribs = {uid: '  someone'}
-        answer  = @od.send(:check_uid, :user_get_info, attribs)
+        answer  = @od.send(:user_get_info, attribs)
         correct = "-read /Users/someone"
         expect( answer ).to eq( correct )
       end
       it "fixes uid with trailing and leading spaces" do
         attribs = {uid: '  someone  '}
-        answer  = @od.send(:check_uid, :user_get_info, attribs)
+        answer  = @od.send(:user_get_info, attribs)
         correct = "-read /Users/someone"
         expect( answer ).to eq( correct )
       end
