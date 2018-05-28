@@ -99,6 +99,18 @@ RSpec.describe OpenDirectoryUtils::UserActions do
         correct = '-create /Users/someone NFSHomeDirectory 1043'
         expect( answer ).to eq( correct )
       end
+      it "user_set_password" do
+        attribs = {uid: 'someone', password: 'TopSecret'}
+        answer  = @od.send(:user_set_password, attribs)
+        correct = '-passwd /Users/someone "TopSecret"'
+        expect( answer ).to eq( correct )
+      end
+      it "user_verify_password" do
+        attribs = {uid: 'someone', password: 'TopSecret'}
+        answer  = @od.send(:user_verify_password, attribs)
+        correct = '-auth someone "TopSecret"'
+        expect( answer ).to eq( correct )
+      end
     end
 
     describe "build ldap actions w/good data" do
@@ -130,6 +142,11 @@ RSpec.describe OpenDirectoryUtils::UserActions do
 
     describe "errors when incorrect/missing data entered" do
       # user_od_set_real_name
+      it "for user_od_set_real_name when uid key missing" do
+        attribs = {}
+        expect { @od.send(:user_od_set_real_name, attribs) }.
+            to raise_error(ArgumentError, /uid/)
+      end
       it "for user_od_set_real_name when real_name key missing" do
         attribs = {uid: 'someone'}
         expect { @od.send(:user_od_set_real_name, attribs) }.
@@ -141,73 +158,108 @@ RSpec.describe OpenDirectoryUtils::UserActions do
             to raise_error(ArgumentError, /real_name/)
       end
       # user_set_common_name
-      it "for user_set_common_name when real_name key missing" do
+      it "for user_set_common_name when uid key missing" do
+        attribs = {}
+        expect { @od.send(:user_set_common_name, attribs) }.
+            to raise_error(ArgumentError, /uid/)
+      end
+      it "for user_set_common_name when common_name key missing" do
         attribs = {uid: 'someone'}
         expect { @od.send(:user_set_common_name, attribs) }.
             to raise_error(ArgumentError, /common_name/)
       end
-      it "for user_set_common_name when real_name blank" do
+      it "for user_set_common_name when common_name blank" do
         attribs = {uid: 'someone', cn: " "}
         expect { @od.send(:user_set_common_name, attribs) }.
             to raise_error(ArgumentError, /common_name/)
       end
       # user_set_od_unique_id
-      it "for user_od_set_unique_id when real_name key missing" do
+      it "for user_od_set_unique_id when uid key missing" do
+        attribs = {}
+        expect { @od.send(:user_od_set_unique_id, attribs) }.
+            to raise_error(ArgumentError, /uid/)
+      end
+      it "for user_od_set_unique_id when unique_id key missing" do
         attribs = {uid: 'someone'}
         expect { @od.send(:user_od_set_unique_id, attribs) }.
             to raise_error(ArgumentError, /unique_id/)
       end
-      it "for user_od_set_unique_id when real_name blank" do
+      it "for user_od_set_unique_id when unique_id blank" do
         attribs = {uid: 'someone', unique_id: " "}
         expect { @od.send(:user_od_set_unique_id, attribs) }.
             to raise_error(ArgumentError, /unique_id/)
       end
       # user_set_uidnumber
-      it "for user_set_uidnumber when real_name key missing" do
+      it "for user_set_uidnumber when uid key missing" do
+        attribs = {}
+        expect { @od.send(:user_set_uidnumber, attribs) }.
+            to raise_error(ArgumentError, /uid/)
+      end
+      it "for user_set_uidnumber when uidnumber key missing" do
         attribs = {uid: 'someone'}
         expect { @od.send(:user_set_uidnumber, attribs) }.
             to raise_error(ArgumentError, /uidnumber/)
       end
-      it "for user_set_uidnumber when real_name blank" do
+      it "for user_set_uidnumber when uidnumber blank" do
         attribs = {uid: 'someone', uidnumber: " "}
         expect { @od.send(:user_set_uidnumber, attribs) }.
             to raise_error(ArgumentError, /uidnumber/)
       end
       # user_set_od_unique_id
-      it "for user_od_set_primary_group_id when real_name key missing" do
+      it "for user_od_set_primary_group_id when uid key missing" do
+        attribs = {}
+        expect { @od.send(:user_od_set_primary_group_id, attribs) }.
+            to raise_error(ArgumentError, /uid/)
+      end
+      it "for user_od_set_primary_group_id when primary_group_id key missing" do
         attribs = {uid: 'someone'}
         expect { @od.send(:user_od_set_primary_group_id, attribs) }.
             to raise_error(ArgumentError, /primary_group_id/)
       end
-      it "for user_od_set_primary_group_id when real_name blank" do
+      it "for user_od_set_primary_group_id when primary_group_id blank" do
         attribs = {uid: 'someone', primary_group_id: " "}
         expect { @od.send(:user_od_set_primary_group_id, attribs) }.
             to raise_error(ArgumentError, /primary_group_id/)
       end
       # user_set_guidnumber
-      it "for user_set_guidnumber when real_name key missing" do
+      it "for user_set_guidnumber when uid key missing" do
+        attribs = {}
+        expect { @od.send(:user_set_gidnumber, attribs) }.
+            to raise_error(ArgumentError, /uid/)
+      end
+      it "for user_set_guidnumber when gidnumber key missing" do
         attribs = {uid: 'someone'}
         expect { @od.send(:user_set_gidnumber, attribs) }.
             to raise_error(ArgumentError, /gidnumber/)
       end
-      it "for user_set_guidnumber when real_name blank" do
+      it "for user_set_guidnumber when gidnumber blank" do
         attribs = {uid: 'someone', gidnumber: " "}
         expect { @od.send(:user_set_gidnumber, attribs) }.
             to raise_error(ArgumentError, /gidnumber/)
       end
       # user_od_set_nfs_home_directory
-      it "for user_od_set_nfs_home_directory when real_name key missing" do
+      it "for user_od_set_nfs_home_directory when uid key missing" do
+        attribs = {}
+        expect { @od.send(:user_od_set_nfs_home_directory, attribs) }.
+            to raise_error(ArgumentError, /uid/)
+      end
+      it "for user_od_set_nfs_home_directory when nfs_home_directory key missing" do
         attribs = {uid: 'someone'}
         expect { @od.send(:user_od_set_nfs_home_directory, attribs) }.
             to raise_error(ArgumentError, /nfs_home_directory/)
       end
-      it "for user_od_set_nfs_home_directory when real_name blank" do
+      it "for user_od_set_nfs_home_directory when nfs_home_directory blank" do
         attribs = {uid: 'someone', nfs_home_directory: " "}
         expect { @od.send(:user_od_set_nfs_home_directory, attribs) }.
             to raise_error(ArgumentError, /nfs_home_directory/)
       end
       # user_set_home_directoy
-      it "for user_set_home_directory when real_name key missing" do
+      it "for user_set_home_directory when uid key missing" do
+        attribs = {}
+        expect { @od.send(:user_set_home_directory, attribs) }.
+            to raise_error(ArgumentError, /uid/)
+      end
+      it "for user_set_home_directory when home_directory key missing" do
         attribs = {uid: 'someone'}
         expect { @od.send(:user_set_home_directory, attribs) }.
             to raise_error(ArgumentError, /home_directory/)
@@ -216,6 +268,33 @@ RSpec.describe OpenDirectoryUtils::UserActions do
         attribs = {uid: 'someone', home_directory: " "}
         expect { @od.send(:user_set_home_directory, attribs) }.
             to raise_error(ArgumentError, /home_directory/)
+      end
+      # user_set_password
+      it "for user_set_password when password key missing" do
+        attribs = {uid: 'someone'}
+        expect { @od.send(:user_set_password, attribs) }.
+            to raise_error(ArgumentError, /password/)
+      end
+      it "for user_od_set_nfs_home_directory when password blank" do
+        attribs = {uid: 'someone', password: " "}
+        expect { @od.send(:user_set_password, attribs) }.
+            to raise_error(ArgumentError, /password/)
+      end
+      # user_verify_password
+      it "for user_verify_password when uid key missing" do
+        attribs = {}
+        expect { @od.send(:user_verify_password, attribs) }.
+            to raise_error(ArgumentError, /uid/)
+      end
+      it "for user_verify_password when password key missing" do
+        attribs = {uid: 'someone'}
+        expect { @od.send(:user_verify_password, attribs) }.
+            to raise_error(ArgumentError, /password/)
+      end
+      it "for user_verify_password when password blank" do
+        attribs = {uid: 'someone', password: " "}
+        expect { @od.send(:user_verify_password, attribs) }.
+            to raise_error(ArgumentError, /password/)
       end
     end
 

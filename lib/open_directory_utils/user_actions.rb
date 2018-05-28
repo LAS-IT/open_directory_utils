@@ -93,11 +93,17 @@ module OpenDirectoryUtils
       %Q{-create /Users/#{user_attrs[:uid]} homedirectory #{user_attrs[:home_directory]}}
     end
 
-    # /usr/bin/dscl -plist -u diradmin -P #{adminpw} /LDAPv3/127.0.0.1/ -passwd /Users/#{uid} #{passwd}
-    def user_set_password
+    # /usr/bin/dscl -plist -u diradmin -P #{adminpw} /LDAPv3/127.0.0.1/ -passwd /Users/#{uid} "#{passwd}"
+    def user_set_password(attribs)
+      user_attrs = check_uid( attribs )
+      raise ArgumentError, "password blank" if user_attrs[:password].to_s.eql? ''
+      %Q{-passwd /Users/#{user_attrs[:uid]} "#{user_attrs[:password]}"}
     end
-    # /usr/bin/dscl /LDAPv3/127.0.0.1 auth #{uid} #{passwd}
-    def user_verify_password_set
+    # /usr/bin/dscl /LDAPv3/127.0.0.1 -auth #{uid} "#{passwd}"
+    def user_verify_password(attribs)
+      user_attrs = check_uid( attribs )
+      raise ArgumentError, "password blank" if user_attrs[:password].to_s.eql? ''
+      %Q{-auth #{user_attrs[:uid]} "#{user_attrs[:password]}"}
     end
 
     # /usr/bin/pwpolicy -a diradmin -p A-B1g-S3cret -u $UID_USERNAME -setpolicy "isDisabled=0"
