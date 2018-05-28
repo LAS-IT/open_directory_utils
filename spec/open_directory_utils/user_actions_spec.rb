@@ -87,6 +87,12 @@ RSpec.describe OpenDirectoryUtils::UserActions do
         correct = '-create /Users/someone UniqueID 987654'
         expect( answer ).to eq( correct )
       end
+      it "user_od_set_primary_group_id" do
+        attribs = {uid: 'someone', primary_group_id: 1043}
+        answer  = @od.send(:user_od_set_primary_group_id, attribs)
+        correct = '-create /Users/someone PrimaryGroupID 1043'
+        expect( answer ).to eq( correct )
+      end
     end
 
     describe "build ldap actions w/good data" do
@@ -96,10 +102,16 @@ RSpec.describe OpenDirectoryUtils::UserActions do
         correct = '-create /Users/someone cn "John Doe"'
         expect( answer ).to eq( correct )
       end
-      it "user_od_set_uidnumber" do
+      it "user_set_uidnumber" do
         attribs = {uid: 'someone', uidnumber: 987654}
         answer  = @od.send(:user_set_uidnumber, attribs)
         correct = '-create /Users/someone uidnumber 987654'
+        expect( answer ).to eq( correct )
+      end
+      it "user_set_gidnumber" do
+        attribs = {uid: 'someone', gidnumber: 1045}
+        answer  = @od.send(:user_set_gidnumber, attribs)
+        correct = '-create /Users/someone gidnumber 1045'
         expect( answer ).to eq( correct )
       end
     end
@@ -148,6 +160,28 @@ RSpec.describe OpenDirectoryUtils::UserActions do
         attribs = {uid: 'someone', uidnumber: " "}
         expect { @od.send(:user_set_uidnumber, attribs) }.
             to raise_error(ArgumentError, /uidnumber/)
+      end
+      # user_set_od_unique_id
+      it "for user_od_set_primary_group_id when real_name key missing" do
+        attribs = {uid: 'someone'}
+        expect { @od.send(:user_od_set_primary_group_id, attribs) }.
+            to raise_error(ArgumentError, /primary_group_id/)
+      end
+      it "for user_od_set_primary_group_id when real_name blank" do
+        attribs = {uid: 'someone', primary_group_id: " "}
+        expect { @od.send(:user_od_set_primary_group_id, attribs) }.
+            to raise_error(ArgumentError, /primary_group_id/)
+      end
+      # user_set_guidnumber
+      it "for user_set_guidnumber when real_name key missing" do
+        attribs = {uid: 'someone'}
+        expect { @od.send(:user_set_gidnumber, attribs) }.
+            to raise_error(ArgumentError, /gidnumber/)
+      end
+      it "for user_set_guidnumber when real_name blank" do
+        attribs = {uid: 'someone', gidnumber: " "}
+        expect { @od.send(:user_set_gidnumber, attribs) }.
+            to raise_error(ArgumentError, /gidnumber/)
       end
     end
 

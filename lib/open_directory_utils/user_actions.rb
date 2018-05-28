@@ -68,10 +68,16 @@ module OpenDirectoryUtils
     alias_method :user_ldap_set_uidnumber, :user_set_uidnumber
 
     # sudo dscl . -create /Users/someuser PrimaryGroupID 80
-    def user_od_set_primary_group_id
+    def user_od_set_primary_group_id(attribs)
+      user_attrs = check_uid( attribs )
+      raise ArgumentError, "primary_group_id blank" if user_attrs[:primary_group_id].to_s.eql? ''
+      %Q{-create /Users/#{user_attrs[:uid]} PrimaryGroupID #{user_attrs[:primary_group_id]}}
     end
     # sudo dscl . -create /Users/someuser PrimaryGroupID 80
-    def user_set_gidnumber
+    def user_set_gidnumber(attribs)
+      user_attrs = check_uid( attribs )
+      raise ArgumentError, "gidnumber blank" if user_attrs[:gidnumber].to_s.eql? ''
+      %Q{-create /Users/#{user_attrs[:uid]} gidnumber #{user_attrs[:gidnumber]}}
     end
 
     # -create /Users/someuser NFSHomeDirectory /Users/someuser
