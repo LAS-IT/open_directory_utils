@@ -18,92 +18,134 @@ module OpenDirectoryUtils
       return user_attrs
     end
 
+    def add_srv_info(dir_info, format_info=nil)
+      # /usr/bin/dscl -u diradmin -P "BigSecret" /LDAPv3/127.0.0.1/ -append /Users/$UID_USERNAME apple-keyword "$VALUE"
+      # "/usr/bin/dscl -plist -u #{od_username} -P #{od_password} #{od_dsclpath} -#{command} #{resource} #{params}"
+      ans  = ""
+      ans += ' -plist'                        unless format_info.nil?  or
+                                                      format_info.empty?
+      ans += " -u #{dir_info[:diradmin]}"     unless dir_info[:diradmin].nil? or
+                                                      dir_info[:diradmin].empty?
+      ans += %Q[ -P "#{dir_info[:password]}"] unless dir_info[:password].nil? or
+                                                      dir_info[:password].empty?
+      ans += " #{dir_info[:data_path]}"
+      return ans
+    end
+
+
     # GET INFO
     ##########
     # get user record -- dscl . -read /Users/<username>
     # get user value  -- dscl . -read /Users/<username> <key>
     # search od user  -- dscl . -search /Users RealName "Andrew Garrett"
     # return as xml   -- dscl -plist . -search /Users RealName "Andrew Garrett"
-    def user_get_info(attribs)
+    def user_get_info(attribs, dir_info)
       user_attrs = check_uid( attribs )
-      "-read /Users/#{user_attrs[:uid]}"
+      # %Q[-read /Users/#{user_attrs[:uid]}]
+      # %Q[/usr/bin/dscl #{add_srv_info(dir_info, attribs[:format])} -read /Users/#{user_attrs[:uid]}]
+      answer  = "/usr/bin/dscl"
+      answer += add_srv_info( dir_info, attribs[:format] )
+      answer += %Q[ -read /Users/#{user_attrs[:uid]}]
+      return answer
     end
 
     # get all usernames -- dscl . -list /Users
     # get all user details -- dscl . -readall /Users
-    def user_exists?(attribs)
+    def user_exists?(attribs, dir_info)
       user_attrs = check_uid( attribs )
-      user_get_info(user_attrs)
+      user_get_info(user_attrs, dir_info)
     end
-
 
     # CHANGE OD
     ###########
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER RealName "$VALUE"
-    def user_od_set_real_name(attribs)
+    def user_od_set_real_name(attribs, dir_info)
       user_attrs = check_uid( attribs )
       raise ArgumentError, "real_name blank" if user_attrs[:real_name].to_s.eql? ''
-      %Q{-create /Users/#{user_attrs[:uid]} RealName "#{user_attrs[:real_name]}"}
+      # %Q[-create /Users/#{user_attrs[:uid]} RealName "#{user_attrs[:real_name]}"]
+      # %Q[/usr/bin/dscl -u #{dir_info[:diradmin]} -P "#{dir_info[:password]}" #{dir_info[:data_path]} -create /Users/#{user_attrs[:uid]} RealName "#{user_attrs[:real_name]}"]
+      answer  = "/usr/bin/dscl"
+      answer += add_srv_info( dir_info, attribs[:format] )
+      answer += %Q[ -create /Users/#{user_attrs[:uid]} RealName "#{user_attrs[:real_name]}"]
     end
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER cn "$NAME"
-    def user_set_common_name(attribs)
+    def user_set_common_name(attribs, dir_info)
       user_attrs = check_uid( attribs )
       raise ArgumentError, "common_name (cn) blank" if user_attrs[:cn].to_s.eql? ''
-      %Q{-create /Users/#{user_attrs[:uid]} cn "#{user_attrs[:cn]}"}
+      answer  = "/usr/bin/dscl"
+      answer += add_srv_info( dir_info, attribs[:format] )
+      answer += %Q[ -create /Users/#{user_attrs[:uid]} cn "#{user_attrs[:cn]}"]
+      # %Q[/usr/bin/dscl -u #{dir_info[:diradmin]} -P "#{dir_info[:password]}" #{dir_info[:data_path]} -create /Users/#{user_attrs[:uid]} cn "#{user_attrs[:cn]}"]
     end
     alias_method :user_ldap_set_common_name, :user_set_common_name
 
     # sudo dscl . -create /Users/someuser UniqueID "1010"  #use something not already in use
-    def user_od_set_unique_id(attribs)
+    def user_od_set_unique_id(attribs, dir_info)
       user_attrs = check_uid( attribs )
       raise ArgumentError, "unique_id blank" if user_attrs[:unique_id].to_s.eql? ''
-      %Q{-create /Users/#{user_attrs[:uid]} UniqueID #{user_attrs[:unique_id]}}
+      answer  = "/usr/bin/dscl"
+      answer += add_srv_info( dir_info, attribs[:format] )
+      answer += %Q[ -create /Users/#{user_attrs[:uid]} UniqueID #{user_attrs[:unique_id]}]
     end
     # sudo dscl . -create /Users/someuser uidnumber "1010"  #use something not already in use
-    def user_set_uidnumber(attribs)
+    def user_set_uidnumber(attribs, dir_info)
       user_attrs = check_uid( attribs )
       raise ArgumentError, "uidnumber blank" if user_attrs[:uidnumber].to_s.eql? ''
-      %Q{-create /Users/#{user_attrs[:uid]} uidnumber #{user_attrs[:uidnumber]}}
+      answer  = "/usr/bin/dscl"
+      answer += add_srv_info( dir_info, attribs[:format] )
+      answer += %Q[ -create /Users/#{user_attrs[:uid]} uidnumber #{user_attrs[:uidnumber]}]
     end
     alias_method :user_ldap_set_uidnumber, :user_set_uidnumber
 
     # sudo dscl . -create /Users/someuser PrimaryGroupID 80
-    def user_od_set_primary_group_id(attribs)
+    def user_od_set_primary_group_id(attribs, dir_info)
       user_attrs = check_uid( attribs )
       raise ArgumentError, "primary_group_id blank" if user_attrs[:primary_group_id].to_s.eql? ''
-      %Q{-create /Users/#{user_attrs[:uid]} PrimaryGroupID #{user_attrs[:primary_group_id]}}
+      answer  = "/usr/bin/dscl"
+      answer += add_srv_info( dir_info, attribs[:format] )
+      answer += %Q[ -create /Users/#{user_attrs[:uid]} PrimaryGroupID #{user_attrs[:primary_group_id]}]
     end
     # sudo dscl . -create /Users/someuser PrimaryGroupID 80
-    def user_set_gidnumber(attribs)
+    def user_set_gidnumber(attribs, dir_info)
       user_attrs = check_uid( attribs )
       raise ArgumentError, "gidnumber blank" if user_attrs[:gidnumber].to_s.eql? ''
-      %Q{-create /Users/#{user_attrs[:uid]} gidnumber #{user_attrs[:gidnumber]}}
+      answer  = "/usr/bin/dscl"
+      answer += add_srv_info( dir_info, attribs[:format] )
+      answer += %Q[ -create /Users/#{user_attrs[:uid]} gidnumber #{user_attrs[:gidnumber]}]
     end
 
-    # -create /Users/someuser NFSHomeDirectory /Users/someuser
-    def user_od_set_nfs_home_directory(attribs)
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/someuser NFSHomeDirectory /Users/someuser
+    def user_od_set_nfs_home_directory(attribs, dir_info)
       user_attrs = check_uid( attribs )
       raise ArgumentError, "nfs_home_directory blank" if user_attrs[:nfs_home_directory].to_s.eql? ''
-      %Q{-create /Users/#{user_attrs[:uid]} NFSHomeDirectory #{user_attrs[:nfs_home_directory]}}
+      answer  = "/usr/bin/dscl"
+      answer += add_srv_info( dir_info, attribs[:format] )
+      answer += %Q[ -create /Users/#{user_attrs[:uid]} NFSHomeDirectory #{user_attrs[:nfs_home_directory]}]
     end
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME homedirectory "$VALUE"
-    def user_set_home_directory(attribs)
+    def user_set_home_directory(attribs, dir_info)
       user_attrs = check_uid( attribs )
       raise ArgumentError, "home_directory blank" if user_attrs[:home_directory].to_s.eql? ''
-      %Q{-create /Users/#{user_attrs[:uid]} homedirectory #{user_attrs[:home_directory]}}
+      answer  = "/usr/bin/dscl"
+      answer += add_srv_info( dir_info, attribs[:format] )
+      answer += %Q[ -create /Users/#{user_attrs[:uid]} homedirectory #{user_attrs[:home_directory]}]
     end
 
     # /usr/bin/dscl -plist -u diradmin -P #{adminpw} /LDAPv3/127.0.0.1/ -passwd /Users/#{uid} "#{passwd}"
-    def user_set_password(attribs)
+    def user_set_password(attribs, dir_info)
       user_attrs = check_uid( attribs )
       raise ArgumentError, "password blank" if user_attrs[:password].to_s.eql? ''
-      %Q{-passwd /Users/#{user_attrs[:uid]} "#{user_attrs[:password]}"}
+      answer  = "/usr/bin/dscl"
+      answer += add_srv_info( dir_info, attribs[:format] )
+      answer += %Q[ -passwd /Users/#{user_attrs[:uid]} "#{user_attrs[:password]}"]
     end
     # /usr/bin/dscl /LDAPv3/127.0.0.1 -auth #{uid} "#{passwd}"
-    def user_verify_password(attribs)
+    def user_verify_password(attribs, dir_info)
       user_attrs = check_uid( attribs )
       raise ArgumentError, "password blank" if user_attrs[:password].to_s.eql? ''
-      %Q{-auth #{user_attrs[:uid]} "#{user_attrs[:password]}"}
+      answer  = "/usr/bin/dscl"
+      answer += add_srv_info( dir_info, attribs[:format] )
+      answer += %Q[ -auth #{user_attrs[:uid]} "#{user_attrs[:password]}"]
     end
 
     # /usr/bin/pwpolicy -a diradmin -p A-B1g-S3cret -u $UID_USERNAME -setpolicy "isDisabled=0"
@@ -177,6 +219,8 @@ module OpenDirectoryUtils
     def user_add_keywords
     end
 
+    #
+    #
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME mobile "$VALUE"
     def user_set_mobile_phone
     end

@@ -5,8 +5,8 @@ module OpenDirectoryUtils
   class Connection
 
     attr_reader :srv_hostname, :srv_username, :ssh_options
-    attr_reader :dir_datapath, :dir_username, :dir_password
-    attr_reader :dscl_cmdpath
+    attr_reader :diradmin #:dir_datapath, :dir_username, :dir_password
+    attr_reader :command_paths #,:dscl_cmdpath
 
     # include OpenDirectoryUtils::Assertions
     include OpenDirectoryUtils::UserActions
@@ -18,11 +18,15 @@ module OpenDirectoryUtils
       @srv_username = config[:srv_username]
       @ssh_options  = config[:ssh_options]
 
-      @dir_username = config[:dir_username]
-      @dir_password = config[:dir_password]
-      @dir_datapath = config[:dir_datapath]
+      dir_username = config[:dir_username]
+      dir_password = config[:dir_password]
+      dir_datapath = config[:dir_datapath]
+      @diradmin_info = {username: dir_username, password: dir_password,
+                        data_path: dir_datapath}
 
-      @dscl_cmdpath = config[:dscl_cmdpath]
+      dscl_cmdpath  = config[:dscl_cmdpath]
+      pwpol_cmdpath = config[:pwpol_cmdpath]
+      @command_paths = {dscl: dscl_cmdpath, pwpolicy: pwpol_cmdpath}
 
       raise ArgumentError, 'server hostname missing' if srv_hostname.nil? or
                                                         srv_hostname.empty?
@@ -33,9 +37,9 @@ module OpenDirectoryUtils
     def run(command:, attributes:, formatting: nil)
       answer = {}
       begin
-        action  = send(command, attributes)
+        ssh_cmd = send(command, attributes, diradmin_info)
         # action  = send(:check_action, command, attributes)
-        ssh_cmd = build_full_command(action)
+        # ssh_cmd = build_full_command(action)
         results = send_od_cmds(ssh_cmd)
         answer  = format_results(results, command, attributes)
       rescue ArgumentError, NoMethodError => error
@@ -55,17 +59,17 @@ module OpenDirectoryUtils
       od_cmds
     end
 
-    def build_full_command(cmd_actions, formatting=nil)
-      # /usr/bin/dscl -u diradmin -P "BigSecret" /LDAPv3/127.0.0.1/ -append /Users/$UID_USERNAME apple-keyword "$VALUE"
-      # "/usr/bin/dscl -plist -u #{od_username} -P #{od_password} #{od_dsclpath} -#{command} #{resource} #{params}"
-      ans  = "#{dscl_cmdpath}"
-      ans += ' -plist'                 unless formatting.nil? or formatting.empty?
-      ans += " -u #{dir_username}"     unless dir_username.nil? or dir_username.empty?
-      ans += %Q{ -P "#{dir_password}"} unless dir_password.nil? or dir_password.empty?
-      ans += " #{dir_datapath}"
-      ans += " #{cmd_actions}"
-      return ans
-    end
+    # def build_full_command(cmd_actions, formatting=nil)
+    #   # /usr/bin/dscl -u diradmin -P "BigSecret" /LDAPv3/127.0.0.1/ -append /Users/$UID_USERNAME apple-keyword "$VALUE"
+    #   # "/usr/bin/dscl -plist -u #{od_username} -P #{od_password} #{od_dsclpath} -#{command} #{resource} #{params}"
+    #   ans  = "#{dscl_cmdpath}"
+    #   ans += ' -plist'                 unless formatting.nil? or formatting.empty?
+    #   ans += " -u #{dir_username}"     unless dir_username.nil? or dir_username.empty?
+    #   ans += %Q{ -P "#{dir_password}"} unless dir_password.nil? or dir_password.empty?
+    #   ans += " #{dir_datapath}"
+    #   ans += " #{cmd_actions}"
+    #   return ans
+    # end
 
     def send_od_cmds(cmds)
       cmd_array = Array( cmds )
@@ -114,7 +118,8 @@ module OpenDirectoryUtils
         dir_password: ENV['DIR_PASSWORD'],
         dir_datapath: (ENV['DIR_DATAPATH'] || '/LDAPv3/127.0.0.1/'),
 
-        dscl_cmdpath: ENV['DIR_CMDPATH'] || '/usr/bin/dscl',
+        dscl_cmdpath:  ENV['DSCL_PATH']  || '/usr/bin/dscl',
+        pwpol_cmdpath: ENV['PWPOL_PATH'] || '/usr/bin/pwpolicy'
       }
     end
 
