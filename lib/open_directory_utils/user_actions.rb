@@ -9,7 +9,13 @@ module OpenDirectoryUtils
       raise ArgumentError, "missing uid"   if attribs[:uid].nil?
       raise ArgumentError, "blank uid"     if attribs[:uid].empty?
       raise ArgumentError, "uid has space" if attribs[:uid].include?(' ')
-      return attribs
+      user_attrs = {}
+      attribs.each do |k,v|
+        user_attrs[k] = v.to_s.strip
+      end
+      # attibs.each{ |k,v| user_attrs[k] = v.to_s.strip }
+      # return attribs
+      return user_attrs
     end
 
     # GET INFO
@@ -33,36 +39,58 @@ module OpenDirectoryUtils
 
     # CHANGE OD
     ###########
-
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER RealName "$VALUE"
     def user_od_set_real_name(attribs)
-      # %Q{-create /Users/#{attribs[:uid]} RealName "#{attribs[:]}"}
+      user_attrs = check_uid( attribs )
+      raise ArgumentError, "real_name blank" if user_attrs[:real_name].to_s.eql? ''
+      %Q{-create /Users/#{user_attrs[:uid]} RealName "#{user_attrs[:real_name]}"}
     end
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER cn "$NAME"
-    def user_ldap_set_common_name
+    def user_set_common_name(attribs)
+      user_attrs = check_uid( attribs )
+      raise ArgumentError, "common_name (cn) blank" if user_attrs[:cn].to_s.eql? ''
+      %Q{-create /Users/#{user_attrs[:uid]} cn "#{user_attrs[:cn]}"}
     end
-
+    alias_method :user_ldap_set_common_name, :user_set_common_name
 
     # sudo dscl . -create /Users/someuser UniqueID "1010"  #use something not already in use
-    def user_set_unique_id
+    def user_od_set_unique_id(attribs)
+      user_attrs = check_uid( attribs )
+      raise ArgumentError, "unique_id blank" if user_attrs[:unique_id].to_s.eql? ''
+      %Q{-create /Users/#{user_attrs[:uid]} UniqueID #{user_attrs[:unique_id]}}
     end
+    # sudo dscl . -create /Users/someuser uidnumber "1010"  #use something not already in use
+    def user_set_uidnumber(attribs)
+      user_attrs = check_uid( attribs )
+      raise ArgumentError, "uidnumber blank" if user_attrs[:uidnumber].to_s.eql? ''
+      %Q{-create /Users/#{user_attrs[:uid]} uidnumber #{user_attrs[:uidnumber]}}
+    end
+    alias_method :user_ldap_set_uidnumber, :user_set_uidnumber
 
     # sudo dscl . -create /Users/someuser PrimaryGroupID 80
-    def user_set_primary_group_id
+    def user_od_set_primary_group_id
+    end
+    # sudo dscl . -create /Users/someuser PrimaryGroupID 80
+    def user_set_gidnumber
+    end
+
+    # -create /Users/someuser NFSHomeDirectory /Users/someuser
+    def user_od_set_nfs_home_directory
+    end
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME homedirectory "$VALUE"
+    def user_set_home_directoy
     end
 
     # /usr/bin/dscl -plist -u diradmin -P #{adminpw} /LDAPv3/127.0.0.1/ -passwd /Users/#{uid} #{passwd}
     def user_set_password
     end
-
     # /usr/bin/dscl /LDAPv3/127.0.0.1 auth #{uid} #{passwd}
-    def user_test_password
+    def user_verify_password_set
     end
 
     # /usr/bin/pwpolicy -a diradmin -p A-B1g-S3cret -u $UID_USERNAME -setpolicy "isDisabled=0"
     def user_enable_login
     end
-
     # /usr/bin/pwpolicy -a diradmin -p A-B1g-S3cret -u $UID_USERNAME -setpolicy "isDisabled=1"
     def user_disable_login
     end
@@ -85,59 +113,41 @@ module OpenDirectoryUtils
     def user_create
     end
 
-    # LDAP Fields
-    #############
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER uidnumber "$VALUE"
-    def user_set_uidnumber
-    end
-
-    # add 1st user   -- dscl . create /Groups/ladmins GroupMembership localadmin
-    # add more users -- dscl . append /Groups/ladmins GroupMembership 2ndlocaladmin
-    def user_add_to_group
-    end
-
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -delete /Groups/$VALUE GroupMembership $UID_USERNAME
-    def user_remove_from_group
-    end
-
     # dscl . -delete /Users/yourUserName
     # https://tutorialforlinux.com/2011/09/15/delete-users-and-groups-from-terminal/
     def user_delete
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME gidnumber "$VALUE"
-    def user_set_groupnumber
+    # ADD USER TO GROUPS
+    ####################
+    # add 1st user   -- dscl . create /Groups/ladmins GroupMembership localadmin
+    # add more users -- dscl . append /Groups/ladmins GroupMembership 2ndlocaladmin
+    def user_add_to_group
+    end
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -delete /Groups/$VALUE GroupMembership $UID_USERNAME
+    def user_remove_from_group
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME ??? "$VALUE"
-    def user_set_saluation
-    end
-
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME givenName "$VALUE"
-    def user_set_first_name
-    end
-
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME ??? "$VALUE"
-    def user_set_middle_name
-    end
-
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME sn "$VALUE"
-    def user_set_last_name
-    end
-
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME NameSuffix "$VALUE"
-    def user_set_name_suffix
-    end
-
-
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME apple-namesuffix "$VALUE"
-    def user_set_name_suffix
-    end
-
+    # OTHER FIELDS
+    #####################
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME mail "$VALUE"
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME email "$VALUE"
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME apple-user-mailattribute "$VALUE"
     def user_set_email
+    end
+
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME givenName "$VALUE"
+    def user_ldap_set_first_name
+    end
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME sn "$VALUE"
+    def user_ldap_set_last_name
+    end
+
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME NameSuffix "$VALUE"
+    def user_od_set_name_suffix
+    end
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME apple-namesuffix "$VALUE"
+    def user_ldap_set_name_suffix
     end
 
     # 1st keyword    -- /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME apple-keyword "$VALUE"
@@ -172,10 +182,6 @@ module OpenDirectoryUtils
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME departmentNumber "$VALUE"
     def user_set_department
-    end
-
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME homedirectory "$VALUE"
-    def user_set_home_directoy
     end
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME loginShell "$VALUE"
