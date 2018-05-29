@@ -18,7 +18,7 @@ module OpenDirectoryUtils
                     password: config[:dir_password],
                     data_path: config[:dir_datapath],
                     dscl: config[:dscl_path],
-                    pwpolicy: config[:pwpol_path],
+                    pwpol: config[:pwpol_path],
                   }
       raise ArgumentError, 'server hostname missing' if srv_info[:hostname].nil? or
                                                         srv_info[:hostname].empty?

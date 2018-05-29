@@ -123,17 +123,17 @@ RSpec.describe OpenDirectoryUtils::Connection do
     it "has correct default pwpolicy command path" do
       stub_const('ENV', ENV.to_hash.merge('PWPOL_PATH' => nil))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.dir_info[:pwpolicy]).to eq('/usr/bin/pwpolicy')
+      expect(od.dir_info[:pwpol]).to eq('/usr/bin/pwpolicy')
     end
     it "pwpolicy command path overrides from ENV VAR" do
       stub_const('ENV', ENV.to_hash.merge('PWPOL_PATH' => '/bin/pwpolicy'))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.dir_info[:pwpolicy]).to eq('/bin/pwpolicy')
+      expect(od.dir_info[:pwpol]).to eq('/bin/pwpolicy')
     end
     it "pwpolicy command path overrides from params" do
       # stub_const('ENV', ENV.to_hash.merge('DPWPOL_PATH' => 'pwpolicy'))
       od = OpenDirectoryUtils::Connection.new({pwpol_path: 'pwpolicy'})
-      expect(od.dir_info[:pwpolicy]).to eq('pwpolicy')
+      expect(od.dir_info[:pwpol]).to eq('pwpolicy')
     end
   end
 

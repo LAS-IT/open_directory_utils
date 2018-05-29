@@ -15,23 +15,25 @@ RSpec.describe OpenDirectoryUtils::UserActions do
 
     let(:od)       { Object.new.extend(OpenDirectoryUtils::UserActions) }
     let(:srv_info) { {diradmin: 'diradmin', password: 'TopSecret',
-                      data_path: '/LDAPv3/127.0.0.1/'} }
+                      data_path: '/LDAPv3/127.0.0.1/',
+                      dscl: '/usr/bin/dscl',
+                      pwpol: '/usr/bin/pwpolicy'} }
 
     describe ":check_uid check errors with bad uid attribute" do
       it "uid = nil" do
         attribs  = {uid: nil}
         expect { od.send(:check_uid, attribs) }.
-            to raise_error(ArgumentError, /missing uid/)
+            to raise_error(ArgumentError, /invalid uid/)
       end
       it "uid = '' (empty)" do
         attribs = {uid: ''}
         expect { od.send(:check_uid, attribs) }.
-            to raise_error(ArgumentError, /blank uid/)
+            to raise_error(ArgumentError, /invalid uid/)
       end
       it "uid = 'with space' (no space allowed)" do
         attribs = {uid: 'with space'}
         expect { od.send(:check_uid, attribs) }.
-            to raise_error(ArgumentError, /uid has space/)
+            to raise_error(ArgumentError, /invalid uid/)
       end
     end
 
@@ -142,6 +144,18 @@ RSpec.describe OpenDirectoryUtils::UserActions do
         attribs = {uid: 'someone', home_directory: 1043}
         answer  = od.send(:user_set_home_directory, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone homedirectory 1043'
+        expect( answer ).to eq( correct )
+      end
+      it "user_enable_login" do
+        attribs = {uid: 'someone'}
+        answer  = od.send(:user_enable_login, attribs, srv_info)
+        correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=0"'
+        expect( answer ).to eq( correct )
+      end
+      it "user_disable_login" do
+        attribs = {uid: 'someone'}
+        answer  = od.send(:user_disable_login, attribs, srv_info)
+        correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=1"'
         expect( answer ).to eq( correct )
       end
     end
