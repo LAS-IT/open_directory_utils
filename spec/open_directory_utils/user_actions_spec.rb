@@ -149,13 +149,39 @@ RSpec.describe OpenDirectoryUtils::UserActions do
       it "user_enable_login" do
         attribs = {uid: 'someone'}
         answer  = od.send(:user_enable_login, attribs, srv_info)
-        correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=0"'
+        correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -enableuser'
+        # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=0"'
         expect( answer ).to eq( correct )
       end
       it "user_disable_login" do
         attribs = {uid: 'someone'}
         answer  = od.send(:user_disable_login, attribs, srv_info)
-        correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=1"'
+        correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser'
+        # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=1"'
+        expect( answer ).to eq( correct )
+      end
+      it "user_od_set_shell" do
+        attribs = {uid: 'someone'}
+        answer  = od.send(:user_od_set_shell, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/bash"'
+        expect( answer ).to eq( correct )
+      end
+      it "user_od_set_shell with zsh" do
+        attribs = {uid: 'someone', shell: '/bin/zsh'}
+        answer  = od.send(:user_od_set_shell, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/zsh"'
+        expect( answer ).to eq( correct )
+      end
+      it "user_set_login_shell" do
+        attribs = {uid: 'someone'}
+        answer  = od.send(:user_set_login_shell, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone loginShell "/bin/bash"'
+        expect( answer ).to eq( correct )
+      end
+      it "user_set_login_shell with zsh" do
+        attribs = {uid: 'someone', shell: '/bin/zsh'}
+        answer  = od.send(:user_set_login_shell, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone loginShell "/bin/zsh"'
         expect( answer ).to eq( correct )
       end
     end

@@ -42,15 +42,14 @@ module OpenDirectoryUtils
     def add_pwpol_info(dir_info, format_info=nil)
       # /usr/bin/pwpolicy -a diradmin -p "BigSecret" -u username -setpolicy "isDisabled=0"
       ans  = "#{dir_info[:pwpol]}"
-      ans += ' -plist'                        unless format_info.nil?  or
-                                                      format_info.empty?
+      # ans += ' -plist'                        unless format_info.nil?  or
+      #                                                 format_info.empty?
       ans += " -a #{dir_info[:diradmin]}"     unless dir_info[:diradmin].nil? or
                                                       dir_info[:diradmin].empty?
       ans += %Q[ -p "#{dir_info[:password]}"] unless dir_info[:password].nil? or
                                                       dir_info[:password].empty?
       return ans
     end
-
 
     # GET INFO
     ##########
@@ -62,7 +61,6 @@ module OpenDirectoryUtils
       check_uid( attribs )
       user_attrs = clean_attribs(attribs)
 
-      # answer  = "#{dir_info[:dscl]}"
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -read /Users/#{user_attrs[:uid]}]
 
@@ -85,7 +83,6 @@ module OpenDirectoryUtils
       check_uid( attribs )
       user_attrs = clean_attribs(attribs)
 
-      # answer  = "#{dir_info[:dscl]}"
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -create /Users/#{user_attrs[:uid]} RealName "#{user_attrs[:real_name]}"]
 
@@ -97,7 +94,6 @@ module OpenDirectoryUtils
       check_uid( attribs )
       user_attrs = clean_attribs(attribs)
 
-      # answer  = "#{dir_info[:dscl]}"
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -create /Users/#{user_attrs[:uid]} cn "#{user_attrs[:cn]}"]
 
@@ -111,7 +107,6 @@ module OpenDirectoryUtils
       check_uid( attribs )
       user_attrs = clean_attribs(attribs)
 
-      # answer  = "#{dir_info[:dscl]}"
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -create /Users/#{user_attrs[:uid]} UniqueID #{user_attrs[:unique_id]}]
 
@@ -123,7 +118,6 @@ module OpenDirectoryUtils
       check_uid( attribs )
       user_attrs = clean_attribs(attribs)
 
-      # answer  = "#{dir_info[:dscl]}"
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -create /Users/#{user_attrs[:uid]} uidnumber #{user_attrs[:uidnumber]}]
 
@@ -137,7 +131,6 @@ module OpenDirectoryUtils
       check_uid( attribs )
       user_attrs = clean_attribs(attribs)
 
-      # answer  = "#{dir_info[:dscl]}"
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -create /Users/#{user_attrs[:uid]} PrimaryGroupID #{user_attrs[:primary_group_id]}]
 
@@ -149,7 +142,6 @@ module OpenDirectoryUtils
       check_uid( attribs )
       user_attrs = clean_attribs(attribs)
 
-      # answer  = "#{dir_info[:dscl]}"
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -create /Users/#{user_attrs[:uid]} gidnumber #{user_attrs[:gidnumber]}]
 
@@ -162,7 +154,6 @@ module OpenDirectoryUtils
       check_uid( attribs )
       user_attrs = clean_attribs(attribs)
 
-      # answer  = "#{dir_info[:dscl]}"
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -create /Users/#{user_attrs[:uid]} NFSHomeDirectory #{user_attrs[:nfs_home_directory]}]
 
@@ -174,7 +165,6 @@ module OpenDirectoryUtils
       check_uid( attribs )
       user_attrs = clean_attribs(attribs)
 
-      # answer  = "#{dir_info[:dscl]}"
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -create /Users/#{user_attrs[:uid]} homedirectory #{user_attrs[:home_directory]}]
 
@@ -182,12 +172,12 @@ module OpenDirectoryUtils
       return answer
     end
 
+    # /usr/bin/pwpolicy -a diradmin -p "TopSecret" -u username -setpassword "AnotherSecret"
     # /usr/bin/dscl -plist -u diradmin -P #{adminpw} /LDAPv3/127.0.0.1/ -passwd /Users/#{uid} "#{passwd}"
     def user_set_password(attribs, dir_info)
       check_uid( attribs )
       user_attrs = clean_attribs(attribs)
 
-      # answer  = "#{dir_info[:dscl]}"
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -passwd /Users/#{user_attrs[:uid]} "#{user_attrs[:password]}"]
 
@@ -199,7 +189,6 @@ module OpenDirectoryUtils
       check_uid( attribs )
       user_attrs = clean_attribs(attribs)
 
-      # answer  = "#{dir_info[:dscl]}"
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -auth #{user_attrs[:uid]} "#{user_attrs[:password]}"]
 
@@ -212,9 +201,9 @@ module OpenDirectoryUtils
       check_uid( attribs )
       user_attrs = clean_attribs(attribs)
 
-      # answer  = "#{dir_info[:pwpol]}"
       answer  = add_pwpol_info( dir_info, attribs[:format] )
-      answer += %Q[ -u #{user_attrs[:uid]} -setpolicy "isDisabled=0"]
+      answer += %Q[ -u #{user_attrs[:uid]} -enableuser]
+      # answer += %Q[ -u #{user_attrs[:uid]} -setpolicy "isDisabled=0"]
 
       return answer
     end
@@ -223,13 +212,35 @@ module OpenDirectoryUtils
       check_uid( attribs )
       user_attrs = clean_attribs(attribs)
 
-      # answer  = "#{dir_info[:pwpol]}"
       answer  = add_pwpol_info( dir_info, attribs[:format] )
-      answer += %Q[ -u #{user_attrs[:uid]} -setpolicy "isDisabled=1"]
+      answer += %Q[ -u #{user_attrs[:uid]} -disableuser]
+      # answer += %Q[ -u #{user_attrs[:uid]} -setpolicy "isDisabled=1"]
 
       return answer
     end
 
+    # sudo dscl . -create /Users/someuser UserShell /bin/bash
+    def user_od_set_shell(attribs, dir_info)
+      check_uid( attribs )
+      user_attrs = clean_attribs(attribs)
+      user_attrs[:shell] = user_attrs[:shell] || '/bin/bash'
+
+      answer  = add_dscl_info( dir_info, attribs[:format] )
+      answer += %Q[ -create /Users/#{user_attrs[:uid]} UserShell "#{user_attrs[:shell]}"]
+
+      return answer
+    end
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME loginShell "$VALUE"
+    def user_set_login_shell(attribs, dir_info)
+      check_uid( attribs )
+      user_attrs = clean_attribs(attribs)
+      user_attrs[:shell] = user_attrs[:shell] || '/bin/bash'
+
+      answer  = add_dscl_info( dir_info, attribs[:format] )
+      answer += %Q[ -create /Users/#{user_attrs[:uid]} loginShell "#{user_attrs[:shell]}"]
+
+      return answer
+    end
 
     # https://images.apple.com/server/docs/Command_Line.pdf
     # https://serverfault.com/questions/20702/how-do-i-create-user-accounts-from-the-terminal-in-mac-os-x-10-5?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
@@ -245,7 +256,17 @@ module OpenDirectoryUtils
     # sudo dscl . -passwd /Users/someuser password
     # SET USER GROUP (optional, but recommended - student / employee or whatever you have):
     # sudo dscl . -append /Groups/admin GroupMembership someuser
-    def user_create
+    def user_create(attribs, dir_info)
+      check_uid( attribs )
+      user_attrs = clean_attribs(attribs)
+      answer  = [
+        # sudo dscl . -create /Users/someuser
+        "#{add_dscl_info( dir_info, attribs[:format] )} -create /Users/#{user_attrs[:uid]}",
+        # sudo dscl . -create /Users/someuser UserShell /bin/bash
+
+      ]
+
+      return answer
     end
 
     # dscl . -delete /Users/yourUserName
@@ -321,9 +342,6 @@ module OpenDirectoryUtils
     def user_set_department
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME loginShell "$VALUE"
-    def user_set_login_shell
-    end
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME street "$VALUE"
     def user_set_street
     end
