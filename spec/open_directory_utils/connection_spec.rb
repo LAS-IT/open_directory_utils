@@ -8,132 +8,132 @@ RSpec.describe OpenDirectoryUtils::Connection do
     it "has correct hostname from environment" do
       stub_const('ENV', ENV.to_hash.merge('OD_HOSTNAME' => 'od_hostname'))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.srv_hostname).to eq(ENV['OD_HOSTNAME'])
+      expect(od.srv_info[:hostname]).to eq(ENV['OD_HOSTNAME'])
     end
     it "has correct hostname from parameters" do
       stub_const('ENV', ENV.to_hash.merge('OD_HOSTNAME' => 'od_hostname'))
       od = OpenDirectoryUtils::Connection.new({srv_hostname: 'params_host'})
-      expect(od.srv_hostname).to eq('params_host')
+      expect(od.srv_info[:hostname]).to eq('params_host')
     end
 
     # SERVER USERNAME
     it "has correct username from environment" do
       stub_const('ENV', ENV.to_hash.merge('OD_USERNAME' => 'od_username'))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.srv_username).to eq(ENV['OD_USERNAME'])
+      expect(od.srv_info[:username]).to eq(ENV['OD_USERNAME'])
     end
     it "has correct usernzme from parameters" do
       stub_const('ENV', ENV.to_hash.merge('OD_USERNAME' => 'od_username'))
       od = OpenDirectoryUtils::Connection.new({srv_username: 'params_user'})
-      expect(od.srv_username).to eq('params_user')
+      expect(od.srv_info[:username]).to eq('params_user')
     end
 
     # SSH_OPTIONS
     it "has empty default ssh_options" do
       stub_const('ENV', ENV.to_hash.merge('OD_SSH_OPTIONS' => nil))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.ssh_options).to eq({})
+      expect(od.srv_info[:ssh_options]).to eq({})
     end
     it "ssh_options from ENV VARS overrides defaults" do
       stub_const('ENV', ENV.to_hash.merge('OD_SSH_OPTIONS' => {password: 'secret'}))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.ssh_options).to eq({password: 'secret'})
+      expect(od.srv_info[:ssh_options]).to eq({password: 'secret'})
     end
     it "ssh_options override defaults settings" do
       od = OpenDirectoryUtils::Connection.new({ssh_options: {password: 'ssh_password'}})
-      expect(od.ssh_options).to eq({password: 'ssh_password'})
+      expect(od.srv_info[:ssh_options]).to eq({password: 'ssh_password'})
     end
     it "ssh_options parameters override environment" do
       stub_const('ENV', ENV.to_hash.merge('EQ_SSH_OPTIONS' => '{verify_host_key: false}'))
       od = OpenDirectoryUtils::Connection.new({ssh_options: {password: 'ssh_password'}})
-      expect(od.ssh_options).to eq({password: 'ssh_password'})
+      expect(od.srv_info[:ssh_options]).to eq({password: 'ssh_password'})
     end
 
     # DIRECTORY DATA PATH / LOCATION
     it "has correct default dir_datapath" do
       stub_const('ENV', ENV.to_hash.merge('DIR_DATAPATH' => nil))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.od_info[:data_path]).to eq('/LDAPv3/127.0.0.1/')
+      expect(od.dir_info[:data_path]).to eq('/LDAPv3/127.0.0.1/')
     end
     it "dir_datapath from ENV VARS overrides defaults" do
       stub_const('ENV', ENV.to_hash.merge('DIR_DATAPATH' => '.'))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.od_info[:data_path]).to eq('.')
+      expect(od.dir_info[:data_path]).to eq('.')
     end
     it "dir_datapath override defaults settings" do
       od = OpenDirectoryUtils::Connection.new({dir_datapath: '/LDAPv3/localhost/'})
-      expect(od.od_info[:data_path]).to eq('/LDAPv3/localhost/')
+      expect(od.dir_info[:data_path]).to eq('/LDAPv3/localhost/')
     end
     it "dir_datapath parameters overrides environment" do
       stub_const('ENV', ENV.to_hash.merge('DIR_DATAPATH' => '.'))
       od = OpenDirectoryUtils::Connection.new({dir_datapath: '/LDAPv3/localhost/'})
-      expect(od.od_info[:data_path]).to eq('/LDAPv3/localhost/')
+      expect(od.dir_info[:data_path]).to eq('/LDAPv3/localhost/')
     end
 
     # DIRECTORY ADMIN USER (Directory read-write)
     it "has nil dir_username by default" do
       stub_const('ENV', ENV.to_hash.merge('DIR_USERNAME' => nil))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.od_info[:username]).to eq(nil)
+      expect(od.dir_info[:username]).to eq(nil)
     end
     it "has correct dir_username from environment" do
       stub_const('ENV', ENV.to_hash.merge('DIR_USERNAME' => 'dir_username'))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.od_info[:username]).to eq(ENV['DIR_USERNAME'])
+      expect(od.dir_info[:username]).to eq(ENV['DIR_USERNAME'])
     end
     it "has correct dir_username from parameters" do
       stub_const('ENV', ENV.to_hash.merge('DIR_USERNAME' => 'dir_username'))
       od = OpenDirectoryUtils::Connection.new({dir_username: 'dir_admin'})
-      expect(od.od_info[:username]).to eq('dir_admin')
+      expect(od.dir_info[:username]).to eq('dir_admin')
     end
 
     # DIRECTORY ADMIN PASSWORD
     it "has nil dir_password by default" do
       stub_const('ENV', ENV.to_hash.merge('DIR_PASSWORD' => nil))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.od_info[:password]).to eq(nil)
+      expect(od.dir_info[:password]).to eq(nil)
     end
     it "has correct dir_password from environment" do
       stub_const('ENV', ENV.to_hash.merge('DIR_PASSWORD' => 'secret'))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.od_info[:password]).to eq(ENV['DIR_PASSWORD'])
+      expect(od.dir_info[:password]).to eq(ENV['DIR_PASSWORD'])
     end
     it "has correct dir_password from parameters" do
       stub_const('ENV', ENV.to_hash.merge('DIR_PASSWORD' => 'secret'))
       od = OpenDirectoryUtils::Connection.new({dir_password: 'TopSecret'})
-      expect(od.od_info[:password]).to eq('TopSecret')
+      expect(od.dir_info[:password]).to eq('TopSecret')
     end
 
     # DIRECTORY ADMIN PASSWORD
     it "has correct default dscl command path" do
       stub_const('ENV', ENV.to_hash.merge('DSCL_PATH' => nil))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.od_info[:dscl]).to eq('/usr/bin/dscl')
+      expect(od.dir_info[:dscl]).to eq('/usr/bin/dscl')
     end
     it "dscl command path overrides from ENV VAR" do
       stub_const('ENV', ENV.to_hash.merge('DSCL_PATH' => '/bin/dscl'))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.od_info[:dscl]).to eq('/bin/dscl')
+      expect(od.dir_info[:dscl]).to eq('/bin/dscl')
     end
     it "dscl command path overrides from params" do
       stub_const('ENV', ENV.to_hash.merge('DSCL_PATH' => 'dscl'))
       od = OpenDirectoryUtils::Connection.new({dscl_path: 'dscl'})
-      expect(od.od_info[:dscl]).to eq('dscl')
+      expect(od.dir_info[:dscl]).to eq('dscl')
     end
     it "has correct default pwpolicy command path" do
       stub_const('ENV', ENV.to_hash.merge('PWPOL_PATH' => nil))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.od_info[:pwpolicy]).to eq('/usr/bin/pwpolicy')
+      expect(od.dir_info[:pwpolicy]).to eq('/usr/bin/pwpolicy')
     end
     it "pwpolicy command path overrides from ENV VAR" do
       stub_const('ENV', ENV.to_hash.merge('PWPOL_PATH' => '/bin/pwpolicy'))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.od_info[:pwpolicy]).to eq('/bin/pwpolicy')
+      expect(od.dir_info[:pwpolicy]).to eq('/bin/pwpolicy')
     end
     it "pwpolicy command path overrides from params" do
       # stub_const('ENV', ENV.to_hash.merge('DPWPOL_PATH' => 'pwpolicy'))
       od = OpenDirectoryUtils::Connection.new({pwpol_path: 'pwpolicy'})
-      expect(od.od_info[:pwpolicy]).to eq('pwpolicy')
+      expect(od.dir_info[:pwpolicy]).to eq('pwpolicy')
     end
   end
 

@@ -4,40 +4,33 @@ require "open_directory_utils/user_actions"
 module OpenDirectoryUtils
   class Connection
 
-    attr_reader :srv_hostname, :srv_username, :ssh_options
-    attr_reader :od_info #, :command_paths
+    # attr_reader :srv_hostname, :srv_username, :ssh_options
+    attr_reader :srv_info, :dir_info #, :command_paths
 
     include OpenDirectoryUtils::UserActions
 
     def initialize(params={})
       config = defaults.merge(params)
 
-      @srv_hostname = config[:srv_hostname]
-      @srv_username = config[:srv_username]
-      @ssh_options  = config[:ssh_options]
-
-      dir_username = config[:dir_username]
-      dir_password = config[:dir_password]
-      dir_datapath = config[:dir_datapath]
-
-      dscl_path  = config[:dscl_path]
-      pwpol_path = config[:pwpol_path]
-      # @command_paths = {dscl: dscl_cmdpath, pwpolicy: pwpol_cmdpath}
-      @od_info = {username: dir_username, password: dir_password,
-                  data_path: dir_datapath, dscl: dscl_path,
-                  pwpolicy: pwpol_path,
-                }
-
-      raise ArgumentError, 'server hostname missing' if srv_hostname.nil? or
-                                                        srv_hostname.empty?
-      raise ArgumentError, 'server username missing' if srv_username.nil? or
-                                                        srv_username.empty?
+      @srv_info = { hostname: config[:srv_hostname],
+                    username: config[:srv_username],
+                    ssh_options: config[:ssh_options]}
+      @dir_info = { username: config[:dir_username],
+                    password: config[:dir_password],
+                    data_path: config[:dir_datapath],
+                    dscl: config[:dscl_path],
+                    pwpolicy: config[:pwpol_path],
+                  }
+      raise ArgumentError, 'server hostname missing' if srv_info[:hostname].nil? or
+                                                        srv_info[:hostname].empty?
+      raise ArgumentError, 'server username missing' if srv_info[:username].nil? or
+                                                        srv_info[:username].empty?
     end
 
     def run(command:, attributes:, formatting: nil)
       answer = {}
       begin
-        ssh_cmd = send(command, attributes, od_info)
+        ssh_cmd = send(command, attributes, dir_info)
         results = send_od_cmds(ssh_cmd)
         answer  = format_results(results, command, attributes)
       rescue ArgumentError, NoMethodError => error
@@ -51,10 +44,12 @@ module OpenDirectoryUtils
     def send_od_cmds(cmds)
       cmd_array = Array( cmds )
       output = []
-      Net::SSH.start(srv_hostname, srv_username, ssh_options) do |ssh|
-        cmd_array.each do |one_cmd|
-          output << (ssh.exec!(one_cmd)).strip
-        end
+      Net::SSH.start( srv_info[:hostname],
+                      srv_info[:username],
+                      srv_info[:ssh_options] ) do |ssh|
+          cmd_array.each do |one_cmd|
+            output << (ssh.exec!(one_cmd)).strip
+          end
       end
       return output
     end
