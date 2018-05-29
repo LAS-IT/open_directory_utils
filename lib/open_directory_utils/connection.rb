@@ -4,8 +4,7 @@ require "open_directory_utils/user_actions"
 module OpenDirectoryUtils
   class Connection
 
-    # attr_reader :srv_hostname, :srv_username, :ssh_options
-    attr_reader :srv_info, :dir_info #, :command_paths
+    attr_reader :srv_info, :dir_info
 
     include OpenDirectoryUtils::UserActions
 
@@ -29,14 +28,11 @@ module OpenDirectoryUtils
 
     def run(command:, attributes:, formatting: nil)
       answer = {}
-      begin
-        ssh_cmd = send(command, attributes, dir_info)
-        results = send_od_cmds(ssh_cmd)
-        answer  = format_results(results, command, attributes)
+      ssh_cmd = send(command, attributes, dir_info)
+      results = send_od_cmds(ssh_cmd)
+      format_results(results, command, attributes)
       rescue ArgumentError, NoMethodError => error
         answer[:error]   =  "#{error.message} -- command: :#{command} with attribs: #{attributes}"
-      end
-      return answer
     end
 
     private
