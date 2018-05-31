@@ -1,14 +1,16 @@
 require 'net/ssh'
+require "open_directory_utils/dscl"
+require "open_directory_utils/pwpolicy"
 require "open_directory_utils/user_actions"
-require "open_directory_utils/pwpolicy_user"
 
 module OpenDirectoryUtils
   class Connection
 
     attr_reader :srv_info, :dir_info
 
+    include OpenDirectoryUtils::Dscl
+    include OpenDirectoryUtils::Pwpolicy
     include OpenDirectoryUtils::UserActions
-    include OpenDirectoryUtils::PwpolicyUser
 
     def initialize(params={})
       config = defaults.merge(params)
@@ -31,7 +33,7 @@ module OpenDirectoryUtils
     def run(command:, attributes:, formatting: nil)
       answer = {}
       ssh_cmd = send(command, attributes, dir_info)
-      results = send_od_cmds(ssh_cmd)
+      results = send_cmds_to_od_server(ssh_cmd)
       format_results(results, command, attributes)
       rescue ArgumentError, NoMethodError => error
         answer[:error]   =  "#{error.message} -- command: :#{command} with attribs: #{attributes}"
@@ -39,11 +41,10 @@ module OpenDirectoryUtils
 
     private
 
-    def send_od_cmds(cmds)
+    def send_cmds_to_od_server(cmds)
       cmd_array = Array( cmds )
       output = []
-      Net::SSH.start( srv_info[:hostname],
-                      srv_info[:username],
+      Net::SSH.start( srv_info[:hostname], srv_info[:username],
                       srv_info[:ssh_options] ) do |ssh|
           cmd_array.each do |one_cmd|
             output << (ssh.exec!(one_cmd)).strip

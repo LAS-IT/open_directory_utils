@@ -8,15 +8,12 @@ module OpenDirectoryUtils
       raise ArgumentError unless block.call
     end
 
-    def check_uid(attribs)
-      attribs[:uid] = attribs[:uid]&.strip
-      assert{not attribs[:uid].eql? ''}
-      assert{not attribs[:uid].include? ' '}
-      # user_attrs = {}
-      # attribs.each{ |k,v| user_attrs[k] = v.to_s.strip }
-      # return user_attrs
+    def check_critical_attribute(attrib, value)
+      attrib[value] = attrib[value]&.strip
+      assert{not attrib[value].eql? ''}
+      assert{not attrib[value].include? ' '}
       rescue NoMethodError, ArgumentError => error
-        raise ArgumentError, "uid invalid"
+        raise ArgumentError, "#{value} invalid"
     end
 
     def tidy_attribs(attribs)

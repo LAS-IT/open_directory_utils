@@ -1,3 +1,4 @@
+require "open_directory_utils/dscl"
 require "open_directory_utils/clean_check"
 
 module OpenDirectoryUtils
@@ -6,33 +7,8 @@ module OpenDirectoryUtils
   # https://superuser.com/questions/592921/mac-osx-users-vs-dscl-command-to-list-user/621055?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
   module UserActions
 
+    include OpenDirectoryUtils::Dscl
     include OpenDirectoryUtils::CleanCheck
-
-    def add_dscl_info(dir_info, format_info=nil)
-      # /usr/bin/dscl -u diradmin -P "BigSecret" /LDAPv3/127.0.0.1/ -append /Users/$UID_USERNAME apple-keyword "$VALUE"
-      # "/usr/bin/dscl -plist -u #{od_username} -P #{od_password} #{od_dsclpath} -#{command} #{resource} #{params}"
-      ans  = "#{dir_info[:dscl]}"
-      ans += ' -plist'                        unless format_info.nil?  or
-                                                      format_info.empty?
-      ans += " -u #{dir_info[:diradmin]}"     unless dir_info[:diradmin].nil? or
-                                                      dir_info[:diradmin].empty?
-      ans += %Q[ -P "#{dir_info[:password]}"] unless dir_info[:password].nil? or
-                                                      dir_info[:password].empty?
-      ans += " #{dir_info[:data_path]}"
-      return ans
-    end
-
-    def add_pwpol_info(dir_info, format_info=nil)
-      # /usr/bin/pwpolicy -a diradmin -p "BigSecret" -u username -setpolicy "isDisabled=0"
-      ans  = "#{dir_info[:pwpol]}"
-      # ans += ' -plist'                        unless format_info.nil?  or
-      #                                                 format_info.empty?
-      ans += " -a #{dir_info[:diradmin]}"     unless dir_info[:diradmin].nil? or
-                                                      dir_info[:diradmin].empty?
-      ans += %Q[ -p "#{dir_info[:password]}"] unless dir_info[:password].nil? or
-                                                      dir_info[:password].empty?
-      return ans
-    end
 
     # GET INFO
     ##########
@@ -41,44 +17,37 @@ module OpenDirectoryUtils
     # search od user  -- dscl . -search /Users RealName "Andrew Garrett"
     # return as xml   -- dscl -plist . -search /Users RealName "Andrew Garrett"
     def user_get_info(attribs, dir_info)
-      check_uid( attribs )
-      user_attrs = tidy_attribs(attribs)
-
-      answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -read /Users/#{user_attrs[:uid]}]
-
-      return answer
+      command = {action: 'read', scope: 'Users'}
+      user_attrs = attribs.merge(command)
+      dscl( user_attrs, dir_info )
     end
 
     # get all usernames -- dscl . -list /Users
     # get all user details -- dscl . -readall /Users
     def user_exists?(attribs, dir_info)
-      check_uid( attribs )
-      user_attrs = tidy_attribs(attribs)
-
-      return user_get_info(user_attrs, dir_info)
+      user_get_info(attribs, dir_info)
     end
 
     # CHANGE OD
     ###########
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER RealName "$VALUE"
     def user_od_set_real_name(attribs, dir_info)
-      check_uid( attribs )
+      check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:uid]} RealName "#{user_attrs[:real_name]}"]
+      answer += %Q[ -create /Users/#{user_attrs[:shortname]} RealName "#{user_attrs[:real_name]}"]
 
       raise ArgumentError, "real_name blank" if user_attrs[:real_name].to_s.eql? ''
       return answer
     end
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER cn "$NAME"
     def user_set_common_name(attribs, dir_info)
-      check_uid( attribs )
+      check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
 
-      answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:uid]} cn "#{user_attrs[:cn]}"]
+      answer  = add_dscl_info( dir_info, user_attrs[:format] )
+      answer += %Q[ -create /Users/#{user_attrs[:shortname]} cn "#{user_attrs[:cn]}"]
 
       raise ArgumentError, "common_name (cn) blank" if user_attrs[:cn].to_s.eql? ''
       return answer
@@ -87,46 +56,46 @@ module OpenDirectoryUtils
 
     # sudo dscl . -create /Users/someuser UniqueID "1010"  #use something not already in use
     def user_od_set_unique_id(attribs, dir_info)
-      check_uid( attribs )
+      check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
 
-      answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:uid]} UniqueID #{user_attrs[:unique_id]}]
+      answer  = add_dscl_info( dir_info, user_attrs[:format] )
+      answer += %Q[ -create /Users/#{user_attrs[:shortname]} UniqueID #{user_attrs[:unique_id]}]
 
       raise ArgumentError, "unique_id blank" if user_attrs[:unique_id].to_s.eql? ''
       return answer
     end
-    # sudo dscl . -create /Users/someuser uidnumber "1010"  #use something not already in use
-    def user_set_uidnumber(attribs, dir_info)
-      check_uid( attribs )
+    # sudo dscl . -create /Users/someuser shortnamenumber "1010"  #use something not already in use
+    def user_set_shortnamenumber(attribs, dir_info)
+      check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
 
-      answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:uid]} uidnumber #{user_attrs[:uidnumber]}]
+      answer  = add_dscl_info( dir_info, user_attrs[:format] )
+      answer += %Q[ -create /Users/#{user_attrs[:shortname]} shortnamenumber #{user_attrs[:shortnamenumber]}]
 
-      raise ArgumentError, "uidnumber blank" if user_attrs[:uidnumber].to_s.eql? ''
+      raise ArgumentError, "shortnamenumber blank" if user_attrs[:shortnamenumber].to_s.eql? ''
       return answer
     end
-    alias_method :user_ldap_set_uidnumber, :user_set_uidnumber
+    alias_method :user_ldap_set_shortnamenumber, :user_set_shortnamenumber
 
     # sudo dscl . -create /Users/someuser PrimaryGroupID 80
     def user_od_set_primary_group_id(attribs, dir_info)
-      check_uid( attribs )
+      check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
 
-      answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:uid]} PrimaryGroupID #{user_attrs[:primary_group_id]}]
+      answer  = add_dscl_info( dir_info, user_attrs[:format] )
+      answer += %Q[ -create /Users/#{user_attrs[:shortname]} PrimaryGroupID #{user_attrs[:primary_group_id]}]
 
       raise ArgumentError, "primary_group_id blank" if user_attrs[:primary_group_id].to_s.eql? ''
       return answer
     end
     # sudo dscl . -create /Users/someuser PrimaryGroupID 80
     def user_set_gidnumber(attribs, dir_info)
-      check_uid( attribs )
+      check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:uid]} gidnumber #{user_attrs[:gidnumber]}]
+      answer += %Q[ -create /Users/#{user_attrs[:shortname]} gidnumber #{user_attrs[:gidnumber]}]
 
       raise ArgumentError, "gidnumber blank" if user_attrs[:gidnumber].to_s.eql? ''
       return answer
@@ -134,113 +103,90 @@ module OpenDirectoryUtils
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/someuser NFSHomeDirectory /Users/someuser
     def user_od_set_nfs_home_directory(attribs, dir_info)
-      check_uid( attribs )
+      check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:uid]} NFSHomeDirectory #{user_attrs[:nfs_home_directory]}]
+      answer += %Q[ -create /Users/#{user_attrs[:shortname]} NFSHomeDirectory #{user_attrs[:nfs_home_directory]}]
 
       raise ArgumentError, "nfs_home_directory blank" if user_attrs[:nfs_home_directory].to_s.eql? ''
       return answer
     end
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME homedirectory "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME homedirectory "$VALUE"
     def user_set_home_directory(attribs, dir_info)
-      check_uid( attribs )
+      check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:uid]} homedirectory #{user_attrs[:home_directory]}]
+      answer += %Q[ -create /Users/#{user_attrs[:shortname]} homedirectory #{user_attrs[:home_directory]}]
 
       raise ArgumentError, "home_directory blank" if user_attrs[:home_directory].to_s.eql? ''
       return answer
     end
 
     # /usr/bin/pwpolicy -a diradmin -p "TopSecret" -u username -setpassword "AnotherSecret"
-    # /usr/bin/dscl -plist -u diradmin -P #{adminpw} /LDAPv3/127.0.0.1/ -passwd /Users/#{uid} "#{passwd}"
+    # /usr/bin/dscl -plist -u diradmin -P #{adminpw} /LDAPv3/127.0.0.1/ -passwd /Users/#{shortname} "#{passwd}"
     def user_set_password(attribs, dir_info)
-      check_uid( attribs )
+      check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -passwd /Users/#{user_attrs[:uid]} "#{user_attrs[:password]}"]
+      answer += %Q[ -passwd /Users/#{user_attrs[:shortname]} "#{user_attrs[:password]}"]
 
       raise ArgumentError, "password blank" if user_attrs[:password].to_s.eql? ''
       return answer
     end
-    # /usr/bin/dscl /LDAPv3/127.0.0.1 -auth #{uid} "#{passwd}"
+    # /usr/bin/dscl /LDAPv3/127.0.0.1 -auth #{shortname} "#{passwd}"
     def user_verify_password(attribs, dir_info)
-      check_uid( attribs )
+      check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -auth #{user_attrs[:uid]} "#{user_attrs[:password]}"]
+      answer += %Q[ -auth #{user_attrs[:shortname]} "#{user_attrs[:password]}"]
 
       raise ArgumentError, "password blank" if user_attrs[:password].to_s.eql? ''
       return answer
     end
-
-    # # /usr/bin/pwpolicy -a diradmin -p A-B1g-S3cret -u $UID_USERNAME -setpolicy "isDisabled=0"
-    # def user_enable_login(attribs, dir_info)
-    #   check_uid( attribs )
-    #   user_attrs = tidy_attribs(attribs)
-    #
-    #   answer  = add_pwpol_info( dir_info, attribs[:format] )
-    #   answer += %Q[ -u #{user_attrs[:uid]} -enableuser]
-    #   # answer += %Q[ -u #{user_attrs[:uid]} -setpolicy "isDisabled=0"]
-    #
-    #   return answer
-    # end
-    # # /usr/bin/pwpolicy -a diradmin -p A-B1g-S3cret -u $UID_USERNAME -setpolicy "isDisabled=1"
-    # def user_disable_login(attribs, dir_info)
-    #   check_uid( attribs )
-    #   user_attrs = tidy_attribs(attribs)
-    #
-    #   answer  = add_pwpol_info( dir_info, attribs[:format] )
-    #   answer += %Q[ -u #{user_attrs[:uid]} -disableuser]
-    #   # answer += %Q[ -u #{user_attrs[:uid]} -setpolicy "isDisabled=1"]
-    #
-    #   return answer
-    # end
 
     # sudo dscl . -create /Users/someuser UserShell /bin/bash
     def user_od_set_shell(attribs, dir_info)
-      check_uid( attribs )
+      check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
       user_attrs[:shell] = user_attrs[:shell] ||
                             user_attrs[:user_shell] || '/bin/bash'
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:uid]} UserShell "#{user_attrs[:shell]}"]
+      answer += %Q[ -create /Users/#{user_attrs[:shortname]} UserShell "#{user_attrs[:shell]}"]
 
       return answer
     end
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME loginShell "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME loginShell "$VALUE"
     def user_set_login_shell(attribs, dir_info)
-      check_uid( attribs )
+      check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
       user_attrs[:shell] = user_attrs[:shell] ||
                             user_attrs[:login_shell] || '/bin/bash'
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:uid]} loginShell "#{user_attrs[:shell]}"]
+      answer += %Q[ -create /Users/#{user_attrs[:shortname]} loginShell "#{user_attrs[:shell]}"]
 
       return answer
     end
 
     # OTHER FIELDS
     #####################
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME mail "$VALUE"
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME email "$VALUE"
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME apple-user-mailattribute "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME mail "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME email "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-user-mailattribute "$VALUE"
     def user_set_email(attribs, dir_info)
-      check_uid( attribs )
+      check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
       user_attrs[:email] = user_attrs[:email] || user_attrs[:mail] ||
                             user_attrs['apple-user-mailattribute']
       answer = [
-        %Q[#{add_dscl_info( dir_info, attribs[:format] )} -create /Users/#{user_attrs[:uid]} mail "#{user_attrs[:email]}"],
-        %Q[#{add_dscl_info( dir_info, attribs[:format] )} -create /Users/#{user_attrs[:uid]} email "#{user_attrs[:email]}"],
-        %Q[#{add_dscl_info( dir_info, attribs[:format] )} -create /Users/#{user_attrs[:uid]} apple-user-mailattribute "#{user_attrs[:email]}"],
+        %Q[#{add_dscl_info( dir_info, attribs[:format] )} -create /Users/#{user_attrs[:shortname]} mail "#{user_attrs[:email]}"],
+        %Q[#{add_dscl_info( dir_info, attribs[:format] )} -create /Users/#{user_attrs[:shortname]} email "#{user_attrs[:email]}"],
+        %Q[#{add_dscl_info( dir_info, attribs[:format] )} -create /Users/#{user_attrs[:shortname]} apple-user-mailattribute "#{user_attrs[:email]}"],
       ]
 
       raise ArgumentError, "email blank" if user_attrs[:email].to_s.eql? ''
@@ -251,21 +197,21 @@ module OpenDirectoryUtils
     # dscl . -delete /Users/yourUserName
     # https://tutorialforlinux.com/2011/09/15/delete-users-and-groups-from-terminal/
     def user_delete(attribs, dir_info)
-      check_uid( attribs )
+      check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
 
-      "#{add_dscl_info( dir_info, attribs[:format] )} -delete /Users/#{user_attrs[:uid]}"
+      "#{add_dscl_info( dir_info, attribs[:format] )} -delete /Users/#{user_attrs[:shortname]}"
     end
 
     # https://images.apple.com/server/docs/Command_Line.pdf
     # https://serverfault.com/questions/20702/how-do-i-create-user-accounts-from-the-terminal-in-mac-os-x-10-5?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
     # https://superuser.com/questions/1154564/how-to-create-a-user-from-the-macos-command-line
     def user_create(attribs, dir_info)
-      check_uid( attribs )
+      check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
 
       # merge od names info with ldap names (just incase)
-      user_attrs[:unique_id] = user_attrs[:unique_id] || user_attrs[:uidnumber]
+      user_attrs[:unique_id] = user_attrs[:unique_id] || user_attrs[:shortnamenumber]
       user_attrs[:real_name] = user_attrs[:real_name] ||
                 ("#{user_attrs[:first_name]} #{user_attrs[:last_name]}")
       user_attrs[:primary_group_id] = user_attrs[:primary_group_id] ||
@@ -275,7 +221,7 @@ module OpenDirectoryUtils
 
       # There are a few steps to create a user account from the command line.
       [ # sudo dscl . -create /Users/someuser
-        "#{add_dscl_info( dir_info, attribs[:format] )} -create /Users/#{user_attrs[:uid]}",
+        "#{add_dscl_info( dir_info, attribs[:format] )} -create /Users/#{user_attrs[:shortname]}",
         # sudo dscl . -create /Users/someuser UserShell /bin/bash
         "#{user_od_set_shell(attribs, dir_info)}",
         # sudo dscl . -create /Users/someuser RealName "Lucius Q. User"
@@ -303,92 +249,92 @@ module OpenDirectoryUtils
     # add 1st user   -- dscl . -create /Groups/ladmins GroupMembership localadmin
     # add more users -- dscl . -append /Groups/ladmins GroupMembership 2ndlocaladmin
     def user_add_to_group(attribs, dir_info)
-      check_uid( attribs )
+      check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -append /Groups/#{user_attrs[:group_name]} GroupMembership #{user_attrs[:uid]}]
+      answer += %Q[ -append /Groups/#{user_attrs[:group_name]} GroupMembership #{user_attrs[:shortname]}]
 
       raise ArgumentError, "group blank" if user_attrs[:group_name].to_s.eql? ''
       return answer
     end
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -delete /Groups/$VALUE GroupMembership $UID_USERNAME
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -delete /Groups/$VALUE GroupMembership $shortname_USERNAME
     def user_remove_from_group(attribs, dir_info)
-      check_uid( attribs )
+      check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -delete /Groups/#{user_attrs[:group_name]} GroupMembership #{user_attrs[:uid]}]
+      answer += %Q[ -delete /Groups/#{user_attrs[:group_name]} GroupMembership #{user_attrs[:shortname]}]
 
       raise ArgumentError, "group blank" if user_attrs[:group_name].to_s.eql? ''
       return answer
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME givenName "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME givenName "$VALUE"
     def user_ldap_set_first_name
     end
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME sn "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME sn "$VALUE"
     def user_ldap_set_last_name
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME NameSuffix "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME NameSuffix "$VALUE"
     def user_od_set_name_suffix
     end
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME apple-namesuffix "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-namesuffix "$VALUE"
     def user_ldap_set_name_suffix
     end
 
-    # 1st keyword    -- /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME apple-keyword "$VALUE"
-    # other keywords --  /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -append /Users/$UID_USERNAME apple-keyword "$VALUE"
+    # 1st keyword    -- /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-keyword "$VALUE"
+    # other keywords --  /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
     def user_set_keywords
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -append /Users/$UID_USERNAME apple-keyword "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
     def user_add_keywords
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME mobile "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME mobile "$VALUE"
     def user_set_mobile_phone
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME telephoneNumber "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME telephoneNumber "$VALUE"
     def user_set_work_phone
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME homePhone "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME homePhone "$VALUE"
     def user_set_home_phone
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME apple-company "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-company "$VALUE"
     def user_set_company
     end
     alias_method :las_program_info, :user_set_company
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME title "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME title "$VALUE"
     def user_set_title
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME departmentNumber "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME departmentNumber "$VALUE"
     def user_set_department
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME street "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME street "$VALUE"
     def user_set_street
     end
     alias_method :las_set_dorm, :user_set_street
     alias_method :las_set_housing, :user_set_street
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID l "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname l "$VALUE"
     def user_set_city
     end
     alias_method :las_, :user_set_city
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME st "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME st "$VALUE"
     def user_set_state
     end
     alias_method :las_cultural_trip, :user_set_state
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME postalCode "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME postalCode "$VALUE"
     def user_set_postcode
     end
     alias_method :las_faculty_family, :user_set_postcode
@@ -397,19 +343,19 @@ module OpenDirectoryUtils
     def user_set_country
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME apple-webloguri "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-webloguri "$VALUE"
     def user_set_blog
     end
     alias_method :user_set_weblog, :user_set_blog
     alias_method :las_sync_date, :user_set_blog
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME apple-organizationinfo "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-organizationinfo "$VALUE"
     def user_set_org_info
     end
     alias_method :las_set_organizational_info, :user_set_org_info
     alias_method :las_link_student_to_parent, :user_set_org_info
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME apple-relationships "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-relationships "$VALUE"
     def user_set_relationships
     end
     alias_method :las_link_parent_to_student, :user_set_relationships
@@ -427,7 +373,7 @@ module OpenDirectoryUtils
     alias_method :las_end_date, :user_set_chat
 
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME labeledURI "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME labeledURI "$VALUE"
     def user_set_homepage
     end
     alias_method :user_set_webpage, :user_set_homepage
