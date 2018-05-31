@@ -33,39 +33,16 @@ module OpenDirectoryUtils
     #####################
     # /usr/bin/pwpolicy -a diradmin -p A-B1g-S3cret -u $shortname_USERNAME -setpolicy "isDisabled=0"
     def user_enable_login(params, dir_info)
-      check_critical_attribute( params, :shortname )
-      user_attrs = tidy_attribs(params)
-
-      answer  = add_pwpolicy_info( dir_info )
-      answer += %Q[ -u #{user_attrs[:shortname]} -enableuser]
-      # answer += %Q[ -u #{user_attrs[:shortname]} -setpolicy "isDisabled=0"]
-
-      return answer
+      command = {attribute: 'enableuser'}
+      params  = command.merge(params)
+      pwpolicy(params, dir_info)
     end
     # /usr/bin/pwpolicy -a diradmin -p A-B1g-S3cret -u $shortname_USERNAME -setpolicy "isDisabled=1"
     def user_disable_login(params, dir_info)
-      check_critical_attribute( params, :shortname )
-      user_attrs = tidy_attribs(params)
-
-      answer  = add_pwpolicy_info( dir_info )
-      answer += %Q[ -u #{user_attrs[:shortname]} -disableuser]
-      # answer += %Q[ -u #{user_attrs[:shortname]} -setpolicy "isDisabled=1"]
-
-      return answer
+      command = {attribute: 'disableuser'}
+      params  = command.merge(params)
+      pwpolicy(params, dir_info)
     end
-
-    def add_pwpolicy_info(dir_info)
-      # /usr/bin/pwpolicy -a diradmin -p "BigSecret" -u username -setpolicy "isDisabled=0"
-      ans  = "#{dir_info[:pwpol]}"
-      # ans += ' -plist'                        unless format_info.nil?  or
-      #                                                 format_info.empty?
-      ans += " -a #{dir_info[:diradmin]}"      unless dir_info[:diradmin].nil? or
-                                                      dir_info[:diradmin].empty?
-      ans += %Q[ -p "#{dir_info[:password]}"]  unless dir_info[:password].nil? or
-                                                      dir_info[:password].empty?
-      return ans
-    end
-
 
   end
 end
