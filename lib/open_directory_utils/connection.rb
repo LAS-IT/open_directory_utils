@@ -1,5 +1,6 @@
 require 'net/ssh'
 require "open_directory_utils/user_actions"
+require "open_directory_utils/pwpolicy_user"
 
 module OpenDirectoryUtils
   class Connection
@@ -7,6 +8,7 @@ module OpenDirectoryUtils
     attr_reader :srv_info, :dir_info
 
     include OpenDirectoryUtils::UserActions
+    include OpenDirectoryUtils::PwpolicyUser
 
     def initialize(params={})
       config = defaults.merge(params)

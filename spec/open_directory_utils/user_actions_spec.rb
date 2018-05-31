@@ -23,17 +23,17 @@ RSpec.describe OpenDirectoryUtils::UserActions do
       it "uid = nil" do
         attribs  = {uid: nil}
         expect { od.send(:check_uid, attribs) }.
-            to raise_error(ArgumentError, /invalid uid/)
+            to raise_error(ArgumentError, /uid invalid/)
       end
-      it "uid = '' (empty)" do
+      it "uid = '' (blank)" do
         attribs = {uid: ''}
         expect { od.send(:check_uid, attribs) }.
-            to raise_error(ArgumentError, /invalid uid/)
+            to raise_error(ArgumentError, /uid invalid/)
       end
       it "uid = 'with space' (no space allowed)" do
         attribs = {uid: 'with space'}
         expect { od.send(:check_uid, attribs) }.
-            to raise_error(ArgumentError, /invalid uid/)
+            to raise_error(ArgumentError, /uid invalid/)
       end
     end
 
@@ -83,6 +83,7 @@ RSpec.describe OpenDirectoryUtils::UserActions do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
         expect( answer ).to eq( correct )
       end
+
       it "user_od_set_real_name" do
         attribs = {uid: 'someone', real_name: "John Doe"}
         answer  = od.send(:user_od_set_real_name, attribs, srv_info)
@@ -95,6 +96,7 @@ RSpec.describe OpenDirectoryUtils::UserActions do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UniqueID 987654'
         expect( answer ).to eq( correct )
       end
+
       it "user_od_set_primary_group_id" do
         attribs = {uid: 'someone', primary_group_id: 1043}
         answer  = od.send(:user_od_set_primary_group_id, attribs, srv_info)
@@ -107,18 +109,116 @@ RSpec.describe OpenDirectoryUtils::UserActions do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone NFSHomeDirectory 1043'
         expect( answer ).to eq( correct )
       end
+
       it "user_set_password" do
-        attribs = {uid: 'someone', password: 'TopSecret'}
+        attribs = {uid: 'someone', password: 'A-Big-Secret'}
         answer  = od.send(:user_set_password, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "TopSecret"'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "A-Big-Secret"'
         expect( answer ).to eq( correct )
       end
       it "user_verify_password" do
-        attribs = {uid: 'someone', password: 'TopSecret'}
+        attribs = {uid: 'someone', password: 'A-Big-Secret'}
         answer  = od.send(:user_verify_password, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -auth someone "TopSecret"'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -auth someone "A-Big-Secret"'
         expect( answer ).to eq( correct )
       end
+
+      # it "user_enable_login" do
+      #   attribs = {uid: 'someone'}
+      #   answer  = od.send(:user_enable_login, attribs, srv_info)
+      #   correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -enableuser'
+      #   expect( answer ).to eq( correct )
+      # end
+      # it "user_disable_login" do
+      #   attribs = {uid: 'someone'}
+      #   answer  = od.send(:user_disable_login, attribs, srv_info)
+      #   correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser'
+      #   expect( answer ).to eq( correct )
+      # end
+
+      it "user_od_set_shell with default" do
+        attribs = {uid: 'someone'}
+        answer  = od.send(:user_od_set_shell, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/bash"'
+        expect( answer ).to eq( correct )
+      end
+      it "user_od_set_shell with params" do
+        attribs = {uid: 'someone', shell: '/bin/zsh'}
+        answer  = od.send(:user_od_set_shell, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/zsh"'
+        expect( answer ).to eq( correct )
+      end
+      it "user_od_set_shell with params" do
+        attribs = {uid: 'someone', user_shell: '/bin/zsh'}
+        answer  = od.send(:user_od_set_shell, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/zsh"'
+        expect( answer ).to eq( correct )
+      end
+      it "user_set_login_shell with default" do
+        attribs = {uid: 'someone'}
+        answer  = od.send(:user_set_login_shell, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone loginShell "/bin/bash"'
+        expect( answer ).to eq( correct )
+      end
+      it "user_set_login_shell with params" do
+        attribs = {uid: 'someone', shell: '/bin/zsh'}
+        answer  = od.send(:user_set_login_shell, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone loginShell "/bin/zsh"'
+        expect( answer ).to eq( correct )
+      end
+      it "user_set_login_shell with params" do
+        attribs = {uid: 'someone', login_shell: '/bin/zsh'}
+        answer  = od.send(:user_set_login_shell, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone loginShell "/bin/zsh"'
+        expect( answer ).to eq( correct )
+      end
+
+      it "user_set_email" do
+        attribs = {uid: 'someone', email: 'user@example.com'}
+        answer  = od.send(:user_set_email, attribs, srv_info)
+        pp answer
+        correct = [
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone mail "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone email "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone apple-user-mailattribute "user@example.com"'
+        ]
+        expect( answer ).to eq( correct )
+      end
+
+      it "user_delete" do
+        attribs = {uid: 'someone'}
+        answer  = od.send(:user_delete, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Users/someone'
+        expect( answer ).to eq( correct )
+      end
+      xit "user_create" do
+        attribs = {uid: 'someone', email: 'user@example.com'}
+        answer  = od.send(:user_set_email, attribs, srv_info)
+        pp answer
+        correct = [
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/zsh"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone mail "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone email "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone apple-user-mailattribute "user@example.com"'
+        ]
+        expect( answer ).to eq( correct )
+      end
+
+      it "user_add_to_group" do
+        attribs = {uid: 'someone', group_name: 'student'}
+        answer  = od.send(:user_add_to_group, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/student GroupMembership someone'
+        expect( answer ).to eq( correct )
+      end
+      it "user_remove_from_group" do
+        attribs = {uid: 'someone', group_name: 'student'}
+        answer  = od.send(:user_remove_from_group, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/student GroupMembership someone'
+        expect( answer ).to eq( correct )
+      end
+
+
     end
 
     describe "build ldap actions w/good data" do
@@ -146,20 +246,20 @@ RSpec.describe OpenDirectoryUtils::UserActions do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone homedirectory 1043'
         expect( answer ).to eq( correct )
       end
-      it "user_enable_login" do
-        attribs = {uid: 'someone'}
-        answer  = od.send(:user_enable_login, attribs, srv_info)
-        correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -enableuser'
-        # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=0"'
-        expect( answer ).to eq( correct )
-      end
-      it "user_disable_login" do
-        attribs = {uid: 'someone'}
-        answer  = od.send(:user_disable_login, attribs, srv_info)
-        correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser'
-        # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=1"'
-        expect( answer ).to eq( correct )
-      end
+      # it "user_enable_login" do
+      #   attribs = {uid: 'someone'}
+      #   answer  = od.send(:user_enable_login, attribs, srv_info)
+      #   correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -enableuser'
+      #   # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=0"'
+      #   expect( answer ).to eq( correct )
+      # end
+      # it "user_disable_login" do
+      #   attribs = {uid: 'someone'}
+      #   answer  = od.send(:user_disable_login, attribs, srv_info)
+      #   correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser'
+      #   # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=1"'
+      #   expect( answer ).to eq( correct )
+      # end
       it "user_od_set_shell" do
         attribs = {uid: 'someone'}
         answer  = od.send(:user_od_set_shell, attribs, srv_info)
