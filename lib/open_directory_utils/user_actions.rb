@@ -1,29 +1,12 @@
+require "open_directory_utils/clean_check"
+
 module OpenDirectoryUtils
 
   # https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man1/dscl.1.html
   # https://superuser.com/questions/592921/mac-osx-users-vs-dscl-command-to-list-user/621055?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
   module UserActions
 
-    def assert(&block)
-      raise ArgumentError unless block.call
-    end
-
-    def check_uid(attribs)
-      attribs[:uid] = attribs[:uid]&.strip
-      assert{not attribs[:uid].eql? ''}
-      assert{not attribs[:uid].include? ' '}
-      # user_attrs = {}
-      # attribs.each{ |k,v| user_attrs[k] = v.to_s.strip }
-      # return user_attrs
-      rescue NoMethodError, ArgumentError => error
-        raise ArgumentError, "uid invalid"
-    end
-
-    def clean_attribs(attribs)
-      user_attrs = {}
-      attribs.each{ |k,v| user_attrs[k] = v.to_s.strip }
-      return user_attrs
-    end
+    include OpenDirectoryUtils::CleanCheck
 
     def add_dscl_info(dir_info, format_info=nil)
       # /usr/bin/dscl -u diradmin -P "BigSecret" /LDAPv3/127.0.0.1/ -append /Users/$UID_USERNAME apple-keyword "$VALUE"
@@ -59,7 +42,7 @@ module OpenDirectoryUtils
     # return as xml   -- dscl -plist . -search /Users RealName "Andrew Garrett"
     def user_get_info(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -read /Users/#{user_attrs[:uid]}]
@@ -71,7 +54,7 @@ module OpenDirectoryUtils
     # get all user details -- dscl . -readall /Users
     def user_exists?(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
 
       return user_get_info(user_attrs, dir_info)
     end
@@ -81,7 +64,7 @@ module OpenDirectoryUtils
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER RealName "$VALUE"
     def user_od_set_real_name(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -create /Users/#{user_attrs[:uid]} RealName "#{user_attrs[:real_name]}"]
@@ -92,7 +75,7 @@ module OpenDirectoryUtils
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER cn "$NAME"
     def user_set_common_name(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -create /Users/#{user_attrs[:uid]} cn "#{user_attrs[:cn]}"]
@@ -105,7 +88,7 @@ module OpenDirectoryUtils
     # sudo dscl . -create /Users/someuser UniqueID "1010"  #use something not already in use
     def user_od_set_unique_id(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -create /Users/#{user_attrs[:uid]} UniqueID #{user_attrs[:unique_id]}]
@@ -116,7 +99,7 @@ module OpenDirectoryUtils
     # sudo dscl . -create /Users/someuser uidnumber "1010"  #use something not already in use
     def user_set_uidnumber(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -create /Users/#{user_attrs[:uid]} uidnumber #{user_attrs[:uidnumber]}]
@@ -129,7 +112,7 @@ module OpenDirectoryUtils
     # sudo dscl . -create /Users/someuser PrimaryGroupID 80
     def user_od_set_primary_group_id(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -create /Users/#{user_attrs[:uid]} PrimaryGroupID #{user_attrs[:primary_group_id]}]
@@ -140,7 +123,7 @@ module OpenDirectoryUtils
     # sudo dscl . -create /Users/someuser PrimaryGroupID 80
     def user_set_gidnumber(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -create /Users/#{user_attrs[:uid]} gidnumber #{user_attrs[:gidnumber]}]
@@ -152,7 +135,7 @@ module OpenDirectoryUtils
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/someuser NFSHomeDirectory /Users/someuser
     def user_od_set_nfs_home_directory(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -create /Users/#{user_attrs[:uid]} NFSHomeDirectory #{user_attrs[:nfs_home_directory]}]
@@ -163,7 +146,7 @@ module OpenDirectoryUtils
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME homedirectory "$VALUE"
     def user_set_home_directory(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -create /Users/#{user_attrs[:uid]} homedirectory #{user_attrs[:home_directory]}]
@@ -176,7 +159,7 @@ module OpenDirectoryUtils
     # /usr/bin/dscl -plist -u diradmin -P #{adminpw} /LDAPv3/127.0.0.1/ -passwd /Users/#{uid} "#{passwd}"
     def user_set_password(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -passwd /Users/#{user_attrs[:uid]} "#{user_attrs[:password]}"]
@@ -187,7 +170,7 @@ module OpenDirectoryUtils
     # /usr/bin/dscl /LDAPv3/127.0.0.1 -auth #{uid} "#{passwd}"
     def user_verify_password(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -auth #{user_attrs[:uid]} "#{user_attrs[:password]}"]
@@ -199,7 +182,7 @@ module OpenDirectoryUtils
     # # /usr/bin/pwpolicy -a diradmin -p A-B1g-S3cret -u $UID_USERNAME -setpolicy "isDisabled=0"
     # def user_enable_login(attribs, dir_info)
     #   check_uid( attribs )
-    #   user_attrs = clean_attribs(attribs)
+    #   user_attrs = tidy_attribs(attribs)
     #
     #   answer  = add_pwpol_info( dir_info, attribs[:format] )
     #   answer += %Q[ -u #{user_attrs[:uid]} -enableuser]
@@ -210,7 +193,7 @@ module OpenDirectoryUtils
     # # /usr/bin/pwpolicy -a diradmin -p A-B1g-S3cret -u $UID_USERNAME -setpolicy "isDisabled=1"
     # def user_disable_login(attribs, dir_info)
     #   check_uid( attribs )
-    #   user_attrs = clean_attribs(attribs)
+    #   user_attrs = tidy_attribs(attribs)
     #
     #   answer  = add_pwpol_info( dir_info, attribs[:format] )
     #   answer += %Q[ -u #{user_attrs[:uid]} -disableuser]
@@ -222,7 +205,7 @@ module OpenDirectoryUtils
     # sudo dscl . -create /Users/someuser UserShell /bin/bash
     def user_od_set_shell(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
       user_attrs[:shell] = user_attrs[:shell] ||
                             user_attrs[:user_shell] || '/bin/bash'
 
@@ -234,7 +217,7 @@ module OpenDirectoryUtils
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME loginShell "$VALUE"
     def user_set_login_shell(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
       user_attrs[:shell] = user_attrs[:shell] ||
                             user_attrs[:login_shell] || '/bin/bash'
 
@@ -251,7 +234,7 @@ module OpenDirectoryUtils
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$UID_USERNAME apple-user-mailattribute "$VALUE"
     def user_set_email(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
       user_attrs[:email] = user_attrs[:email] || user_attrs[:mail] ||
                             user_attrs['apple-user-mailattribute']
       answer = [
@@ -269,7 +252,7 @@ module OpenDirectoryUtils
     # https://tutorialforlinux.com/2011/09/15/delete-users-and-groups-from-terminal/
     def user_delete(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
 
       "#{add_dscl_info( dir_info, attribs[:format] )} -delete /Users/#{user_attrs[:uid]}"
     end
@@ -279,7 +262,7 @@ module OpenDirectoryUtils
     # https://superuser.com/questions/1154564/how-to-create-a-user-from-the-macos-command-line
     def user_create(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
 
       # merge od names info with ldap names (just incase)
       user_attrs[:unique_id] = user_attrs[:unique_id] || user_attrs[:uidnumber]
@@ -321,7 +304,7 @@ module OpenDirectoryUtils
     # add more users -- dscl . -append /Groups/ladmins GroupMembership 2ndlocaladmin
     def user_add_to_group(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -append /Groups/#{user_attrs[:group_name]} GroupMembership #{user_attrs[:uid]}]
@@ -332,7 +315,7 @@ module OpenDirectoryUtils
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -delete /Groups/$VALUE GroupMembership $UID_USERNAME
     def user_remove_from_group(attribs, dir_info)
       check_uid( attribs )
-      user_attrs = clean_attribs(attribs)
+      user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
       answer += %Q[ -delete /Groups/#{user_attrs[:group_name]} GroupMembership #{user_attrs[:uid]}]
