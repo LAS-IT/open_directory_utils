@@ -10,6 +10,7 @@ module OpenDirectoryUtils
 
     def check_critical_attribute(attrib, value)
       attrib[value] = attrib[value]&.strip
+      assert{not attrib[value].nil?}
       assert{not attrib[value].eql? ''}
       assert{not attrib[value].include? ' '}
       rescue NoMethodError, ArgumentError => error

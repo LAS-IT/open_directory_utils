@@ -1,7 +1,8 @@
 require 'net/ssh'
 require "open_directory_utils/dscl"
 require "open_directory_utils/pwpolicy"
-require "open_directory_utils/user_actions"
+require "open_directory_utils/commands_user"
+require "open_directory_utils/commands_group"
 
 module OpenDirectoryUtils
   class Connection
@@ -10,7 +11,8 @@ module OpenDirectoryUtils
 
     include OpenDirectoryUtils::Dscl
     include OpenDirectoryUtils::Pwpolicy
-    include OpenDirectoryUtils::UserActions
+    include OpenDirectoryUtils::CommandsUser
+    include OpenDirectoryUtils::CommandsGroup 
 
     def initialize(params={})
       config = defaults.merge(params)
