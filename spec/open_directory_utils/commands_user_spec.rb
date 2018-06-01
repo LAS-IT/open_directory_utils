@@ -307,43 +307,47 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
       end
     end
 
-    #   it "user_od_set_shell with default" do
-    #     attribs = {uid: 'someone'}
-    #     answer  = user.send(:user_od_set_shell, attribs, srv_info)
-    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/bash"'
-    #     expect( answer ).to eq( correct )
-    #   end
-    #   it "user_od_set_shell with params" do
-    #     attribs = {uid: 'someone', shell: '/bin/zsh'}
-    #     answer  = user.send(:user_od_set_shell, attribs, srv_info)
-    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/zsh"'
-    #     expect( answer ).to eq( correct )
-    #   end
-    #   it "user_od_set_shell with params" do
-    #     attribs = {uid: 'someone', user_shell: '/bin/zsh'}
-    #     answer  = user.send(:user_od_set_shell, attribs, srv_info)
-    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/zsh"'
-    #     expect( answer ).to eq( correct )
-    #   end
-    #   it "user_set_login_shell with default" do
-    #     attribs = {uid: 'someone'}
-    #     answer  = user.send(:user_set_login_shell, attribs, srv_info)
-    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone loginShell "/bin/bash"'
-    #     expect( answer ).to eq( correct )
-    #   end
-    #   it "user_set_login_shell with params" do
-    #     attribs = {uid: 'someone', shell: '/bin/zsh'}
-    #     answer  = user.send(:user_set_login_shell, attribs, srv_info)
-    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone loginShell "/bin/zsh"'
-    #     expect( answer ).to eq( correct )
-    #   end
-    #   it "user_set_login_shell with params" do
-    #     attribs = {uid: 'someone', login_shell: '/bin/zsh'}
-    #     answer  = user.send(:user_set_login_shell, attribs, srv_info)
-    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone loginShell "/bin/zsh"'
-    #     expect( answer ).to eq( correct )
-    #   end
-    #
+    define "user_set_shell" do
+      it "with default" do
+        attribs = {uid: 'someone'}
+        answer  = user.send(:user_set_shell, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/bash"'
+        expect( answer ).to eq( correct )
+      end
+      it "with shell" do
+        attribs = {uid: 'someone', shell: '/bin/zsh'}
+        answer  = user.send(:user_set_shell, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/zsh"'
+        expect( answer ).to eq( correct )
+      end
+      it "with user_shell" do
+        attribs = {uid: 'someone', user_shell: '/bin/zsh'}
+        answer  = user.send(:user_set_shell, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/zsh"'
+        expect( answer ).to eq( correct )
+      end
+    end
+    define "user_set_login_shell" do 
+      it "with default" do
+        attribs = {uid: 'someone'}
+        answer  = user.send(:user_set_login_shell, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone loginShell "/bin/bash"'
+        expect( answer ).to eq( correct )
+      end
+      it "with shell" do
+        attribs = {uid: 'someone', shell: '/bin/zsh'}
+        answer  = user.send(:user_set_login_shell, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone loginShell "/bin/zsh"'
+        expect( answer ).to eq( correct )
+      end
+      it "with login_shell" do
+        attribs = {uid: 'someone', login_shell: '/bin/zsh'}
+        answer  = user.send(:user_set_login_shell, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone loginShell "/bin/zsh"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
     #   it "user_set_email" do
     #     attribs = {uid: 'someone', email: 'user@example.com'}
     #     answer  = user.send(:user_set_email, attribs, srv_info)

@@ -210,39 +210,39 @@ module OpenDirectoryUtils
       user_attrs = tidy_attribs(attribs)
 
       dscl( user_attrs, dir_info )
-      # check_critical_attribute( attribs, :shortname )
-      # user_attrs = tidy_attribs(attribs)
-      #
-      # answer  = add_dscl_info( dir_info, attribs[:format] )
-      # answer += %Q[ -auth #{user_attrs[:shortname]} "#{user_attrs[:password]}"]
-      #
-      # raise ArgumentError, "password blank" if user_attrs[:password].to_s.eql? ''
-      # return answer
     end
 
     # sudo dscl . -create /Users/someuser UserShell /bin/bash
     def user_set_shell(attribs, dir_info)
+      attribs[:shortname] = user_shortname_alternatives(attribs)
+      attribs[:value]     = attribs[:value] || attribs[:user_shell]
+      attribs[:value]     = attribs[:value] || attribs[:shell]
+      attribs[:value]     = attribs[:value] || '/bin/bash'
+
+      command = {action: 'create', scope: 'Users', attribute: 'UserShell'}
+      attribs = attribs.merge(command)
+
       check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :value )
       user_attrs = tidy_attribs(attribs)
-      user_attrs[:shell] = user_attrs[:shell] ||
-                            user_attrs[:user_shell] || '/bin/bash'
 
-      answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:shortname]} UserShell "#{user_attrs[:shell]}"]
-
-      return answer
+      dscl( user_attrs, dir_info )
     end
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME loginShell "$VALUE"
     def user_set_login_shell(attribs, dir_info)
+      attribs[:shortname] = user_shortname_alternatives(attribs)
+      attribs[:value]     = attribs[:value] || attribs[:user_shell]
+      attribs[:value]     = attribs[:value] || attribs[:shell]
+      attribs[:value]     = attribs[:value] || '/bin/bash'
+
+      command = {action: 'create', scope: 'Users', attribute: 'loginShell'}
+      attribs = attribs.merge(command)
+
       check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :value )
       user_attrs = tidy_attribs(attribs)
-      user_attrs[:shell] = user_attrs[:shell] ||
-                            user_attrs[:login_shell] || '/bin/bash'
 
-      answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:shortname]} loginShell "#{user_attrs[:shell]}"]
-
-      return answer
+      dscl( user_attrs, dir_info )
     end
 
     # OTHER FIELDS
