@@ -25,6 +25,7 @@ module OpenDirectoryUtils
     # return as xml   -- dscl -plist . -search /Users RealName "Andrew Garrett"
     def user_get_info(attribs, dir_info)
       attribs[:shortname] = user_shortname_alternatives(attribs)
+
       command = {action: 'read', scope: 'Users'}
       attribs = attribs.merge(command)
 
@@ -43,56 +44,78 @@ module OpenDirectoryUtils
     # CHANGE OD
     ###########
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER RealName "$VALUE"
-    def user_od_set_real_name(attribs, dir_info)
+    def user_set_real_name(attribs, dir_info)
       attribs[:shortname] = user_shortname_alternatives(attribs)
+      attribs[:value]     = attribs[:value] || attribs[:cn]
+      attribs[:value]     = attribs[:value] || attribs[:realname]
+      attribs[:value]     = attribs[:value] || attribs[:real_name]
+
+      command = {action: 'create', scope: 'Users', attribute: 'RealName'}
+      attribs = attribs.merge(command)
+
       check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :value )
       user_attrs = tidy_attribs(attribs)
 
-      answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:shortname]} RealName "#{user_attrs[:real_name]}"]
-
-      raise ArgumentError, "real_name blank" if user_attrs[:real_name].to_s.eql? ''
-      return answer
+      dscl( user_attrs, dir_info )
     end
+    # alias_method :user_set_cn, :user_set_real_name
+    # alias_method :user_set_common_name, :user_set_real_name
+
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER cn "$NAME"
     def user_set_common_name(attribs, dir_info)
+      attribs[:shortname] = user_shortname_alternatives(attribs)
+      attribs[:value]     = attribs[:value] || attribs[:cn]
+      attribs[:value]     = attribs[:value] || attribs[:realname]
+      attribs[:value]     = attribs[:value] || attribs[:real_name]
+
+      command = {action: 'create', scope: 'Users', attribute: 'cn'}
+      attribs = attribs.merge(command)
+
       check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :value )
       user_attrs = tidy_attribs(attribs)
 
-      answer  = add_dscl_info( dir_info, user_attrs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:shortname]} cn "#{user_attrs[:cn]}"]
-
-      raise ArgumentError, "common_name (cn) blank" if user_attrs[:cn].to_s.eql? ''
-      return answer
+      dscl( user_attrs, dir_info )
     end
-    alias_method :user_ldap_set_common_name, :user_set_common_name
+    alias_method :user_set_cn, :user_set_common_name
 
     # sudo dscl . -create /Users/someuser UniqueID "1010"  #use something not already in use
-    def user_od_set_unique_id(attribs, dir_info)
+    def user_set_unique_id(attribs, dir_info)
+      attribs[:shortname] = user_shortname_alternatives(attribs)
+      attribs[:value]     = attribs[:value] || attribs[:uniqueid]
+      attribs[:value]     = attribs[:value] || attribs[:unique_id]
+      attribs[:value]     = attribs[:value] || attribs[:uidnumber]
+
+      command = {action: 'create', scope: 'Users', attribute: 'UniqueID'}
+      attribs = attribs.merge(command)
+
       check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :value )
       user_attrs = tidy_attribs(attribs)
 
-      answer  = add_dscl_info( dir_info, user_attrs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:shortname]} UniqueID #{user_attrs[:unique_id]}]
-
-      raise ArgumentError, "unique_id blank" if user_attrs[:unique_id].to_s.eql? ''
-      return answer
+      dscl( user_attrs, dir_info )
     end
-    # sudo dscl . -create /Users/someuser shortnamenumber "1010"  #use something not already in use
-    def user_set_shortnamenumber(attribs, dir_info)
+
+    # # sudo dscl . -create /Users/someuser uidnumber "1010"  #use something not already in use
+    def user_set_uidnumber(attribs, dir_info)
+      attribs[:shortname] = user_shortname_alternatives(attribs)
+      attribs[:value]     = attribs[:value] || attribs[:uniqueid]
+      attribs[:value]     = attribs[:value] || attribs[:unique_id]
+      attribs[:value]     = attribs[:value] || attribs[:uidnumber]
+
+      command = {action: 'create', scope: 'Users', attribute: 'uidnumber'}
+      attribs = attribs.merge(command)
+
       check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :value )
       user_attrs = tidy_attribs(attribs)
 
-      answer  = add_dscl_info( dir_info, user_attrs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:shortname]} shortnamenumber #{user_attrs[:shortnamenumber]}]
-
-      raise ArgumentError, "shortnamenumber blank" if user_attrs[:shortnamenumber].to_s.eql? ''
-      return answer
+      dscl( user_attrs, dir_info )
     end
-    alias_method :user_ldap_set_shortnamenumber, :user_set_shortnamenumber
 
     # sudo dscl . -create /Users/someuser PrimaryGroupID 80
-    def user_od_set_primary_group_id(attribs, dir_info)
+    def user_set_primary_group_id(attribs, dir_info)
       check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
 
@@ -115,7 +138,7 @@ module OpenDirectoryUtils
     end
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/someuser NFSHomeDirectory /Users/someuser
-    def user_od_set_nfs_home_directory(attribs, dir_info)
+    def user_set_nfs_home_directory(attribs, dir_info)
       check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
 
@@ -162,7 +185,7 @@ module OpenDirectoryUtils
     end
 
     # sudo dscl . -create /Users/someuser UserShell /bin/bash
-    def user_od_set_shell(attribs, dir_info)
+    def user_set_shell(attribs, dir_info)
       check_critical_attribute( attribs, :shortname )
       user_attrs = tidy_attribs(attribs)
       user_attrs[:shell] = user_attrs[:shell] ||
@@ -291,7 +314,7 @@ module OpenDirectoryUtils
     end
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME NameSuffix "$VALUE"
-    def user_od_set_name_suffix
+    def user_set_name_suffix
     end
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-namesuffix "$VALUE"
     def user_ldap_set_name_suffix

@@ -9,10 +9,10 @@ module OpenDirectoryUtils
     end
 
     def check_critical_attribute(attrib, value)
-      attrib[value] = attrib[value]&.strip
       assert{not attrib[value].nil?}
+      attrib[value] = attrib[value].to_s.strip
       assert{not attrib[value].eql? ''}
-      assert{not attrib[value].include? ' '}
+      assert{not attrib[value].include? ' '} if value.eql? :shortname
       rescue NoMethodError, ArgumentError => error
         raise ArgumentError, "#{value} invalid"
     end

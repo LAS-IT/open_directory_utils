@@ -10,46 +10,131 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
                       dscl: '/usr/bin/dscl',
                       pwpol: '/usr/bin/pwpolicy'} }
 
-    describe "build od actions w/good data" do
-      it "user_get_info - shortname" do
+    describe "user_get_info" do
+      it "with shortname" do
         attribs = {shortname: 'someone'}
         answer  = user.send(:user_get_info, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
         expect( answer ).to eq( correct )
       end
-      it "user_get_info - uid" do
+      it "with username" do
+        attribs = {username: 'someone'}
+        answer  = user.send(:user_get_info, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+        expect( answer ).to eq( correct )
+      end
+      it "with uid" do
         attribs = {uid: 'someone'}
         answer  = user.send(:user_get_info, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
         expect( answer ).to eq( correct )
       end
+    end
+
+    describe "user_get_info" do
       it "user_exists? - shortname" do
         attribs = {shortname: 'someone'}
         answer  = user.send(:user_exists?, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
         expect( answer ).to eq( correct )
       end
-      it "user_exists? - uid" do
-        attribs = {uid: 'someone'}
-        answer  = user.send(:user_exists?, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+    end
+
+    describe "user_set_real_name" do
+      it "user_set_real_name - value" do
+        attribs = {shortname: 'someone', value: "John Doe"}
+        answer  = user.send(:user_set_real_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "John Doe"'
         expect( answer ).to eq( correct )
       end
-    #
-    #   it "user_od_set_real_name" do
-    #     attribs = {uid: 'someone', real_name: "John Doe"}
-    #     answer  = user.send(:user_od_set_real_name, attribs, srv_info)
-    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "John Doe"'
-    #     expect( answer ).to eq( correct )
-    #   end
-    #   it "user_od_set_unique_id" do
-    #     attribs = {uid: 'someone', unique_id: 987654}
-    #     answer  = user.send(:user_od_set_unique_id, attribs, srv_info)
-    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UniqueID 987654'
-    #     expect( answer ).to eq( correct )
-    #   end
-    #
-    #   it "user_od_set_primary_group_id" do
+      it "user_set_real_name - real_name" do
+        attribs = {username: 'someone', real_name: "John Doe"}
+        answer  = user.send(:user_set_real_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "John Doe"'
+        expect( answer ).to eq( correct )
+      end
+      it "user_set_real_name - realname" do
+        attribs = {uid: 'someone', realname: "John Doe"}
+        answer  = user.send(:user_set_real_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "John Doe"'
+        expect( answer ).to eq( correct )
+      end
+      it "user_set_real_name - cn" do
+        attribs = {uid: 'someone', cn: "John Doe"}
+        answer  = user.send(:user_set_real_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "John Doe"'
+        expect( answer ).to eq( correct )
+      end
+    end
+    describe "user_set_common_name" do
+      it "user_set_common_name - value" do
+        attribs = {shortname: 'someone', value: "John Doe"}
+        answer  = user.send(:user_set_common_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone cn "John Doe"'
+        expect( answer ).to eq( correct )
+      end
+      it "user_set_common_name - real_name" do
+        attribs = {username: 'someone', real_name: "John Doe"}
+        answer  = user.send(:user_set_common_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone cn "John Doe"'
+        expect( answer ).to eq( correct )
+      end
+      it "user_set_common_name - realname" do
+        attribs = {uid: 'someone', realname: "John Doe"}
+        answer  = user.send(:user_set_common_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone cn "John Doe"'
+        expect( answer ).to eq( correct )
+      end
+      it "user_set_common_name - cn" do
+        attribs = {uid: 'someone', cn: "John Doe"}
+        answer  = user.send(:user_set_common_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone cn "John Doe"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "user_set_unique_id" do
+      it "with uniqueid" do
+        attribs = {shortname: 'someone', uniqueid: 987654}
+        answer  = user.send(:user_set_unique_id, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UniqueID "987654"'
+        expect( answer ).to eq( correct )
+      end
+      it "with unique_id" do
+        attribs = {username: 'someone', unique_id: 987654}
+        answer  = user.send(:user_set_unique_id, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UniqueID "987654"'
+        expect( answer ).to eq( correct )
+      end
+      it "with uidnumber" do
+        attribs = {uid: 'someone', uidnumber: "987654"}
+        answer  = user.send(:user_set_unique_id, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UniqueID "987654"'
+        expect( answer ).to eq( correct )
+      end
+    end
+    describe "user_set_uidnumber" do
+      it "with uniqueid" do
+        attribs = {shortname: 'someone', uniqueid: 987654}
+        answer  = user.send(:user_set_uidnumber, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone uidnumber "987654"'
+        expect( answer ).to eq( correct )
+      end
+      it "with unique_id" do
+        attribs = {username: 'someone', unique_id: 987654}
+        answer  = user.send(:user_set_uidnumber, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone uidnumber "987654"'
+        expect( answer ).to eq( correct )
+      end
+      it "with uidnumber" do
+        attribs = {uid: 'someone', uidnumber: "987654"}
+        answer  = user.send(:user_set_uidnumber, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone uidnumber "987654"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    #   it "user_set_primary_group_id" do
     #     attribs = {uid: 'someone', primary_group_id: 1043}
     #     answer  = user.send(:user_od_set_primary_group_id, attribs, srv_info)
     #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone PrimaryGroupID 1043'
@@ -156,7 +241,7 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
     #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/student GroupMembership someone'
     #     expect( answer ).to eq( correct )
     #   end
-    end
+    # end
     #
     # describe "build ldap actions w/good data" do
     #   it "user_set_common_name" do
