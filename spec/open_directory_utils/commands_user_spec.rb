@@ -134,12 +134,49 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
       end
     end
 
-    #   it "user_set_primary_group_id" do
-    #     attribs = {uid: 'someone', primary_group_id: 1043}
-    #     answer  = user.send(:user_od_set_primary_group_id, attribs, srv_info)
-    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone PrimaryGroupID 1043'
-    #     expect( answer ).to eq( correct )
-    #   end
+
+    describe "user_set_primary_group_id" do
+      it "using primary_group_id" do
+        attribs = {uid: 'someone', primary_group_id: 1043}
+        answer  = user.send(:user_set_primary_group_id, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone PrimaryGroupID "1043"'
+        expect( answer ).to eq( correct )
+      end
+      it "using group_id" do
+        attribs = {uid: 'someone', group_id: 1043}
+        answer  = user.send(:user_set_primary_group_id, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone PrimaryGroupID "1043"'
+        expect( answer ).to eq( correct )
+      end
+      it "using gidnumber" do
+        attribs = {uid: 'someone', gidnumber: 1043}
+        answer  = user.send(:user_set_primary_group_id, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone PrimaryGroupID "1043"'
+        expect( answer ).to eq( correct )
+      end
+    end
+    describe "user_set_gidnumber" do
+      it "using primary_group_id" do
+        attribs = {uid: 'someone', primary_group_id: 1043}
+        answer  = user.send(:user_set_gidnumber, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone gidnumber "1043"'
+        expect( answer ).to eq( correct )
+      end
+      it "using group_id" do
+        attribs = {uid: 'someone', group_id: 1043}
+        answer  = user.send(:user_set_gidnumber, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone gidnumber "1043"'
+        expect( answer ).to eq( correct )
+      end
+      it "using gidnumber" do
+        attribs = {uid: 'someone', gidnumber: 1043}
+        answer  = user.send(:user_set_gidnumber, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone gidnumber "1043"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+
     #   it "user_od_set_nfs_home_directory" do
     #     attribs = {uid: 'someone', nfs_home_directory: 1043}
     #     answer  = user.send(:user_od_set_nfs_home_directory, attribs, srv_info)
