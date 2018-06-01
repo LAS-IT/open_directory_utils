@@ -20,6 +20,7 @@ module OpenDirectoryUtils
       build_dscl_command( tidy_attribs, dir_info )
     end
 
+    # TODO: switch to template pattern
     def build_dscl_command(attribs, dir_info)
       # /usr/bin/dscl -u diradmin -P "BigSecret" /LDAPv3/127.0.0.1/ -append /Users/$UID_USERNAME apple-keyword "$VALUE"
       # "/usr/bin/dscl -plist -u #{od_username} -P #{od_password} #{od_dsclpath} -#{command} #{resource} #{params}"
@@ -29,13 +30,17 @@ module OpenDirectoryUtils
                                                       attribs[:format].eql? 'xml'
       end
       ans += " -u #{dir_info[:diradmin]}"      unless dir_info[:diradmin].nil? or
-                                                      dir_info[:diradmin].empty?
+                                                      dir_info[:diradmin].empty? or
+                                                      attribs[:action].eql? 'auth'
       ans += %Q[ -P "#{dir_info[:password]}"]  unless dir_info[:password].nil? or
-                                                      dir_info[:password].empty?
+                                                      dir_info[:password].empty? or
+                                                      attribs[:action].eql? 'auth'
       ans += " #{dir_info[:data_path]}"
 
       ans += %Q[ -#{attribs[:action]}]
-      ans += %Q[ /#{attribs[:scope]}/#{attribs[:shortname]}]
+      ans += %Q[ #{attribs[:shortname]}]           if attribs[:action].eql? 'auth'
+      ans += %Q[ /#{attribs[:scope]}/#{attribs[:shortname]}] unless
+                                                      attribs[:action].eql? 'auth'
       ans += %Q[ #{attribs[:attribute]}]       unless attribs[:attribute].nil? or
                                                       attribs[:attribute].empty?
       ans += %Q[ "#{attribs[:value]}"]         unless attribs[:value].nil? or

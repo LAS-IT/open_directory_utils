@@ -59,6 +59,12 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "John Doe"'
         expect( answer ).to eq( correct )
       end
+      it "user_set_real_name - value" do
+        attribs = {uid: 'someone', value: "John Doe"}
+        answer  = user.send(:user_set_real_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "John Doe"'
+        expect( answer ).to eq( correct )
+      end
       it "user_set_real_name - cn" do
         attribs = {uid: 'someone', cn: "John Doe"}
         answer  = user.send(:user_set_real_name, attribs, srv_info)
@@ -81,6 +87,12 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
       end
       it "user_set_common_name - realname" do
         attribs = {uid: 'someone', realname: "John Doe"}
+        answer  = user.send(:user_set_common_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone cn "John Doe"'
+        expect( answer ).to eq( correct )
+      end
+      it "user_set_common_name - value" do
+        attribs = {uid: 'someone', value: "John Doe"}
         answer  = user.send(:user_set_common_name, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone cn "John Doe"'
         expect( answer ).to eq( correct )
@@ -112,6 +124,12 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UniqueID "987654"'
         expect( answer ).to eq( correct )
       end
+      it "with value" do
+        attribs = {uid: 'someone', value: "987654"}
+        answer  = user.send(:user_set_unique_id, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UniqueID "987654"'
+        expect( answer ).to eq( correct )
+      end
     end
     describe "user_set_uidnumber" do
       it "with uniqueid" do
@@ -128,6 +146,12 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
       end
       it "with uidnumber" do
         attribs = {uid: 'someone', uidnumber: "987654"}
+        answer  = user.send(:user_set_uidnumber, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone uidnumber "987654"'
+        expect( answer ).to eq( correct )
+      end
+      it "with value" do
+        attribs = {uid: 'someone', value: "987654"}
         answer  = user.send(:user_set_uidnumber, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone uidnumber "987654"'
         expect( answer ).to eq( correct )
@@ -154,6 +178,12 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone PrimaryGroupID "1043"'
         expect( answer ).to eq( correct )
       end
+      it "using value" do
+        attribs = {uid: 'someone', value: 1043}
+        answer  = user.send(:user_set_primary_group_id, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone PrimaryGroupID "1043"'
+        expect( answer ).to eq( correct )
+      end
     end
     describe "user_set_gidnumber" do
       it "using primary_group_id" do
@@ -174,6 +204,12 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone gidnumber "1043"'
         expect( answer ).to eq( correct )
       end
+      it "using value" do
+        attribs = {uid: 'someone', value: 1043}
+        answer  = user.send(:user_set_gidnumber, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone gidnumber "1043"'
+        expect( answer ).to eq( correct )
+      end
     end
 
 
@@ -186,6 +222,12 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
       end
       it "using nfs_home_directory" do
         attribs = {uid: 'someone', home_directory: "/home/someone"}
+        answer  = user.send(:user_set_nfs_home_directory, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone NFSHomeDirectory "/home/someone"'
+        expect( answer ).to eq( correct )
+      end
+      it "using value" do
+        attribs = {uid: 'someone', value: "/home/someone"}
         answer  = user.send(:user_set_nfs_home_directory, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone NFSHomeDirectory "/home/someone"'
         expect( answer ).to eq( correct )
@@ -210,6 +252,12 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone homedirectory "/home/someone"'
         expect( answer ).to eq( correct )
       end
+      it "using value" do
+        attribs = {uid: 'someone', value: "/home/someone"}
+        answer  = user.send(:user_set_home_directory, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone homedirectory "/home/someone"'
+        expect( answer ).to eq( correct )
+      end
       it "using nfs_home_directory" do
         attribs = {uid: 'someone'}
         answer  = user.send(:user_set_home_directory, attribs, srv_info)
@@ -218,19 +266,47 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
       end
     end
 
-    #   it "user_set_password" do
-    #     attribs = {uid: 'someone', password: 'A-Big-Secret'}
-    #     answer  = user.send(:user_set_password, attribs, srv_info)
-    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "A-Big-Secret"'
-    #     expect( answer ).to eq( correct )
-    #   end
-    #   it "user_verify_password" do
-    #     attribs = {uid: 'someone', password: 'A-Big-Secret'}
-    #     answer  = user.send(:user_verify_password, attribs, srv_info)
-    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -auth someone "A-Big-Secret"'
-    #     expect( answer ).to eq( correct )
-    #   end
-    #
+    describe "user_set_password" do
+      it "using password" do
+        attribs = {uid: 'someone', password: 'A-Big-Secret'}
+        answer  = user.send(:user_set_password, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "A-Big-Secret"'
+        expect( answer ).to eq( correct )
+      end
+      it "using passwd" do
+        attribs = {uid: 'someone', passwd: 'A-Big-Secret'}
+        answer  = user.send(:user_set_password, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "A-Big-Secret"'
+        expect( answer ).to eq( correct )
+      end
+      it "using value" do
+        attribs = {uid: 'someone', value: 'A-Big-Secret'}
+        answer  = user.send(:user_set_password, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "A-Big-Secret"'
+        expect( answer ).to eq( correct )
+      end
+    end
+    describe "user_verify_password" do
+      it "using password" do
+        attribs = {uid: 'someone', password: 'A-Big-Secret'}
+        answer  = user.send(:user_verify_password, attribs, srv_info)
+        correct = '/usr/bin/dscl /LDAPv3/127.0.0.1/ -auth someone "A-Big-Secret"'
+        expect( answer ).to eq( correct )
+      end
+      it "using passwd" do
+        attribs = {uid: 'someone', passwd: 'A-Big-Secret'}
+        answer  = user.send(:user_verify_password, attribs, srv_info)
+        correct = '/usr/bin/dscl /LDAPv3/127.0.0.1/ -auth someone "A-Big-Secret"'
+        expect( answer ).to eq( correct )
+      end
+      it "using value" do
+        attribs = {uid: 'someone', value: 'A-Big-Secret'}
+        answer  = user.send(:user_verify_password, attribs, srv_info)
+        correct = '/usr/bin/dscl /LDAPv3/127.0.0.1/ -auth someone "A-Big-Secret"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
     #   it "user_od_set_shell with default" do
     #     attribs = {uid: 'someone'}
     #     answer  = user.send(:user_od_set_shell, attribs, srv_info)
