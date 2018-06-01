@@ -177,13 +177,47 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
     end
 
 
-    #   it "user_od_set_nfs_home_directory" do
-    #     attribs = {uid: 'someone', nfs_home_directory: 1043}
-    #     answer  = user.send(:user_od_set_nfs_home_directory, attribs, srv_info)
-    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone NFSHomeDirectory 1043'
-    #     expect( answer ).to eq( correct )
-    #   end
-    #
+    describe "user_od_set_nfs_home_directory" do
+      it "using nfs_home_directory" do
+        attribs = {uid: 'someone', nfs_home_directory: "/home/someone"}
+        answer  = user.send(:user_set_nfs_home_directory, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone NFSHomeDirectory "/home/someone"'
+        expect( answer ).to eq( correct )
+      end
+      it "using nfs_home_directory" do
+        attribs = {uid: 'someone', home_directory: "/home/someone"}
+        answer  = user.send(:user_set_nfs_home_directory, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone NFSHomeDirectory "/home/someone"'
+        expect( answer ).to eq( correct )
+      end
+      it "using blank" do
+        attribs = {uid: 'someone'}
+        answer  = user.send(:user_set_nfs_home_directory, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone NFSHomeDirectory "/Volumes/Macintosh HD/Users/someone"'
+        expect( answer ).to eq( correct )
+      end
+    end
+    describe "user_set_home_directory" do
+      it "using nfs_home_directory" do
+        attribs = {uid: 'someone', nfs_home_directory: "/home/someone"}
+        answer  = user.send(:user_set_home_directory, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone homedirectory "/home/someone"'
+        expect( answer ).to eq( correct )
+      end
+      it "using nfs_home_directory" do
+        attribs = {uid: 'someone', home_directory: "/home/someone"}
+        answer  = user.send(:user_set_home_directory, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone homedirectory "/home/someone"'
+        expect( answer ).to eq( correct )
+      end
+      it "using nfs_home_directory" do
+        attribs = {uid: 'someone'}
+        answer  = user.send(:user_set_home_directory, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone homedirectory "/Volumes/Macintosh HD/Users/someone"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
     #   it "user_set_password" do
     #     attribs = {uid: 'someone', password: 'A-Big-Secret'}
     #     answer  = user.send(:user_set_password, attribs, srv_info)

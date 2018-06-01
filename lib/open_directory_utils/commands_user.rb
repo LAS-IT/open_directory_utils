@@ -129,15 +129,6 @@ module OpenDirectoryUtils
       user_attrs = tidy_attribs(attribs)
 
       dscl( user_attrs, dir_info )
-
-      # check_critical_attribute( attribs, :shortname )
-      # user_attrs = tidy_attribs(attribs)
-      #
-      # answer  = add_dscl_info( dir_info, user_attrs[:format] )
-      # answer += %Q[ -create /Users/#{user_attrs[:shortname]} PrimaryGroupID #{user_attrs[:primary_group_id]}]
-      #
-      # raise ArgumentError, "primary_group_id blank" if user_attrs[:primary_group_id].to_s.eql? ''
-      # return answer
     end
     # sudo dscl . -create /Users/someuser PrimaryGroupID 80
     def user_set_gidnumber(attribs, dir_info)
@@ -158,25 +149,53 @@ module OpenDirectoryUtils
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/someuser NFSHomeDirectory /Users/someuser
     def user_set_nfs_home_directory(attribs, dir_info)
+      attribs[:shortname] = user_shortname_alternatives(attribs)
+      attribs[:value]     = attribs[:value] || attribs[:home_directory]
+      attribs[:value]     = attribs[:value] || attribs[:nfs_home_directory]
+      attribs[:value]     = attribs[:value] || '/Volumes/Macintosh HD/Users/someone'
+
+      command = {action: 'create', scope: 'Users', attribute: 'NFSHomeDirectory'}
+      attribs = attribs.merge(command)
+
       check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :value )
       user_attrs = tidy_attribs(attribs)
 
-      answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:shortname]} NFSHomeDirectory #{user_attrs[:nfs_home_directory]}]
+      dscl( user_attrs, dir_info )
 
-      raise ArgumentError, "nfs_home_directory blank" if user_attrs[:nfs_home_directory].to_s.eql? ''
-      return answer
+      # check_critical_attribute( attribs, :shortname )
+      # user_attrs = tidy_attribs(attribs)
+      #
+      # answer  = add_dscl_info( dir_info, attribs[:format] )
+      # answer += %Q[ -create /Users/#{user_attrs[:shortname]} NFSHomeDirectory #{user_attrs[:nfs_home_directory]}]
+      #
+      # raise ArgumentError, "nfs_home_directory blank" if user_attrs[:nfs_home_directory].to_s.eql? ''
+      # return answer
     end
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME homedirectory "$VALUE"
     def user_set_home_directory(attribs, dir_info)
+      attribs[:shortname] = user_shortname_alternatives(attribs)
+      attribs[:value]     = attribs[:value] || attribs[:home_directory]
+      attribs[:value]     = attribs[:value] || attribs[:nfs_home_directory]
+      attribs[:value]     = attribs[:value] || '/Volumes/Macintosh HD/Users/someone'
+
+      command = {action: 'create', scope: 'Users', attribute: 'homedirectory'}
+      attribs = attribs.merge(command)
+
       check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :value )
       user_attrs = tidy_attribs(attribs)
 
-      answer  = add_dscl_info( dir_info, attribs[:format] )
-      answer += %Q[ -create /Users/#{user_attrs[:shortname]} homedirectory #{user_attrs[:home_directory]}]
+      dscl( user_attrs, dir_info )
 
-      raise ArgumentError, "home_directory blank" if user_attrs[:home_directory].to_s.eql? ''
-      return answer
+      # check_critical_attribute( attribs, :shortname )
+      # user_attrs = tidy_attribs(attribs)
+      #
+      # answer  = add_dscl_info( dir_info, attribs[:format] )
+      # answer += %Q[ -create /Users/#{user_attrs[:shortname]} homedirectory #{user_attrs[:home_directory]}]
+      #
+      # raise ArgumentError, "home_directory blank" if user_attrs[:home_directory].to_s.eql? ''
+      # return answer
     end
 
     # /usr/bin/pwpolicy -a diradmin -p "TopSecret" -u username -setpassword "AnotherSecret"
