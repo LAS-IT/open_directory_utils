@@ -327,7 +327,7 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
         expect( answer ).to eq( correct )
       end
     end
-    define "user_set_login_shell" do 
+    define "user_set_login_shell" do
       it "with default" do
         attribs = {uid: 'someone'}
         answer  = user.send(:user_set_login_shell, attribs, srv_info)
@@ -348,24 +348,69 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
       end
     end
 
-    #   it "user_set_email" do
-    #     attribs = {uid: 'someone', email: 'user@example.com'}
-    #     answer  = user.send(:user_set_email, attribs, srv_info)
-    #     pp answer
-    #     correct = [
-    #       '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone mail "user@example.com"',
-    #       '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone email "user@example.com"',
-    #       '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone apple-user-mailattribute "user@example.com"'
-    #     ]
-    #     expect( answer ).to eq( correct )
-    #   end
-    #
-    #   it "user_delete" do
-    #     attribs = {uid: 'someone'}
-    #     answer  = user.send(:user_delete, attribs, srv_info)
-    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Users/someone'
-    #     expect( answer ).to eq( correct )
-    #   end
+    describe "user_set_email" do
+      it "user_set_email with 'apple-user-mailattribute'" do
+        attribs = {uid: 'someone', 'apple-user-mailattribute' => 'user@example.com'}
+        answer  = user.send(:user_set_email, attribs, srv_info)
+        correct = [
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone mail "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone email "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone apple-user-mailattribute "user@example.com"'
+        ]
+        expect( answer ).to eq( correct )
+      end
+      it "user_set_email with apple_user_mailattribute" do
+        attribs = {uid: 'someone', apple_user_mailattribute: 'user@example.com'}
+        answer  = user.send(:user_set_email, attribs, srv_info)
+        correct = [
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone mail "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone email "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone apple-user-mailattribute "user@example.com"'
+        ]
+        expect( answer ).to eq( correct )
+      end
+      it "user_set_email with apple_user_mailattribute" do
+        attribs = {uid: 'someone', email: 'user@example.com'}
+        answer  = user.send(:user_set_email, attribs, srv_info)
+        correct = [
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone mail "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone email "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone apple-user-mailattribute "user@example.com"'
+        ]
+        expect( answer ).to eq( correct )
+      end
+      it "user_set_email with mail" do
+        attribs = {uid: 'someone', mail: 'user@example.com'}
+        answer  = user.send(:user_set_email, attribs, srv_info)
+        correct = [
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone mail "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone email "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone apple-user-mailattribute "user@example.com"'
+        ]
+        expect( answer ).to eq( correct )
+      end
+    end
+    
+    describe "user_delete" do
+      it "with uid" do
+        attribs = {uid: 'someone'}
+        answer  = user.send(:user_delete, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Users/someone'
+        expect( answer ).to eq( correct )
+      end
+      it "with username" do
+        attribs = {username: 'someone'}
+        answer  = user.send(:user_delete, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Users/someone'
+        expect( answer ).to eq( correct )
+      end
+      it "with shortname" do
+        attribs = {shortname: 'someone'}
+        answer  = user.send(:user_delete, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Users/someone'
+        expect( answer ).to eq( correct )
+      end
+    end
     #   xit "user_create" do
     #     attribs = {uid: 'someone', email: 'user@example.com'}
     #     answer  = user.send(:user_set_email, attribs, srv_info)

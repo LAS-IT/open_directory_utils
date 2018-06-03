@@ -26,11 +26,11 @@ module OpenDirectoryUtils
     def user_get_info(attribs, dir_info)
       attribs[:shortname] = user_shortname_alternatives(attribs)
 
-      command = {action: 'read', scope: 'Users'}
-      attribs = attribs.merge(command)
-
       check_critical_attribute( attribs, :shortname )
-      user_attrs = tidy_attribs(attribs)
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'read', scope: 'Users'}
+      user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
     end
@@ -50,12 +50,12 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:realname]
       attribs[:value]     = attribs[:value] || attribs[:real_name]
 
-      command = {action: 'create', scope: 'Users', attribute: 'RealName'}
-      attribs = attribs.merge(command)
-
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value )
-      user_attrs = tidy_attribs(attribs)
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'RealName'}
+      user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
     end
@@ -69,12 +69,12 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:realname]
       attribs[:value]     = attribs[:value] || attribs[:real_name]
 
-      command = {action: 'create', scope: 'Users', attribute: 'cn'}
-      attribs = attribs.merge(command)
-
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value )
-      user_attrs = tidy_attribs(attribs)
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'cn'}
+      user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
     end
@@ -87,12 +87,12 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:unique_id]
       attribs[:value]     = attribs[:value] || attribs[:uidnumber]
 
-      command = {action: 'create', scope: 'Users', attribute: 'UniqueID'}
-      attribs = attribs.merge(command)
-
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value )
-      user_attrs = tidy_attribs(attribs)
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'UniqueID'}
+      user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
     end
@@ -104,12 +104,12 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:unique_id]
       attribs[:value]     = attribs[:value] || attribs[:uidnumber]
 
-      command = {action: 'create', scope: 'Users', attribute: 'uidnumber'}
-      attribs = attribs.merge(command)
-
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value )
-      user_attrs = tidy_attribs(attribs)
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'uidnumber'}
+      user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
     end
@@ -121,12 +121,12 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:gidnumber]
       attribs[:value]     = attribs[:value] || attribs[:primary_group_id]
 
-      command = {action: 'create', scope: 'Users', attribute: 'PrimaryGroupID'}
-      attribs = attribs.merge(command)
-
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value )
-      user_attrs = tidy_attribs(attribs)
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'PrimaryGroupID'}
+      user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
     end
@@ -137,12 +137,12 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:gidnumber]
       attribs[:value]     = attribs[:value] || attribs[:primary_group_id]
 
-      command = {action: 'create', scope: 'Users', attribute: 'gidnumber'}
-      attribs = attribs.merge(command)
-
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value )
-      user_attrs = tidy_attribs(attribs)
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'gidnumber'}
+      user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
     end
@@ -154,12 +154,12 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:nfs_home_directory]
       attribs[:value]     = attribs[:value] || '/Volumes/Macintosh HD/Users/someone'
 
-      command = {action: 'create', scope: 'Users', attribute: 'NFSHomeDirectory'}
-      attribs = attribs.merge(command)
-
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value )
-      user_attrs = tidy_attribs(attribs)
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'NFSHomeDirectory'}
+      user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
     end
@@ -187,12 +187,12 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:password]
       attribs[:value]     = attribs[:value] || attribs[:passwd]
 
-      command = {action: 'passwd', scope: 'Users'}
-      attribs = attribs.merge(command)
-
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value )
-      user_attrs = tidy_attribs(attribs)
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'passwd', scope: 'Users'}
+      user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
     end
@@ -202,12 +202,12 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:password]
       attribs[:value]     = attribs[:value] || attribs[:passwd]
 
-      command = {action: 'auth', scope: 'Users'}
-      attribs = attribs.merge(command)
-
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value )
-      user_attrs = tidy_attribs(attribs)
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'auth', scope: 'Users'}
+      user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
     end
@@ -219,12 +219,12 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:shell]
       attribs[:value]     = attribs[:value] || '/bin/bash'
 
-      command = {action: 'create', scope: 'Users', attribute: 'UserShell'}
-      attribs = attribs.merge(command)
-
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value )
-      user_attrs = tidy_attribs(attribs)
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'UserShell'}
+      user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
     end
@@ -235,15 +235,16 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:shell]
       attribs[:value]     = attribs[:value] || '/bin/bash'
 
-      command = {action: 'create', scope: 'Users', attribute: 'loginShell'}
-      attribs = attribs.merge(command)
-
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value )
-      user_attrs = tidy_attribs(attribs)
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'loginShell'}
+      user_attrs  = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
     end
+
 
     # OTHER FIELDS
     #####################
@@ -251,17 +252,30 @@ module OpenDirectoryUtils
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME email "$VALUE"
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-user-mailattribute "$VALUE"
     def user_set_email(attribs, dir_info)
-      check_critical_attribute( attribs, :shortname )
-      user_attrs = tidy_attribs(attribs)
-      user_attrs[:email] = user_attrs[:email] || user_attrs[:mail] ||
-                            user_attrs['apple-user-mailattribute']
-      answer = [
-        %Q[#{add_dscl_info( dir_info, attribs[:format] )} -create /Users/#{user_attrs[:shortname]} mail "#{user_attrs[:email]}"],
-        %Q[#{add_dscl_info( dir_info, attribs[:format] )} -create /Users/#{user_attrs[:shortname]} email "#{user_attrs[:email]}"],
-        %Q[#{add_dscl_info( dir_info, attribs[:format] )} -create /Users/#{user_attrs[:shortname]} apple-user-mailattribute "#{user_attrs[:email]}"],
-      ]
+      attribs[:shortname] = user_shortname_alternatives(attribs)
+      attribs[:value]     = attribs[:value] || attribs['apple-user-mailattribute']
+      attribs[:value]     = attribs[:value] || attribs[:apple_user_mailattribute]
+      attribs[:value]     = attribs[:value] || attribs[:email]
+      attribs[:value]     = attribs[:value] || attribs[:mail]
 
-      raise ArgumentError, "email blank" if user_attrs[:email].to_s.eql? ''
+      check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :value )
+      attribs    = tidy_attribs(attribs)
+
+      answer     = []
+
+      command    = {action: 'create', scope: 'Users', attribute: 'mail'}
+      user_attrs = attribs.merge(command)
+      answer    << dscl( user_attrs, dir_info )
+
+      command    = {action: 'create', scope: 'Users', attribute: 'email'}
+      user_attrs = attribs.merge(command)
+      answer    << dscl( user_attrs, dir_info )
+
+      command    = {action: 'create', scope: 'Users', attribute: 'apple-user-mailattribute'}
+      user_attrs = attribs.merge(command)
+      answer    << dscl( user_attrs, dir_info )
+
       return answer
     end
 
@@ -269,10 +283,20 @@ module OpenDirectoryUtils
     # dscl . -delete /Users/yourUserName
     # https://tutorialforlinux.com/2011/09/15/delete-users-and-groups-from-terminal/
     def user_delete(attribs, dir_info)
-      check_critical_attribute( attribs, :shortname )
-      user_attrs = tidy_attribs(attribs)
+      attribs[:shortname] = user_shortname_alternatives(attribs)
 
-      "#{add_dscl_info( dir_info, attribs[:format] )} -delete /Users/#{user_attrs[:shortname]}"
+      check_critical_attribute( attribs, :shortname )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'delete', scope: 'Users'}
+      user_attrs  = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
+
+      # check_critical_attribute( attribs, :shortname )
+      # user_attrs = tidy_attribs(attribs)
+      #
+      # "#{add_dscl_info( dir_info, attribs[:format] )} -delete /Users/#{user_attrs[:shortname]}"
     end
 
     # https://images.apple.com/server/docs/Command_Line.pdf
