@@ -315,20 +315,29 @@ module OpenDirectoryUtils
     # https://images.apple.com/server/docs/Command_Line.pdf
     # https://serverfault.com/questions/20702/how-do-i-create-user-accounts-from-the-terminal-in-mac-os-x-10-5?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
     # https://superuser.com/questions/1154564/how-to-create-a-user-from-the-macos-command-line
-    def user_create_full(attribs_orig, dir_info)
-      attribs_orig[:shortname] = user_shortname_alternatives(attribs_orig)
+    def user_create_full(attribs, dir_info)
+      attribs[:shortname] = user_shortname_alternatives(attribs)
 
-      check_critical_attribute( attribs_orig, :shortname )
-      attribs_orig    = tidy_attribs(attribs_orig)
+      check_critical_attribute( attribs, :shortname )
+      attribs    = tidy_attribs(attribs).dup
 
       answer  = []
-      answer << user_create_min(attribs_orig, dir_info)
-      answer << user_set_shell(attribs_orig, dir_info)
-      answer << user_set_real_name(attribs_orig, dir_info)
-      answer << user_set_unique_id(attribs_orig, dir_info)
-      answer << user_set_primary_group_id(attribs_orig, dir_info)
-      answer << user_set_nfs_home_directory(attribs_orig, dir_info)
-      answer << user_set_email(attribs_orig, dir_info)
+      attribs[:value] = nil
+      answer << user_create_min(attribs, dir_info)
+      attribs[:value] = nil
+      answer << user_set_password(attribs, dir_info)
+      attribs[:value] = nil
+      answer << user_set_shell(attribs, dir_info)
+      attribs[:value] = nil
+      answer << user_set_real_name(attribs, dir_info)
+      attribs[:value] = nil
+      answer << user_set_unique_id(attribs, dir_info)
+      attribs[:value] = nil
+      answer << user_set_primary_group_id(attribs, dir_info)
+      attribs[:value] = nil
+      answer << user_set_nfs_home_directory(attribs, dir_info)
+      attribs[:value] = nil
+      answer << user_set_email(attribs, dir_info)
 
       return answer.flatten
     end

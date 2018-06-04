@@ -484,53 +484,52 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
     describe "user_create_full" do
       let(:correct) {[
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
+        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "*"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/bash"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "Someone Special"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UniqueID "9876543"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone PrimaryGroupID "1032"',
+        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone NFSHomeDirectory "/Volumes/Macintosh HD/Users/someone"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone mail "user@example.com"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone email "user@example.com"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone apple-user-mailattribute "user@example.com"',
-        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone NFSHomeDirectory "/Volumes/Macintosh HD/Users/someone"',
-        '/usr/bin/dscl /LDAPv3/127.0.0.1/ -auth someone "*"'
       ]}
-      it "with all attributes" do
+      it "with good attributes" do
         attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
                     real_name: 'Someone Special', uniqueid: '9876543'}
         answer  = user.send(:user_create_full, attribs, srv_info)
-        pp answer
         expect( answer ).to eq( correct )
       end
-      # it "with missing attributes (no username)" do
-      #   attribs = { gidnumber: '1032',
-      #               real_name: 'Someone Special', uniqueid: '9876543'}
-      #   expect { user.send(:user_create_full, attribs, srv_info) }.
-      #       to raise_error(ArgumentError, /shortname: 'nil' invalid/)
-      # end
-      # it "with missing attributes (no email)" do
-      #   attribs = { uid: 'someone', gidnumber: '1032',
-      #               real_name: 'Someone Special', uniqueid: '9876543'}
-      #   expect {  user.send(:user_create_full, attribs, srv_info) }.
-      #       to raise_error(ArgumentError, /value: 'nil' invalid, from :user_set_email/)
-      # end
-      # it "with missing attributes (no PrimaryGroupID)" do
-      #   attribs = { uid: 'someone', email: 'user@example.com',
-      #               real_name: 'Someone Special', uniqueid: '9876543'}
-      #   expect { user.send(:user_create_full, attribs, srv_info) }.
-      #       to raise_error(ArgumentError, /value: 'nil' invalid, from :user_set_primary_group_id/)
-      # end
-      # it "with missing attributes (no real name)" do
-      #   attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
-      #               uniqueid: '9876543'}
-      #   expect { user.send(:user_create_full, attribs, srv_info) }.
-      #       to raise_error(ArgumentError, /value: 'nil' invalid, from :user_set_real_name/)
-      # end
-      # it "with missing attributes (no uniqueid)" do
-      #   attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
-      #               real_name: 'Someone Special'}
-      #   expect { user.send(:user_create_full, attribs, srv_info) }.
-      #       to raise_error(ArgumentError, /value: 'nil' invalid, from :user_set_unique_id/)
-      # end
+      it "with missing attributes (no username)" do
+        attribs = { gidnumber: '1032',
+                    real_name: 'Someone Special', uniqueid: '9876543'}
+        expect { user.send(:user_create_full, attribs, srv_info) }.
+            to raise_error(ArgumentError, /shortname: 'nil' invalid/)
+      end
+      it "with missing attributes (no email)" do
+        attribs = { uid: 'someone', gidnumber: '1032',
+                    real_name: 'Someone Special', uniqueid: '9876543'}
+        expect {  user.send(:user_create_full, attribs, srv_info) }.
+            to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :email/)
+      end
+      it "with missing attributes (no PrimaryGroupID)" do
+        attribs = { uid: 'someone', email: 'user@example.com',
+                    real_name: 'Someone Special', uniqueid: '9876543'}
+        expect { user.send(:user_create_full, attribs, srv_info) }.
+            to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :group_id/)
+      end
+      it "with missing attributes (no real name)" do
+        attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
+                    uniqueid: '9876543'}
+        expect { user.send(:user_create_full, attribs, srv_info) }.
+            to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :real_name/)
+      end
+      it "with missing attributes (no uniqueid)" do
+        attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
+                    real_name: 'Someone Special'}
+        expect { user.send(:user_create_full, attribs, srv_info) }.
+            to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :unique_id/)
+      end
     end
 
 
