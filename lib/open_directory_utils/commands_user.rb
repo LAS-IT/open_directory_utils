@@ -48,6 +48,7 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:cn]
       attribs[:value]     = attribs[:value] || attribs[:realname]
       attribs[:value]     = attribs[:value] || attribs[:real_name]
+      attribs[:value]     = attribs[:value] || "#{attribs[:first_name]} #{attribs[:last_name]}"
 
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value, :real_name )
@@ -67,6 +68,7 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:cn]
       attribs[:value]     = attribs[:value] || attribs[:realname]
       attribs[:value]     = attribs[:value] || attribs[:real_name]
+      attribs[:value]     = attribs[:value] || "#{attribs[:first_name]} #{attribs[:last_name]}"
 
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value, :common_name )

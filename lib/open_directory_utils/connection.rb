@@ -62,9 +62,9 @@ module OpenDirectoryUtils
       if command.eql? :user_exists?
         errors  = false        # in this case not actually an error
         unless results.to_s.include?('eDSRecordNotFound')
-          results = true
+          results = [true]
         else
-          results = false
+          results = [false]
         end
       end
 

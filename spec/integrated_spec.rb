@@ -6,6 +6,10 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
   let( :existing_uid) { {uid: 'btihen'} }
   let( :existing_gid) { {gid: 'employee'} }
   let( :not_here_uid) { {uid: 'nobody'} }
+  let( :new_user_r_n) { {uid: 'od_util_test', real_name: "Od_Util TEST",
+                        uidnumber: 987654321, gidnumber: "1031", email: "user@example.com" } }
+  let( :new_user_fnl) { {uid: 'od_util_test', uidnumber: 987654321, gidnumber: "1031",
+                        first_name: "Od_Util", last_name: "TEST", email: "user@example.com" } }
 
   context "query od info" do
     describe "without uid info" do
@@ -28,19 +32,28 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
     describe "users_exists?" do
       it "answers true when user exists" do
         answer  = od.run(command: :user_exists?, params: existing_uid)
-        correct = {:success=>{:response=>true, :command=>:user_exists?, :attributes=>{:uid=>"btihen", :shortname=>"btihen"}}}
+        correct = {:success=>{:response=>[true], :command=>:user_exists?, :attributes=>{:uid=>"btihen", :shortname=>"btihen"}}}
         expect( answer ).to eq(correct)
+        expect( answer[:success][:response] ).to eq( [true] )
       end
       it "answers false when user does not exist" do
         answer  = od.run(command: :user_exists?, params: not_here_uid)
-        correct = {:success=>{:response=>false, :command=>:user_exists?, :attributes=>{:uid=>"nobody", :shortname=>"nobody"}}}
+        correct = {:success=>{:response=>[false], :command=>:user_exists?, :attributes=>{:uid=>"nobody", :shortname=>"nobody"}}}
         expect( answer ).to eq(correct)
+        expect( answer[:success][:response] ).to eq( [false] )
       end
     end
 
-    describe "with invalid uid info" do
-      it "with internal space - get ERROR message"
+    describe "create new minimal od_test user" do
+      it "with username" do
+
+      end
     end
+    describe "delete od_test user" do
+      it "with username" do
+      end
+    end
+
   end
   context "modify/update user info" do
     describe "without uid info" do

@@ -53,31 +53,31 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
     end
 
     describe "user_set_real_name" do
-      it "user_set_real_name - value" do
+      it "with value" do
         attribs = {shortname: 'someone', value: "John Doe"}
         answer  = user.send(:user_set_real_name, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "John Doe"'
         expect( answer ).to eq( correct )
       end
-      it "user_set_real_name - real_name" do
+      it "with real_name" do
         attribs = {username: 'someone', real_name: "John Doe"}
         answer  = user.send(:user_set_real_name, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "John Doe"'
         expect( answer ).to eq( correct )
       end
-      it "user_set_real_name - realname" do
+      it "with realname" do
         attribs = {uid: 'someone', realname: "John Doe"}
         answer  = user.send(:user_set_real_name, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "John Doe"'
         expect( answer ).to eq( correct )
       end
-      it "user_set_real_name - value" do
-        attribs = {uid: 'someone', value: "John Doe"}
-        answer  = user.send(:user_set_real_name, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "John Doe"'
+      it "with first and lastname" do
+        attribs = {uid: 'someone', first_name: "John", last_name: "DOE"}
+        answer  = user.send(:user_set_common_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone cn "John DOE"'
         expect( answer ).to eq( correct )
       end
-      it "user_set_real_name - cn" do
+      it "with cn" do
         attribs = {uid: 'someone', cn: "John Doe"}
         answer  = user.send(:user_set_real_name, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "John Doe"'
@@ -85,31 +85,31 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
       end
     end
     describe "user_set_common_name" do
-      it "user_set_common_name - value" do
+      it "with value" do
         attribs = {shortname: 'someone', value: "John Doe"}
         answer  = user.send(:user_set_common_name, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone cn "John Doe"'
         expect( answer ).to eq( correct )
       end
-      it "user_set_common_name - real_name" do
+      it "with real_name" do
         attribs = {username: 'someone', real_name: "John Doe"}
         answer  = user.send(:user_set_common_name, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone cn "John Doe"'
         expect( answer ).to eq( correct )
       end
-      it "user_set_common_name - realname" do
+      it "with realname" do
         attribs = {uid: 'someone', realname: "John Doe"}
         answer  = user.send(:user_set_common_name, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone cn "John Doe"'
         expect( answer ).to eq( correct )
       end
-      it "user_set_common_name - value" do
-        attribs = {uid: 'someone', value: "John Doe"}
+      it "with first and lastname" do
+        attribs = {uid: 'someone', first_name: "John", last_name: "DOE"}
         answer  = user.send(:user_set_common_name, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone cn "John Doe"'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone cn "John DOE"'
         expect( answer ).to eq( correct )
       end
-      it "user_set_common_name - cn" do
+      it "with cn" do
         attribs = {uid: 'someone', cn: "John Doe"}
         answer  = user.send(:user_set_common_name, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone cn "John Doe"'
@@ -486,7 +486,7 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "*"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/bash"',
-        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "Someone Special"',
+        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "Someone SPECIAL"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UniqueID "9876543"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone PrimaryGroupID "1032"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone NFSHomeDirectory "/Volumes/Macintosh HD/Users/someone"',
@@ -494,9 +494,15 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone email "user@example.com"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone apple-user-mailattribute "user@example.com"',
       ]}
-      it "with good attributes" do
+      it "with real_name attributes" do
         attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
-                    real_name: 'Someone Special', uniqueid: '9876543'}
+                    real_name: 'Someone SPECIAL', uniqueid: '9876543'}
+        answer  = user.send(:user_create_full, attribs, srv_info)
+        expect( answer ).to eq( correct )
+      end
+      it "with first & last name attributes" do
+        attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
+                    first_name: 'Someone', last_name: 'SPECIAL', uniqueid: '9876543'}
         answer  = user.send(:user_create_full, attribs, srv_info)
         expect( answer ).to eq( correct )
       end
@@ -522,7 +528,7 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
         attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
                     uniqueid: '9876543'}
         expect { user.send(:user_create_full, attribs, srv_info) }.
-            to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :real_name/)
+            to raise_error(ArgumentError, /value: '""' invalid, value_name: :real_name/)
       end
       it "with missing attributes (no uniqueid)" do
         attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
