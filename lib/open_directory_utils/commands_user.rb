@@ -23,7 +23,6 @@ module OpenDirectoryUtils
     # search od user  -- dscl . -search /Users RealName "Andrew Garrett"
     # return as xml   -- dscl -plist . -search /Users RealName "Andrew Garrett"
     def user_get_info(attribs, dir_info)
-      pp attribs
       attribs[:shortname] = user_shortname_alternatives(attribs)
 
       check_critical_attribute( attribs, :shortname )

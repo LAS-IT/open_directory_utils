@@ -532,7 +532,7 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
       end
     end
 
-    describe "user_add_to_group" do
+    xdescribe "user_add_to_group" do
       it "group student" do
         attribs = {uid: 'someone', group_name: 'student'}
         answer  = user.send(:user_add_to_group, attribs, srv_info)
@@ -541,7 +541,7 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
       end
     end
 
-    describe "user_remove_from_group" do
+    xdescribe "user_remove_from_group" do
       it "user_remove_from_group" do
         attribs = {uid: 'someone', group_name: 'student'}
         answer  = user.send(:user_remove_from_group, attribs, srv_info)

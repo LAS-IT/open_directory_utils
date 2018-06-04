@@ -55,30 +55,26 @@ module OpenDirectoryUtils
       return output
     end
 
-    def format_results(results, command, attributes)
-      # any Errors?
-      # https://makandracards.com/makandra/31141-ruby-counting-occurrences-of-an-item-in-an-array-enumerable
-      error_count = results.count { |r| r.include? 'Error' }
+    def format_results(results, command, params)
+      errors = true         if results.to_s.include? 'Error'
+      errors = false    unless results.to_s.include? 'Error'
 
-      if command.eql? :users_exists?
-        # user found
-        return { success:
-                  {response: true, command: command, attributes: attributes}
-                }  if error_count.eql? 0
-        # user not found
-        return { success:
-                  {response: false, command: command, attributes: attributes}
-                }  if results.first.include? 'eDSRecordNotFound'
+      if command.eql? :user_exists?
+        errors  = false        # in this case not actually an error
+        unless results.to_s.include?('eDSRecordNotFound')
+          results = true
+        else
+          results = false
+        end
       end
 
-      # return success response - when no errors found
-      return { success:
-                {response: results, command: command, attributes: attributes}
-              }  if error_count.eql? 0
-      # return error response - when errors found
-      return { error:
-                {response: results, command: command, attributes: attributes}
-              }  if error_count >= 0
+      ans = case errors
+      when false
+        {success:{response: results, command: command, attributes: params}}
+      else
+        {error:  {response: results, command: command, attributes: params}}
+      end
+      return ans
     end
 
     def defaults
