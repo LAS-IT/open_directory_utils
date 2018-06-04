@@ -29,6 +29,18 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
         expect( answer ).to eq( correct )
       end
+      it "with extra value" do
+        attribs = {uid: 'someone', value: 'nothing'}
+        answer  = user.send(:user_get_info, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+        expect( answer ).to eq( correct )
+      end
+      it "with extra attribute" do
+        attribs = {uid: 'someone', attribute: 'nothing'}
+        answer  = user.send(:user_get_info, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+        expect( answer ).to eq( correct )
+      end
     end
 
     describe "user_get_info" do
@@ -285,6 +297,12 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "A-Big-Secret"'
         expect( answer ).to eq( correct )
       end
+      it "using no value" do
+        attribs = {uid: 'someone'}
+        answer  = user.send(:user_set_password, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "*"'
+        expect( answer ).to eq( correct )
+      end
     end
     describe "user_verify_password" do
       it "using password" do
@@ -390,7 +408,7 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
         expect( answer ).to eq( correct )
       end
     end
-    
+
     describe "user_delete" do
       it "with uid" do
         attribs = {uid: 'someone'}
@@ -410,21 +428,112 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Users/someone'
         expect( answer ).to eq( correct )
       end
+      it "with extra attribute" do
+        attribs = {shortname: 'someone', attribute: 'nothing'}
+        answer  = user.send(:user_delete, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Users/someone'
+        expect( answer ).to eq( correct )
+      end
+      it "with extra value" do
+        attribs = {shortname: 'someone', value: 'nothing'}
+        answer  = user.send(:user_delete, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Users/someone'
+        expect( answer ).to eq( correct )
+      end
     end
-    #   xit "user_create" do
-    #     attribs = {uid: 'someone', email: 'user@example.com'}
-    #     answer  = user.send(:user_set_email, attribs, srv_info)
-    #     pp answer
-    #     correct = [
-    #       '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
-    #       '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/zsh"',
-    #       '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone mail "user@example.com"',
-    #       '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone email "user@example.com"',
-    #       '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone apple-user-mailattribute "user@example.com"'
-    #     ]
-    #     expect( answer ).to eq( correct )
-    #   end
-    #
+
+    describe "user_create_min" do
+      it "with needed uid" do
+        attribs = { uid: 'someone'}
+        answer  = user.send(:user_create_min, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone'
+        expect( answer ).to eq( correct )
+      end
+      it "with needed username" do
+        attribs = { username: 'someone'}
+        answer  = user.send(:user_create_min, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone'
+        expect( answer ).to eq( correct )
+      end
+      it "with needed shortname" do
+        attribs = { shortname: 'someone'}
+        answer  = user.send(:user_create_min, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone'
+        expect( answer ).to eq( correct )
+      end
+      it "with all attributes" do
+        attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
+                    real_name: 'Someone Special', uniqueid: '9876543'}
+        answer  = user.send(:user_create_min, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone'
+        expect( answer ).to eq( correct )
+      end
+      it "with extra attributes - no uid" do
+        attribs = { email: 'user@example.com', gidnumber: '1032',
+                    real_name: 'Someone Special', uniqueid: '9876543'}
+        expect { user.send(:user_create_min, attribs, srv_info) }.
+            to raise_error(ArgumentError, /shortname: 'nil' invalid/)
+      end
+      it "with missing shortname" do
+        attribs = { }
+        expect { user.send(:user_create_min, attribs, srv_info) }.
+            to raise_error(ArgumentError, /shortname: 'nil' invalid/)
+      end
+    end
+
+    describe "user_create_full" do
+      let(:correct) {[
+        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
+        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/bash"',
+        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "Someone Special"',
+        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UniqueID "9876543"',
+        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone PrimaryGroupID "1032"',
+        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone mail "user@example.com"',
+        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone email "user@example.com"',
+        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone apple-user-mailattribute "user@example.com"',
+        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone NFSHomeDirectory "/Volumes/Macintosh HD/Users/someone"',
+        '/usr/bin/dscl /LDAPv3/127.0.0.1/ -auth someone "*"'
+      ]}
+      it "with all attributes" do
+        attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
+                    real_name: 'Someone Special', uniqueid: '9876543'}
+        answer  = user.send(:user_create_full, attribs, srv_info)
+        pp answer
+        expect( answer ).to eq( correct )
+      end
+      # it "with missing attributes (no username)" do
+      #   attribs = { gidnumber: '1032',
+      #               real_name: 'Someone Special', uniqueid: '9876543'}
+      #   expect { user.send(:user_create_full, attribs, srv_info) }.
+      #       to raise_error(ArgumentError, /shortname: 'nil' invalid/)
+      # end
+      # it "with missing attributes (no email)" do
+      #   attribs = { uid: 'someone', gidnumber: '1032',
+      #               real_name: 'Someone Special', uniqueid: '9876543'}
+      #   expect {  user.send(:user_create_full, attribs, srv_info) }.
+      #       to raise_error(ArgumentError, /value: 'nil' invalid, from :user_set_email/)
+      # end
+      # it "with missing attributes (no PrimaryGroupID)" do
+      #   attribs = { uid: 'someone', email: 'user@example.com',
+      #               real_name: 'Someone Special', uniqueid: '9876543'}
+      #   expect { user.send(:user_create_full, attribs, srv_info) }.
+      #       to raise_error(ArgumentError, /value: 'nil' invalid, from :user_set_primary_group_id/)
+      # end
+      # it "with missing attributes (no real name)" do
+      #   attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
+      #               uniqueid: '9876543'}
+      #   expect { user.send(:user_create_full, attribs, srv_info) }.
+      #       to raise_error(ArgumentError, /value: 'nil' invalid, from :user_set_real_name/)
+      # end
+      # it "with missing attributes (no uniqueid)" do
+      #   attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
+      #               real_name: 'Someone Special'}
+      #   expect { user.send(:user_create_full, attribs, srv_info) }.
+      #       to raise_error(ArgumentError, /value: 'nil' invalid, from :user_set_unique_id/)
+      # end
+    end
+
+
     #   it "user_add_to_group" do
     #     attribs = {uid: 'someone', group_name: 'student'}
     #     answer  = user.send(:user_add_to_group, attribs, srv_info)

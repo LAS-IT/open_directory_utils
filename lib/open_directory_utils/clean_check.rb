@@ -8,14 +8,16 @@ module OpenDirectoryUtils
       raise ArgumentError unless block.call
     end
 
-    def check_critical_attribute(attrib, value)
-      assert{not attrib[value].nil?}
-      attrib[value] = attrib[value].to_s.strip
-      assert{not attrib[value].eql? ''}
-      assert{not attrib[value].include? ' '} if value.eql? :scope
-      assert{not attrib[value].include? ' '} if value.eql? :shortname
+    def check_critical_attribute(attrib, key, value=nil)
+      assert{not attrib[key].nil?}
+      attrib[key] = attrib[key].to_s.strip
+      assert{not attrib[key].eql? ''}
+      assert{not attrib[key].include? ' '} if key.eql? :scope
+      assert{not attrib[key].include? ' '} if [:uid, :username, :shortname].include? key
       rescue NoMethodError, ArgumentError => error
-        raise ArgumentError, "#{value} invalid"
+        message  = "#{key}: '#{attrib[key].inspect}' invalid"
+        message += ", value_name: :#{value}"  unless value.nil?
+        raise ArgumentError, message
     end
 
     def tidy_attribs(attribs)

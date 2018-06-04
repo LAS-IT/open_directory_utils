@@ -21,20 +21,20 @@ RSpec.describe OpenDirectoryUtils::Pwpolicy do
                       pwpol: '/usr/bin/pwpolicy'} }
 
     describe ":check_shortname check errors with bad shortname attribute" do
-      it "shortname = nil" do
+      it "shortname is nil" do
         attribs  = {shortname: nil}
         expect { policy.send(:pwpolicy, attribs, srv_info) }.
-            to raise_error(ArgumentError, /shortname invalid/)
+            to raise_error(ArgumentError, /shortname: 'nil' invalid/)
       end
-      it "shortname = '' (blank)" do
+      it "shortname is '' (blank)" do
         attribs = {shortname: ''}
         expect { policy.send(:pwpolicy, attribs, srv_info) }.
-            to raise_error(ArgumentError, /shortname invalid/)
+            to raise_error(ArgumentError, /shortname: '""' invalid/)
       end
       it "shortname = 'with space' (no space allowed)" do
         attribs = {shortname: 'with space'}
         expect { policy.send(:pwpolicy, attribs, srv_info) }.
-            to raise_error(ArgumentError, /shortname invalid/)
+            to raise_error(ArgumentError, /shortname: '"with space"' invalid/)
       end
     end
 

@@ -29,7 +29,7 @@ module OpenDirectoryUtils
       check_critical_attribute( attribs, :shortname )
       attribs    = tidy_attribs(attribs)
 
-      command    = {action: 'read', scope: 'Users'}
+      command    = {action: 'read', scope: 'Users', attribute: nil, value: nil}
       user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
@@ -51,7 +51,7 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:real_name]
 
       check_critical_attribute( attribs, :shortname )
-      check_critical_attribute( attribs, :value )
+      check_critical_attribute( attribs, :value, :real_name )
       attribs    = tidy_attribs(attribs)
 
       command    = {action: 'create', scope: 'Users', attribute: 'RealName'}
@@ -70,7 +70,7 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:real_name]
 
       check_critical_attribute( attribs, :shortname )
-      check_critical_attribute( attribs, :value )
+      check_critical_attribute( attribs, :value, :common_name )
       attribs    = tidy_attribs(attribs)
 
       command    = {action: 'create', scope: 'Users', attribute: 'cn'}
@@ -88,7 +88,7 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:uidnumber]
 
       check_critical_attribute( attribs, :shortname )
-      check_critical_attribute( attribs, :value )
+      check_critical_attribute( attribs, :value, :unique_id )
       attribs    = tidy_attribs(attribs)
 
       command    = {action: 'create', scope: 'Users', attribute: 'UniqueID'}
@@ -105,7 +105,7 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:uidnumber]
 
       check_critical_attribute( attribs, :shortname )
-      check_critical_attribute( attribs, :value )
+      check_critical_attribute( attribs, :value, :unique_id )
       attribs    = tidy_attribs(attribs)
 
       command    = {action: 'create', scope: 'Users', attribute: 'uidnumber'}
@@ -122,7 +122,7 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:primary_group_id]
 
       check_critical_attribute( attribs, :shortname )
-      check_critical_attribute( attribs, :value )
+      check_critical_attribute( attribs, :value, :group_id )
       attribs    = tidy_attribs(attribs)
 
       command    = {action: 'create', scope: 'Users', attribute: 'PrimaryGroupID'}
@@ -135,10 +135,11 @@ module OpenDirectoryUtils
       attribs[:shortname] = user_shortname_alternatives(attribs)
       attribs[:value]     = attribs[:value] || attribs[:group_id]
       attribs[:value]     = attribs[:value] || attribs[:gidnumber]
+      attribs[:value]     = attribs[:value] || attribs[:group_number]
       attribs[:value]     = attribs[:value] || attribs[:primary_group_id]
 
       check_critical_attribute( attribs, :shortname )
-      check_critical_attribute( attribs, :value )
+      check_critical_attribute( attribs, :value, :group_id )
       attribs    = tidy_attribs(attribs)
 
       command    = {action: 'create', scope: 'Users', attribute: 'gidnumber'}
@@ -155,7 +156,7 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || '/Volumes/Macintosh HD/Users/someone'
 
       check_critical_attribute( attribs, :shortname )
-      check_critical_attribute( attribs, :value )
+      check_critical_attribute( attribs, :value, :home_directory )
       attribs    = tidy_attribs(attribs)
 
       command    = {action: 'create', scope: 'Users', attribute: 'NFSHomeDirectory'}
@@ -174,7 +175,7 @@ module OpenDirectoryUtils
       attribs = attribs.merge(command)
 
       check_critical_attribute( attribs, :shortname )
-      check_critical_attribute( attribs, :value )
+      check_critical_attribute( attribs, :value, :home_directory )
       user_attrs = tidy_attribs(attribs)
 
       dscl( user_attrs, dir_info )
@@ -184,11 +185,13 @@ module OpenDirectoryUtils
     # /usr/bin/dscl -plist -u diradmin -P #{adminpw} /LDAPv3/127.0.0.1/ -passwd /Users/#{shortname} "#{passwd}"
     def user_set_password(attribs, dir_info)
       attribs[:shortname] = user_shortname_alternatives(attribs)
+
       attribs[:value]     = attribs[:value] || attribs[:password]
       attribs[:value]     = attribs[:value] || attribs[:passwd]
+      attribs[:value]     = attribs[:value] || '*'
 
       check_critical_attribute( attribs, :shortname )
-      check_critical_attribute( attribs, :value )
+      check_critical_attribute( attribs, :value, :password )
       attribs    = tidy_attribs(attribs)
 
       command    = {action: 'passwd', scope: 'Users'}
@@ -203,7 +206,7 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:passwd]
 
       check_critical_attribute( attribs, :shortname )
-      check_critical_attribute( attribs, :value )
+      check_critical_attribute( attribs, :value, :password )
       attribs    = tidy_attribs(attribs)
 
       command    = {action: 'auth', scope: 'Users'}
@@ -220,7 +223,7 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || '/bin/bash'
 
       check_critical_attribute( attribs, :shortname )
-      check_critical_attribute( attribs, :value )
+      check_critical_attribute( attribs, :value, :shell )
       attribs    = tidy_attribs(attribs)
 
       command    = {action: 'create', scope: 'Users', attribute: 'UserShell'}
@@ -236,7 +239,7 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || '/bin/bash'
 
       check_critical_attribute( attribs, :shortname )
-      check_critical_attribute( attribs, :value )
+      check_critical_attribute( attribs, :value, :shell )
       attribs    = tidy_attribs(attribs)
 
       command    = {action: 'create', scope: 'Users', attribute: 'loginShell'}
@@ -259,7 +262,7 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value] || attribs[:mail]
 
       check_critical_attribute( attribs, :shortname )
-      check_critical_attribute( attribs, :value )
+      check_critical_attribute( attribs, :value, :email )
       attribs    = tidy_attribs(attribs)
 
       answer     = []
@@ -288,51 +291,48 @@ module OpenDirectoryUtils
       check_critical_attribute( attribs, :shortname )
       attribs    = tidy_attribs(attribs)
 
-      command    = {action: 'delete', scope: 'Users'}
-      user_attrs  = attribs.merge(command)
+      command    = {action: 'delete', scope: 'Users', value: nil, attribute: nil}
+      user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
-
-      # check_critical_attribute( attribs, :shortname )
-      # user_attrs = tidy_attribs(attribs)
-      #
-      # "#{add_dscl_info( dir_info, attribs[:format] )} -delete /Users/#{user_attrs[:shortname]}"
     end
 
     # https://images.apple.com/server/docs/Command_Line.pdf
     # https://serverfault.com/questions/20702/how-do-i-create-user-accounts-from-the-terminal-in-mac-os-x-10-5?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
     # https://superuser.com/questions/1154564/how-to-create-a-user-from-the-macos-command-line
-    def user_create(attribs, dir_info)
+    def user_create_min(attribs, dir_info)
+      attribs[:shortname] = user_shortname_alternatives(attribs)
+
       check_critical_attribute( attribs, :shortname )
-      user_attrs = tidy_attribs(attribs)
+      attribs    = tidy_attribs(attribs)
 
-      # merge od names info with ldap names (just incase)
-      user_attrs[:unique_id] = user_attrs[:unique_id] || user_attrs[:shortnamenumber]
-      user_attrs[:real_name] = user_attrs[:real_name] ||
-                ("#{user_attrs[:first_name]} #{user_attrs[:last_name]}")
-      user_attrs[:primary_group_id] = user_attrs[:primary_group_id] ||
-                user_attrs[:gidnumber]
-      user_attrs[:nfs_home_directory] =
-                user_attrs[:nfs_home_directory] || user_attrs[:home_directory]
+      command    = {action: 'create', scope: 'Users', value: nil, attribute: nil}
+      user_attrs = attribs.merge(command)
 
-      # There are a few steps to create a user account from the command line.
-      [ # sudo dscl . -create /Users/someuser
-        "#{add_dscl_info( dir_info )} -create /Users/#{user_attrs[:shortname]}",
-        # sudo dscl . -create /Users/someuser UserShell /bin/bash
-        "#{user_od_set_shell(attribs, dir_info)}",
-        # sudo dscl . -create /Users/someuser RealName "Lucius Q. User"
-        "#{user_od_set_real_name(attribs, dir_info)}",
-        # sudo dscl . -create /Users/someuser UniqueID "1010"  #use something not already in use
-        "#{user_od_set_unique_id(attribs, dir_info)}",
-        # sudo dscl . -create /Users/someuser PrimaryGroupID 80
-        "#{user_od_set_primary_group_id(attribs, dir_info)}",
-        # sudo dscl . -create /Users/someuser NFSHomeDirectory /Users/soemuser
-        "#{user_od_set_nfs_home_directory(attribs, dir_info)}",
-        # SET PASSWOR use:
-        # sudo dscl . -passwd /Users/someuser password
-        "#{user_set_password(attribs, dir_info)}",
-      ]
+      dscl( user_attrs, dir_info )
     end
+
+    # https://images.apple.com/server/docs/Command_Line.pdf
+    # https://serverfault.com/questions/20702/how-do-i-create-user-accounts-from-the-terminal-in-mac-os-x-10-5?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+    # https://superuser.com/questions/1154564/how-to-create-a-user-from-the-macos-command-line
+    def user_create_full(attribs_orig, dir_info)
+      attribs_orig[:shortname] = user_shortname_alternatives(attribs_orig)
+
+      check_critical_attribute( attribs_orig, :shortname )
+      attribs_orig    = tidy_attribs(attribs_orig)
+
+      answer  = []
+      answer << user_create_min(attribs_orig, dir_info)
+      answer << user_set_shell(attribs_orig, dir_info)
+      answer << user_set_real_name(attribs_orig, dir_info)
+      answer << user_set_unique_id(attribs_orig, dir_info)
+      answer << user_set_primary_group_id(attribs_orig, dir_info)
+      answer << user_set_nfs_home_directory(attribs_orig, dir_info)
+      answer << user_set_email(attribs_orig, dir_info)
+
+      return answer.flatten
+    end
+
 
     # ADD USER TO GROUPS
     ####################
@@ -345,7 +345,7 @@ module OpenDirectoryUtils
     # add 1st user   -- dscl . -create /Groups/ladmins GroupMembership localadmin
     # add more users -- dscl . -append /Groups/ladmins GroupMembership 2ndlocaladmin
     def user_add_to_group(attribs, dir_info)
-      check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :shortname, :user_add_to_group )
       user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )
@@ -356,7 +356,7 @@ module OpenDirectoryUtils
     end
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -delete /Groups/$VALUE GroupMembership $shortname_USERNAME
     def user_remove_from_group(attribs, dir_info)
-      check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :shortname, :user_remove_from_group )
       user_attrs = tidy_attribs(attribs)
 
       answer  = add_dscl_info( dir_info, attribs[:format] )

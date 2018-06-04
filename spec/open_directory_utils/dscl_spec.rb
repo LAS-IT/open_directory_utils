@@ -24,22 +24,22 @@ RSpec.describe OpenDirectoryUtils::Dscl do
       it "empty hash" do
         attribs  = {}
         expect { dscl.send(:dscl, attribs, srv_info) }.
-            to raise_error(ArgumentError, /shortname invalid/)
+            to raise_error(ArgumentError, /shortname: 'nil' invalid/)
       end
       it "nil" do
         attribs  = {shortname: nil}
         expect { dscl.send(:dscl, attribs, srv_info) }.
-            to raise_error(ArgumentError, /shortname invalid/)
+            to raise_error(ArgumentError, /shortname: 'nil' invalid/)
       end
       it "'' (blank)" do
         attribs = {shortname: ''}
         expect { dscl.send(:dscl, attribs, srv_info) }.
-            to raise_error(ArgumentError, /shortname invalid/)
+            to raise_error(ArgumentError, /shortname: '""' invalid/)
       end
       it "'with space' (no space allowed)" do
         attribs = {shortname: 'with space'}
         expect { dscl.send(:dscl, attribs, srv_info) }.
-            to raise_error(ArgumentError, /shortname invalid/)
+            to raise_error(ArgumentError, /shortname: '"with space"' invalid/)
       end
     end
 
@@ -47,7 +47,7 @@ RSpec.describe OpenDirectoryUtils::Dscl do
       it "nil" do
         attribs  = {shortname: 'valid', action: nil, scope: 'Users'}
         expect { dscl.send(:dscl, attribs, srv_info) }.
-            to raise_error(ArgumentError, /action invalid/)
+            to raise_error(ArgumentError, /action: 'nil' invalid/)
       end
     end
 
@@ -55,7 +55,7 @@ RSpec.describe OpenDirectoryUtils::Dscl do
       it "'with space' (no space allowed)" do
         attribs  = {shortname: 'valid', action: 'valid', scope: 'with space'}
         expect { dscl.send(:dscl, attribs, srv_info) }.
-            to raise_error(ArgumentError, /scope invalid/)
+            to raise_error(ArgumentError, /scope: '"with space"' invalid/)
       end
     end
 

@@ -12,20 +12,30 @@ RSpec.describe OpenDirectoryUtils::CleanCheck do
                       pwpol: '/usr/bin/pwpolicy'} }
 
     describe ":check_uid check errors with bad uid attribute" do
-      it "uid = nil" do
+      it "uid is nil" do
         attribs  = {uid: nil}
         expect { clean.send(:check_critical_attribute, attribs, :uid) }.
-            to raise_error(ArgumentError, /uid invalid/)
+            to raise_error(ArgumentError, /uid: 'nil' invalid/)
       end
-      it "uid = '' (blank)" do
+      it "uid is '' (blank)" do
         attribs = {uid: ''}
         expect { clean.send(:check_critical_attribute, attribs, :uid) }.
-            to raise_error(ArgumentError, /uid invalid/)
+            to raise_error(ArgumentError, /uid: '""' invalid/)
       end
-      it "uid = 'with space' (no space allowed)" do
+      it "uid is 'with space' (no space allowed)" do
         attribs = {uid: 'with space'}
         expect { clean.send(:check_critical_attribute, attribs, :uid) }.
-            to raise_error(ArgumentError, /uid invalid/)
+            to raise_error(ArgumentError, /uid: '"with space"' invalid/)
+      end
+      it "username is 'with space' (no space allowed)" do
+        attribs = {username: 'with space'}
+        expect { clean.send(:check_critical_attribute, attribs, :username) }.
+            to raise_error(ArgumentError, /username: '"with space"' invalid/)
+      end
+      it "shortname 'with space' (no space allowed)" do
+        attribs = {shortname: 'with space'}
+        expect { clean.send(:check_critical_attribute, attribs, :shortname) }.
+            to raise_error(ArgumentError, /shortname: '"with space"' invalid/)
       end
     end
 
