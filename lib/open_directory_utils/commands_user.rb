@@ -11,10 +11,9 @@ module OpenDirectoryUtils
     include OpenDirectoryUtils::CleanCheck
 
     def user_shortname_alternatives(attribs)
-      shortname = attribs[:shortname]
-      shortname = shortname || attribs[:username]
-      shortname = shortname || attribs[:uid]
-      return shortname
+      attribs[:shortname] = attribs[:shortname] || attribs[:username]
+      attribs[:shortname] = attribs[:shortname] || attribs[:uid]
+      return attribs[:shortname]
     end
 
     # GET INFO
@@ -24,6 +23,7 @@ module OpenDirectoryUtils
     # search od user  -- dscl . -search /Users RealName "Andrew Garrett"
     # return as xml   -- dscl -plist . -search /Users RealName "Andrew Garrett"
     def user_get_info(attribs, dir_info)
+      pp attribs
       attribs[:shortname] = user_shortname_alternatives(attribs)
 
       check_critical_attribute( attribs, :shortname )
@@ -342,7 +342,6 @@ module OpenDirectoryUtils
       return answer.flatten
     end
 
-
     # ADD USER TO GROUPS
     ####################
     # http://krypted.com/mac-os-x/create-groups-using-dscl/
@@ -376,17 +375,17 @@ module OpenDirectoryUtils
     end
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME givenName "$VALUE"
-    def user_ldap_set_first_name
+    def user_set_first_name
     end
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME sn "$VALUE"
-    def user_ldap_set_last_name
+    def user_set_last_name
     end
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME NameSuffix "$VALUE"
     def user_set_name_suffix
     end
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-namesuffix "$VALUE"
-    def user_ldap_set_name_suffix
+    def user_set_apple_name_suffix
     end
 
     # 1st keyword    -- /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-keyword "$VALUE"

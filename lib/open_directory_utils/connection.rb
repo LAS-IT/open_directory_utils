@@ -12,7 +12,7 @@ module OpenDirectoryUtils
     include OpenDirectoryUtils::Dscl
     include OpenDirectoryUtils::Pwpolicy
     include OpenDirectoryUtils::CommandsUser
-    include OpenDirectoryUtils::CommandsGroup 
+    include OpenDirectoryUtils::CommandsGroup
 
     def initialize(params={})
       config = defaults.merge(params)
@@ -32,13 +32,13 @@ module OpenDirectoryUtils
                                                         srv_info[:username].empty?
     end
 
-    def run(command:, attributes:, formatting: nil)
+    def run(command:, params:, formatting: nil)
       answer = {}
-      ssh_cmd = send(command, attributes, dir_info)
+      ssh_cmd = send(command, params, dir_info)
       results = send_cmds_to_od_server(ssh_cmd)
-      format_results(results, command, attributes)
+      format_results(results, command, params)
       rescue ArgumentError, NoMethodError => error
-        answer[:error]   =  "#{error.message} -- command: :#{command} with attribs: #{attributes}"
+        answer[:error]   =  "#{error.message} -- command: :#{command} with attribs: #{params}"
     end
 
     private

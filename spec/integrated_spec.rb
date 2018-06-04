@@ -12,16 +12,16 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
       it "o"
     end
 
-    describe "group_get_info" do
+    describe "user_get_info" do
       it "with existing user" do
-        answer  = od.run(command: :group_get_info, attributes: existing_uid)
+        answer  = od.run(command: :user_get_info, params: existing_uid)
         pp answer
 
         correct = "email: #{existing_uid[:uid]}"
         expect( answer[:success][:response].first ).to match( correct )
       end
       it "with non-existing user" do
-        answer  = od.run(command: :group_get_info, attributes: not_here_uid)
+        answer  = od.run(command: :user_get_info, params: not_here_uid)
         pp answer
 
         correct = "eDSRecordNotFound"
