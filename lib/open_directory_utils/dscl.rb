@@ -13,7 +13,7 @@ module OpenDirectoryUtils
     # search od user  -- dscl . -search /Users RealName "Andrew Garrett"
     # return as xml   -- dscl -plist . -search /Users RealName "Andrew Garrett"
     def dscl(attribs, dir_info)
-      check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :record_name )
       check_critical_attribute( attribs, :action )
       check_critical_attribute( attribs, :scope )
       tidy_attribs = tidy_attribs(attribs)
@@ -38,8 +38,8 @@ module OpenDirectoryUtils
       ans += " #{dir_info[:data_path]}"
 
       ans += %Q[ -#{attribs[:action]}]
-      ans += %Q[ #{attribs[:shortname]}]           if attribs[:action].eql? 'auth'
-      ans += %Q[ /#{attribs[:scope]}/#{attribs[:shortname]}] unless
+      ans += %Q[ #{attribs[:record_name]}]         if attribs[:action].eql? 'auth'
+      ans += %Q[ /#{attribs[:scope]}/#{attribs[:record_name]}] unless
                                                       attribs[:action].eql? 'auth'
       ans += %Q[ #{attribs[:attribute]}]       unless attribs[:attribute].nil? or
                                                       attribs[:attribute].empty?

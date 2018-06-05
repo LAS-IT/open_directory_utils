@@ -10,19 +10,19 @@ module OpenDirectoryUtils
     include OpenDirectoryUtils::Dscl
     include OpenDirectoryUtils::CleanCheck
 
-    def group_shortname_alternatives(attribs)
-      attribs[:shortname] = attribs[:shortname] || attribs[:record_name]
-      attribs[:shortname] = attribs[:shortname] || attribs[:groupname]
-      attribs[:shortname] = attribs[:shortname] || attribs[:gid]
-      attribs[:shortname] = attribs[:shortname] || attribs[:cn]
+    def group_record_name_alternatives(attribs)
+      attribs[:record_name] = attribs[:record_name] || attribs[:record_name]
+      attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
+      attribs[:record_name] = attribs[:record_name] || attribs[:gid]
+      attribs[:record_name] = attribs[:record_name] || attribs[:cn]
       return attribs
     end
 
     # dscl . read /Groups/ladmins
     def group_get_info(attribs, dir_info)
-      attribs = group_shortname_alternatives(attribs)
+      attribs = group_record_name_alternatives(attribs)
 
-      check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :record_name )
 
       command = {action: 'read', scope: 'Groups', value: nil}
       user_attrs = attribs.merge(command)
@@ -38,13 +38,13 @@ module OpenDirectoryUtils
     # add 1st user   -- dscl . create /Groups/ladmins GroupMembership localadmin
     # add more users -- dscl . append /Groups/ladmins GroupMembership 2ndlocaladmin
     def group_add_user(attribs, dir_info)
-      attribs = group_shortname_alternatives(attribs)
+      attribs = group_record_name_alternatives(attribs)
 
       # value <- is username
       attribs[:value]     = attribs[:value] || attribs[:username]
       attribs[:value]     = attribs[:value] || attribs[:uid]
 
-      check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :record_name )
       check_critical_attribute( attribs, :value, :username )
 
       # Will assume we are not adding the first user!
@@ -58,13 +58,13 @@ module OpenDirectoryUtils
     # # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -delete /Groups/$SHORTNAME GroupMembership $VALUE
     # # dseditgroup -o edit -d $Username -t user $GroupName
     def group_remove_user(attribs, dir_info)
-      attribs = group_shortname_alternatives(attribs)
+      attribs = group_record_name_alternatives(attribs)
 
       # value <- is username
       attribs[:value]     = attribs[:value] || attribs[:username]
       attribs[:value]     = attribs[:value] || attribs[:uid]
 
-      check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :record_name )
       check_critical_attribute( attribs, :value, :username )
 
       command = { action: 'delete', scope: 'Groups',
@@ -77,9 +77,9 @@ module OpenDirectoryUtils
     # dscl . -delete /Groups/yourGroupName
     # https://tutorialforlinux.com/2011/09/15/delete-users-and-groups-from-terminal/
     def group_delete(attribs, dir_info)
-      attribs = group_shortname_alternatives(attribs)
+      attribs = group_record_name_alternatives(attribs)
 
-      check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :record_name )
 
       command = {action: 'delete', scope: 'Groups', attribute: nil, value: nil}
       user_attrs = attribs.merge(command)
@@ -88,9 +88,9 @@ module OpenDirectoryUtils
     end
 
     def group_create_min(attribs, dir_info)
-      attribs = group_shortname_alternatives(attribs)
+      attribs = group_record_name_alternatives(attribs)
 
-      check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :record_name )
 
       command = {action: 'create', scope: 'Groups', attribute: nil, value: nil}
       user_attrs = attribs.merge(command)
@@ -99,13 +99,13 @@ module OpenDirectoryUtils
     end
 
     def group_set_primary_group_id(attribs, dir_info)
-      attribs = group_shortname_alternatives(attribs)
+      attribs = group_record_name_alternatives(attribs)
 
       attribs[:value] = attribs[:value] || attribs[:primary_group_id]
       attribs[:value] = attribs[:value] || attribs[:gidnumber]
       attribs[:value] = attribs[:value] || attribs[:group_id]
 
-      check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :record_name )
       check_critical_attribute( attribs, :value, :group_id )
 
       command = {action: 'create', scope: 'Groups', attribute: 'PrimaryGroupID'}
@@ -115,13 +115,13 @@ module OpenDirectoryUtils
     end
 
     def group_set_real_name(attribs, dir_info)
-      attribs = group_shortname_alternatives(attribs)
+      attribs = group_record_name_alternatives(attribs)
 
       attribs[:value] = attribs[:value] || attribs[:group_name]
       attribs[:value] = attribs[:value] || attribs[:real_name]
       attribs[:value] = attribs[:value] || attribs[:name]
 
-      check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :record_name )
       check_critical_attribute( attribs, :value, :real_name )
 
       command = {action: 'create', scope: 'Groups', attribute: 'RealName'}
@@ -135,13 +135,13 @@ module OpenDirectoryUtils
     #  "<main> attribute status: eDSNoStdMappingAvailable\n" +
     #  "<dscl_cmd> DS Error: -14140 (eDSNoStdMappingAvailable)"]
     def group_set_passwd(attribs, dir_info)
-      attribs = group_shortname_alternatives(attribs)
+      attribs = group_record_name_alternatives(attribs)
 
       attribs[:value] = attribs[:value] || attribs[:password]
       attribs[:value] = attribs[:value] || attribs[:passwd]
       attribs[:value] = attribs[:value] || '*'
 
-      check_critical_attribute( attribs, :shortname )
+      check_critical_attribute( attribs, :record_name )
       check_critical_attribute( attribs, :value, :password )
 
       command = {action: 'passwd', scope: 'Groups', attribute: nil}
@@ -157,7 +157,7 @@ module OpenDirectoryUtils
     # group ID number  -- dscl . -create /Groups/ladmins gid 400
     # group id number  -- dscl . -create /Groups/GROUP PrimaryGroupID GID
     def group_create_full(attribs, dir_info)
-      attribs = group_shortname_alternatives(attribs)
+      attribs = group_record_name_alternatives(attribs)
 
       answer          = []
       attribs[:value] = nil

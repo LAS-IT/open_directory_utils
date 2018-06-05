@@ -35,20 +35,20 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
       it "without username" do
         answer  = od.run(command: :group_get_info, params: {})
         expect( answer[:success] ).to be( nil )
-        expect( answer.to_s ).to match( "shortname: 'nil' invalid" )
+        expect( answer.to_s ).to match( "record_name: 'nil' invalid" )
       end
     end
 
     describe "group_exists?" do
       it "answers true when group group_exists" do
         answer  = od.run(command: :group_exists?, params: existing_gid)
-        correct = {:success=>{:response=>[true], :command=>:group_exists?, :attributes=>{:gid=>"employee", :shortname=>"employee"}}}
+        correct = {:success=>{:response=>[true], :command=>:group_exists?, :attributes=>{:gid=>"employee", :record_name=>"employee"}}}
         expect( answer ).to eq(correct)
         expect( answer[:success][:response] ).to eq( [true] )
       end
       it "answers false when group does not exist" do
         answer  = od.run(command: :group_exists?, params: not_here_gid)
-        correct = {:success=>{:response=>[false], :command=>:group_exists?, :attributes=>{:gid=>"nogroup", :shortname=>"nogroup"}}}
+        correct = {:success=>{:response=>[false], :command=>:group_exists?, :attributes=>{:gid=>"nogroup", :record_name=>"nogroup"}}}
         expect( answer ).to eq(correct)
         expect( answer[:success][:response] ).to eq( [false] )
       end
@@ -110,13 +110,13 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
     describe "users_exists?" do
       it "answers true when user exists" do
         answer  = od.run(command: :user_exists?, params: existing_uid)
-        correct = {:success=>{:response=>[true], :command=>:user_exists?, :attributes=>{:uid=>"btihen", :shortname=>"btihen"}}}
+        correct = {:success=>{:response=>[true], :command=>:user_exists?, :attributes=>{:uid=>"btihen", :record_name=>"btihen"}}}
         expect( answer ).to eq(correct)
         expect( answer[:success][:response] ).to eq( [true] )
       end
       it "answers false when user does not exist" do
         answer  = od.run(command: :user_exists?, params: not_here_uid)
-        correct = {:success=>{:response=>[false], :command=>:user_exists?, :attributes=>{:uid=>"nobody", :shortname=>"nobody"}}}
+        correct = {:success=>{:response=>[false], :command=>:user_exists?, :attributes=>{:uid=>"nobody", :record_name=>"nobody"}}}
         expect( answer ).to eq(correct)
         expect( answer[:success][:response] ).to eq( [false] )
       end
@@ -130,11 +130,22 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
         account = od.run(command: :user_exists?, params: new_user)
         expect( account[:success][:response] ).to eq( [false] )
         answer  = od.run(command: :user_create_min, params: new_user)
+        details = od.run(command: :user_info, params: new_user)
+        pp details
+        expect( answer[:success] ).not_to be(nil)
+        expect( answer.to_s ).to match('odusertest')
+      end
+      it "with full user" do
+        account = od.run(command: :user_exists?, params: new_user)
+        expect( account[:success][:response] ).to eq( [false] )
+        answer  = od.run(command: :user_create_full, params: new_user)
+        details = od.run(command: :user_info, params: new_user)
+        pp details
         expect( answer[:success] ).not_to be(nil)
         expect( answer.to_s ).to match('odusertest')
       end
     end
-    
+
     describe "delete od_test user" do
       before(:each) do
         od.run(command: :user_create_min, params: new_user)
@@ -150,15 +161,20 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
     end
   end
 
-  context "test users and groups together" do
-    describe "without uid info" do
-      it "a"
+  context "test user and group interactions" do
+    before(:each) do
+      od.run(command: :group_create_full, params: new_group)
+      od.run(command: :user_create_full, params: new_user)
     end
-    describe "with valid input params" do
-      it "b"
+    after(:each) do
+      od.run(command: :user_delete, params: new_user)
+      od.run(command: :group_delete, params: new_group)
     end
-    describe "with invalid input params" do
-      it "c"
+    it "can add a user to a group" do
+      
+    end
+    it "can remove a user from a group" do
+
     end
   end
 

@@ -33,9 +33,9 @@ RSpec.describe OpenDirectoryUtils::CleanCheck do
             to raise_error(ArgumentError, /username: '"with space"' invalid/)
       end
       it "shortname 'with space' (no space allowed)" do
-        attribs = {shortname: 'with space'}
-        expect { clean.send(:check_critical_attribute, attribs, :shortname) }.
-            to raise_error(ArgumentError, /shortname: '"with space"' invalid/)
+        attribs = {record_name: 'with space'}
+        expect { clean.send(:check_critical_attribute, attribs, :record_name) }.
+            to raise_error(ArgumentError, /record_name: '"with space"' invalid/)
       end
     end
 

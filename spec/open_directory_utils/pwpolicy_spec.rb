@@ -20,34 +20,34 @@ RSpec.describe OpenDirectoryUtils::Pwpolicy do
                       dscl: '/usr/bin/dscl',
                       pwpol: '/usr/bin/pwpolicy'} }
 
-    describe ":check_shortname check errors with bad shortname attribute" do
+    describe ":check_record_name check errors with bad shortname attribute" do
       it "shortname is nil" do
-        attribs  = {shortname: nil}
+        attribs  = {record_name: nil}
         expect { policy.send(:pwpolicy, attribs, srv_info) }.
-            to raise_error(ArgumentError, /shortname: 'nil' invalid/)
+            to raise_error(ArgumentError, /record_name: 'nil' invalid/)
       end
       it "shortname is '' (blank)" do
-        attribs = {shortname: ''}
+        attribs = {record_name: ''}
         expect { policy.send(:pwpolicy, attribs, srv_info) }.
-            to raise_error(ArgumentError, /shortname: '""' invalid/)
+            to raise_error(ArgumentError, /record_name: '""' invalid/)
       end
       it "shortname = 'with space' (no space allowed)" do
-        attribs = {shortname: 'with space'}
+        attribs = {record_name: 'with space'}
         expect { policy.send(:pwpolicy, attribs, srv_info) }.
-            to raise_error(ArgumentError, /shortname: '"with space"' invalid/)
+            to raise_error(ArgumentError, /record_name: '"with space"' invalid/)
       end
     end
 
     describe "pwpolicy self-built commands" do
       it "user_enable_login" do
-        attribs = {shortname: 'someone', attribute: 'enableuser', value: nil}
+        attribs = {record_name: 'someone', attribute: 'enableuser', value: nil}
         answer  = policy.send(:pwpolicy, attribs, srv_info)
         correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -enableuser'
         # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=0"'
         expect( answer ).to eq( correct )
       end
       it "user_disable_login" do
-        attribs = {shortname: 'someone', attribute: 'disableuser', value: nil}
+        attribs = {record_name: 'someone', attribute: 'disableuser', value: nil}
         answer  = policy.send(:pwpolicy, attribs, srv_info)
         correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser'
         # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=1"'
@@ -57,14 +57,14 @@ RSpec.describe OpenDirectoryUtils::Pwpolicy do
 
     describe "prebuild commands - enable / disable user" do
       it "user_enable_login" do
-        attribs = {shortname: 'someone'}
+        attribs = {record_name: 'someone'}
         answer  = policy.send(:user_enable_login, attribs, srv_info)
         correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -enableuser'
         # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=0"'
         expect( answer ).to eq( correct )
       end
       it "user_disable_login" do
-        attribs = {shortname: 'someone'}
+        attribs = {record_name: 'someone'}
         answer  = policy.send(:user_disable_login, attribs, srv_info)
         correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser'
         # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=1"'

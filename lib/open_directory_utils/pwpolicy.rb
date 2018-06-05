@@ -15,7 +15,7 @@ module OpenDirectoryUtils
                                                       dir_info[:diradmin].empty?
       ans += %Q[ -p "#{dir_info[:password]}"]  unless dir_info[:password].nil? or
                                                       dir_info[:password].empty?
-      ans += %Q[ -u #{params[:shortname]}]
+      ans += %Q[ -u #{params[:record_name]}]
       ans += %Q[ -#{params[:attribute]}]
       ans += %Q[ "#{params[:value]}"]          unless params[:value].nil? or
                                                       params[:value].empty?
@@ -23,7 +23,7 @@ module OpenDirectoryUtils
     end
 
     def pwpolicy(params, dir_info)
-      check_critical_attribute( params, :shortname )
+      check_critical_attribute( params, :record_name )
       cmd_params = tidy_attribs(params)
 
       build_pwpolicy_command( cmd_params, dir_info )
