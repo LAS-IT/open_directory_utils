@@ -29,10 +29,10 @@ module OpenDirectoryUtils
         ans += ' -plist'                           if attribs[:format].eql? 'plist' or
                                                       attribs[:format].eql? 'xml'
       end
-      ans += " -u #{dir_info[:diradmin]}"      unless dir_info[:diradmin].nil? or
-                                                      dir_info[:diradmin].empty? or
+      ans += " -u #{dir_info[:username]}"      unless dir_info[:username].nil? or
+                                                      dir_info[:username].empty? or
                                                       attribs[:action].eql? 'auth'
-      ans += %Q[ -P "#{dir_info[:password]}"]  unless dir_info[:password].nil? or
+      ans += %Q[ -P "#{dir_info[:password]}"]    unless dir_info[:password].nil? or
                                                       dir_info[:password].empty? or
                                                       attribs[:action].eql? 'auth'
       ans += " #{dir_info[:data_path]}"

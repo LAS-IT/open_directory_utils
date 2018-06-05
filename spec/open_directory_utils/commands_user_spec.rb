@@ -5,7 +5,7 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
   context "build commands" do
 
     let(:user)     { Object.new.extend(OpenDirectoryUtils::CommandsUser) }
-    let(:srv_info) { {diradmin: 'diradmin', password: 'TopSecret',
+    let(:srv_info) { {username: 'diradmin', password: 'TopSecret',
                       data_path: '/LDAPv3/127.0.0.1/',
                       dscl: '/usr/bin/dscl',
                       pwpol: '/usr/bin/pwpolicy'} }

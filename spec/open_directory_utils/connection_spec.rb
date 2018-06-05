@@ -72,34 +72,34 @@ RSpec.describe OpenDirectoryUtils::Connection do
 
     # DIRECTORY ADMIN USER (Directory read-write)
     it "has nil dir_username by default" do
-      stub_const('ENV', ENV.to_hash.merge('DIR_USERNAME' => nil))
+      stub_const('ENV', ENV.to_hash.merge('DIR_ADMIN_USER' => nil))
       od = OpenDirectoryUtils::Connection.new
       expect(od.dir_info[:username]).to eq(nil)
     end
     it "has correct dir_username from environment" do
-      stub_const('ENV', ENV.to_hash.merge('DIR_USERNAME' => 'dir_username'))
+      stub_const('ENV', ENV.to_hash.merge('DIR_ADMIN_USER' => 'dir_username'))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.dir_info[:username]).to eq(ENV['DIR_USERNAME'])
+      expect(od.dir_info[:username]).to eq(ENV['DIR_ADMIN_USER'])
     end
     it "has correct dir_username from parameters" do
-      stub_const('ENV', ENV.to_hash.merge('DIR_USERNAME' => 'dir_username'))
+      stub_const('ENV', ENV.to_hash.merge('DIR_ADMIN_USER' => 'dir_username'))
       od = OpenDirectoryUtils::Connection.new({dir_username: 'dir_admin'})
       expect(od.dir_info[:username]).to eq('dir_admin')
     end
 
     # DIRECTORY ADMIN PASSWORD
     it "has nil dir_password by default" do
-      stub_const('ENV', ENV.to_hash.merge('DIR_PASSWORD' => nil))
+      stub_const('ENV', ENV.to_hash.merge('DIR_ADMIN_PASS' => nil))
       od = OpenDirectoryUtils::Connection.new
       expect(od.dir_info[:password]).to eq(nil)
     end
     it "has correct dir_password from environment" do
       stub_const('ENV', ENV.to_hash.merge('DIR_PASSWORD' => 'secret'))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.dir_info[:password]).to eq(ENV['DIR_PASSWORD'])
+      expect(od.dir_info[:password]).to eq(ENV['DIR_ADMIN_PASS'])
     end
     it "has correct dir_password from parameters" do
-      stub_const('ENV', ENV.to_hash.merge('DIR_PASSWORD' => 'secret'))
+      stub_const('ENV', ENV.to_hash.merge('DIR_ADMIN_PASS' => 'secret'))
       od = OpenDirectoryUtils::Connection.new({dir_password: 'TopSecret'})
       expect(od.dir_info[:password]).to eq('TopSecret')
     end

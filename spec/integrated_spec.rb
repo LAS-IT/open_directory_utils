@@ -6,23 +6,27 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
 
   let( :existing_gid) { {gid: 'employee'} }
   let( :not_here_gid) { {gid: 'nogroup'} }
-  let( :new_group )   { {gid: 'odgrouptest', real_name: "OD_Gruop TEST",
+  let( :new_group )   { {gid: 'odgrouptest', real_name: "OD Group TEST",
                           gidnumber: '54321'} }
 
   let( :existing_uid) { {uid: 'btihen'} }
   let( :not_here_uid) { {uid: 'nobody'} }
-  let( :new_user_r_n) { {uid: 'odusertest', real_name: "OD_User TEST",
+  let( :new_user_r_n) { {uid: 'odusertest', real_name: "OD User TEST",
                           uidnumber: 987654321, gidnumber: "1031",
                           email: "user@example.com"} }
   let( :new_user_fnl) { {uid: 'od_util_test', uidnumber: 987654321,
-                          first_name: "Od_Util", last_name: "TEST",
+                          first_name: "OD User", last_name: "TEST",
                           gidnumber: "1031", email: "user@example.com"} }
 
-  context "query od info" do
-
+  context "live open directory group testing" do
     describe "group_get_info" do
       it "with existing group" do
         answer  = od.run(command: :group_get_info, params: existing_gid)
+        correct = "RecordName: #{existing_gid[:gid]}"
+        expect( answer[:success][:response].first ).to match( correct )
+      end
+      it "with existing group" do
+        answer  = od.run(command: :group_info, params: existing_gid)
         correct = "RecordName: #{existing_gid[:gid]}"
         expect( answer[:success][:response].first ).to match( correct )
       end
@@ -30,6 +34,11 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
         answer  = od.run(command: :group_get_info, params: not_here_gid)
         correct = "eDSRecordNotFound"
         expect( answer[:error][:response].first ).to match( correct )
+      end
+      it "without username" do
+        answer  = od.run(command: :group_get_info, params: {})
+        expect( answer[:success] ).to be( nil )
+        expect( answer.to_s ).to match( "shortname: 'nil' invalid" )
       end
     end
 
@@ -48,6 +57,46 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
       end
     end
 
+    describe "create group" do
+      after(:each) do
+        od.run(command: :group_delete, params: new_group)
+      end
+      it "minimal new_group" do
+        success = od.run(command: :group_create_min, params: new_group)
+        # pp success
+        expect( success[:success] ).not_to be( nil )
+        details = od.run(command: :group_info, params: new_group)
+        # pp details
+        # expect( details.to_s ).to match( 'RecordName: odgrouptest' )
+        expect( details[:success][:response].to_s ).to match( 'RecordName: odgrouptest' )
+        answer  = od.run(command: :group_exists?, params: new_group)
+        expect( answer[:success][:response] ).to eq( [true] )
+      end
+      it "full new_group" do
+        success = od.run(command: :group_create_full, params: new_group)
+        # pp success
+        expect( success[:success] ).not_to eql( nil )
+        details = od.run(command: :group_info, params: new_group)
+        # pp details
+        # expect( details.to_s ).to match( 'OD Group TEST' )
+        expect( details[:success][:response].to_s ).to match( 'OD Group TEST' )
+      end
+    end
+
+    describe "delete od_test user" do
+      before(:each) do
+        od.run(command: :group_create_min, params: new_group)
+      end
+      it "with new_group" do
+        answer0 = od.run(command: :group_delete, params: new_group)
+        expect( answer0[:success] ).not_to eql( nil )
+        answer  = od.run(command: :group_exists?, params: new_group)
+        expect( answer[:success][:response] ).to eq( [false] )
+      end
+    end
+  end
+
+  context "live open directory user testing" do
     describe "user_get_info" do
       it "with existing user" do
         answer  = od.run(command: :user_get_info, params: existing_uid)
@@ -85,9 +134,9 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
       it "with username" do
       end
     end
-
   end
-  context "modify/update user info" do
+
+  context "test users and groups together" do
     describe "without uid info" do
       it "a"
     end
@@ -98,4 +147,5 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
       it "c"
     end
   end
+
 end

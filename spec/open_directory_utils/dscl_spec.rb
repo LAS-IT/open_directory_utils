@@ -15,7 +15,7 @@ RSpec.describe OpenDirectoryUtils::Dscl do
     # end
 
     let(:dscl)     { Object.new.extend(OpenDirectoryUtils::Dscl) }
-    let(:srv_info) { {diradmin: 'diradmin', password: 'TopSecret',
+    let(:srv_info) { {username: 'diradmin', password: 'TopSecret',
                       data_path: '/LDAPv3/127.0.0.1/',
                       dscl: '/usr/bin/dscl',
                       pwpol: '/usr/bin/pwpolicy'} }

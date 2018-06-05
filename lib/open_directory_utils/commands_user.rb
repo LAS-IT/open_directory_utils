@@ -268,7 +268,7 @@ module OpenDirectoryUtils
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-user-mailattribute "$VALUE"
     def user_set_email(attribs, dir_info)
       attribs = user_shortname_alternatives(attribs)
-      
+
       attribs[:value] = attribs[:value] || attribs['apple-user-mailattribute']
       attribs[:value] = attribs[:value] || attribs[:apple_user_mailattribute]
       attribs[:value] = attribs[:value] || attribs[:email]

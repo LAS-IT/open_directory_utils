@@ -7,7 +7,7 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
   context "build commands" do
 
     let(:group)    { Object.new.extend(OpenDirectoryUtils::CommandsGroup) }
-    let(:srv_info) { {diradmin: 'diradmin', password: 'TopSecret',
+    let(:srv_info) { {username: 'diradmin', password: 'TopSecret',
                       data_path: '/LDAPv3/127.0.0.1/',
                       dscl: '/usr/bin/dscl',
                       pwpol: '/usr/bin/pwpolicy'} }
@@ -27,6 +27,12 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
       end
       it "with cn" do
         attribs = {cn: 'somegroup'}
+        answer  = group.send(:group_get_info, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/somegroup'
+        expect( answer ).to eq( correct )
+      end
+      it "with cn & value" do
+        attribs = {cn: 'somegroup', value: "junk"}
         answer  = group.send(:group_get_info, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/somegroup'
         expect( answer ).to eq( correct )
@@ -228,7 +234,7 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup PrimaryGroupID "54321"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup RealName "Some Group"',
-          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup passwd "*"',
+          # '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup passwd "*"',
         ]
         expect( answer ).to eq( correct )
       end

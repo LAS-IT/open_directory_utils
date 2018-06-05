@@ -24,11 +24,12 @@ module OpenDirectoryUtils
 
       check_critical_attribute( attribs, :shortname )
 
-      command = {action: 'read', scope: 'Groups'}
+      command = {action: 'read', scope: 'Groups', value: nil}
       user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
     end
+    alias_method :group_info, :group_get_info
 
     def group_exists?(attribs, dir_info)
       group_get_info(attribs, dir_info)
@@ -129,6 +130,10 @@ module OpenDirectoryUtils
       dscl( user_attrs, dir_info )
     end
 
+    # probably can't create password for group?
+    # /usr/bin/dscl -u diradmin -P liaP-meD-Aj-pHi-hOb-en-c /LDAPv3/127.0.0.1/ -create /Groups/odgrouptest passwd "*"
+    #  "<main> attribute status: eDSNoStdMappingAvailable\n" +
+    #  "<dscl_cmd> DS Error: -14140 (eDSNoStdMappingAvailable)"]
     def group_set_passwd(attribs, dir_info)
       attribs = group_shortname_alternatives(attribs)
 
@@ -151,7 +156,7 @@ module OpenDirectoryUtils
     # add group name   -- dscl . -create /Groups/ladmins RealName “Local Admins”
     # group ID number  -- dscl . -create /Groups/ladmins gid 400
     # group id number  -- dscl . -create /Groups/GROUP PrimaryGroupID GID
-    def group_create(attribs, dir_info)
+    def group_create_full(attribs, dir_info)
       attribs = group_shortname_alternatives(attribs)
 
       answer          = []
@@ -161,11 +166,12 @@ module OpenDirectoryUtils
       answer         << group_set_primary_group_id( attribs, dir_info )
       attribs[:value] = nil
       answer         << group_set_real_name( attribs, dir_info )
-      attribs[:value] = nil
-      answer         << group_set_password( attribs, dir_info )
+      # attribs[:value] = nil
+      # answer         << group_set_password( attribs, dir_info )
 
       return answer
     end
+    alias_method :group_create, :group_create_full
 
   end
 end

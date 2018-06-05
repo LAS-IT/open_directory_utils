@@ -34,11 +34,14 @@ module OpenDirectoryUtils
 
     def run(command:, params:, formatting: nil)
       answer = {}
-      ssh_cmd = send(command, params, dir_info)
-      results = send_cmds_to_od_server(ssh_cmd)
-      format_results(results, command, params)
+      ssh_cmds = send(command, params, dir_info)
+      results  = send_cmds_to_od_server(ssh_cmds)
+      # pp ssh_cmds
+      # pp resutls
+      format_results(results, command, params, ssh_cmds)
       rescue ArgumentError, NoMethodError => error
-        answer[:error]   =  "#{error.message} -- command: :#{command} with attribs: #{params}"
+        {error:  {response: error.message, command: command,
+                  attributes: params, dscl_cmds: ssh_cmds}}
     end
 
     private
@@ -55,7 +58,7 @@ module OpenDirectoryUtils
       return output
     end
 
-    def format_results(results, command, params)
+    def format_results(results, command, params, ssh_cmds)
       errors = true         if results.to_s.include? 'Error'
       errors = false    unless results.to_s.include? 'Error'
 
@@ -72,7 +75,8 @@ module OpenDirectoryUtils
       when false
         {success:{response: results, command: command, attributes: params}}
       else
-        {error:  {response: results, command: command, attributes: params}}
+        {error:  {response: results, command: command,
+                  attributes: params, dscl_cmds: ssh_cmds}}
       end
       return ans
     end
@@ -83,8 +87,8 @@ module OpenDirectoryUtils
         srv_username: ENV['OD_USERNAME'],
         ssh_options:  (eval(ENV['OD_SSH_OPTIONS'].to_s) || {}),
 
-        dir_username: ENV['DIR_USERNAME'],
-        dir_password: ENV['DIR_PASSWORD'],
+        dir_username: ENV['DIR_ADMIN_USER'],
+        dir_password: ENV['DIR_ADMIN_PASS'],
         dir_datapath: (ENV['DIR_DATAPATH'] || '/LDAPv3/127.0.0.1/'),
 
         dscl_path:    ENV['DSCL_PATH']  || '/usr/bin/dscl',
