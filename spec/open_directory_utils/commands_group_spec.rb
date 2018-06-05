@@ -144,9 +144,19 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
     describe "group_create_min" do
       it "using good data" do
         attribs = { shortname: 'somegroup', real_name: "Some Group",
-                    primary_group_id: "1032"}
+                    primary_group_id: "54321"}
         answer  = group.send(:group_create_min, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "group_set_primary_group_id" do
+      it "creates group id with all data" do
+        attribs = { shortname: 'somegroup', real_name: "Some Group",
+                    primary_group_id: "54321"}
+        answer  = group.send(:group_set_primary_group_id, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup PrimaryGroupID "54321"'
         expect( answer ).to eq( correct )
       end
     end
@@ -154,13 +164,13 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
     xdescribe "group_create" do
       it "using good data" do
         attribs = { shortname: 'somegroup', real_name: "Some Group",
-                    primary_group_id: "1032"}
+                    primary_group_id: "54321"}
         answer  = group.send(:group_create, attribs, srv_info)
         correct = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup',
-          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup passwd "*"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup PrimaryGroupID "54321"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup RealName "Some Group"',
-          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup PrimaryGroupID "1032"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup passwd "*"',
         ]
         expect( answer ).to eq( correct )
       end
