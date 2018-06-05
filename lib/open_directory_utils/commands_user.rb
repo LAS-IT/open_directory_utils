@@ -13,7 +13,7 @@ module OpenDirectoryUtils
     def user_shortname_alternatives(attribs)
       attribs[:shortname] = attribs[:shortname] || attribs[:username]
       attribs[:shortname] = attribs[:shortname] || attribs[:uid]
-      return attribs[:shortname]
+      return attribs
     end
 
     # GET INFO
@@ -23,7 +23,7 @@ module OpenDirectoryUtils
     # search od user  -- dscl . -search /Users RealName "Andrew Garrett"
     # return as xml   -- dscl -plist . -search /Users RealName "Andrew Garrett"
     def user_get_info(attribs, dir_info)
-      attribs[:shortname] = user_shortname_alternatives(attribs)
+      attribs = user_shortname_alternatives(attribs)
 
       check_critical_attribute( attribs, :shortname )
       attribs    = tidy_attribs(attribs)
@@ -44,11 +44,12 @@ module OpenDirectoryUtils
     ###########
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER RealName "$VALUE"
     def user_set_real_name(attribs, dir_info)
-      attribs[:shortname] = user_shortname_alternatives(attribs)
-      attribs[:value]     = attribs[:value] || attribs[:cn]
-      attribs[:value]     = attribs[:value] || attribs[:realname]
-      attribs[:value]     = attribs[:value] || attribs[:real_name]
-      attribs[:value]     = attribs[:value] || "#{attribs[:first_name]} #{attribs[:last_name]}"
+      attribs = user_shortname_alternatives(attribs)
+
+      attribs[:value] = attribs[:value] || attribs[:cn]
+      attribs[:value] = attribs[:value] || attribs[:realname]
+      attribs[:value] = attribs[:value] || attribs[:real_name]
+      attribs[:value] = attribs[:value] || "#{attribs[:first_name]} #{attribs[:last_name]}"
 
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value, :real_name )
@@ -64,11 +65,12 @@ module OpenDirectoryUtils
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER cn "$NAME"
     def user_set_common_name(attribs, dir_info)
-      attribs[:shortname] = user_shortname_alternatives(attribs)
-      attribs[:value]     = attribs[:value] || attribs[:cn]
-      attribs[:value]     = attribs[:value] || attribs[:realname]
-      attribs[:value]     = attribs[:value] || attribs[:real_name]
-      attribs[:value]     = attribs[:value] || "#{attribs[:first_name]} #{attribs[:last_name]}"
+      attribs = user_shortname_alternatives(attribs)
+
+      attribs[:value] = attribs[:value] || attribs[:cn]
+      attribs[:value] = attribs[:value] || attribs[:realname]
+      attribs[:value] = attribs[:value] || attribs[:real_name]
+      attribs[:value] = attribs[:value] || "#{attribs[:first_name]} #{attribs[:last_name]}"
 
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value, :common_name )
@@ -83,10 +85,11 @@ module OpenDirectoryUtils
 
     # sudo dscl . -create /Users/someuser UniqueID "1010"
     def user_set_unique_id(attribs, dir_info)
-      attribs[:shortname] = user_shortname_alternatives(attribs)
-      attribs[:value]     = attribs[:value] || attribs[:uniqueid]
-      attribs[:value]     = attribs[:value] || attribs[:unique_id]
-      attribs[:value]     = attribs[:value] || attribs[:uidnumber]
+      attribs = user_shortname_alternatives(attribs)
+
+      attribs[:value] = attribs[:value] || attribs[:uniqueid]
+      attribs[:value] = attribs[:value] || attribs[:unique_id]
+      attribs[:value] = attribs[:value] || attribs[:uidnumber]
 
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value, :unique_id )
@@ -100,10 +103,11 @@ module OpenDirectoryUtils
 
     # # sudo dscl . -create /Users/someuser uidnumber "1010"
     def user_set_uidnumber(attribs, dir_info)
-      attribs[:shortname] = user_shortname_alternatives(attribs)
-      attribs[:value]     = attribs[:value] || attribs[:uniqueid]
-      attribs[:value]     = attribs[:value] || attribs[:unique_id]
-      attribs[:value]     = attribs[:value] || attribs[:uidnumber]
+      attribs = user_shortname_alternatives(attribs)
+
+      attribs[:value] = attribs[:value] || attribs[:uniqueid]
+      attribs[:value] = attribs[:value] || attribs[:unique_id]
+      attribs[:value] = attribs[:value] || attribs[:uidnumber]
 
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value, :unique_id )
@@ -117,10 +121,11 @@ module OpenDirectoryUtils
 
     # sudo dscl . -create /Users/someuser PrimaryGroupID 80
     def user_set_primary_group_id(attribs, dir_info)
-      attribs[:shortname] = user_shortname_alternatives(attribs)
-      attribs[:value]     = attribs[:value] || attribs[:group_id]
-      attribs[:value]     = attribs[:value] || attribs[:gidnumber]
-      attribs[:value]     = attribs[:value] || attribs[:primary_group_id]
+      attribs = user_shortname_alternatives(attribs)
+
+      attribs[:value] = attribs[:value] || attribs[:group_id]
+      attribs[:value] = attribs[:value] || attribs[:gidnumber]
+      attribs[:value] = attribs[:value] || attribs[:primary_group_id]
 
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value, :group_id )
@@ -133,11 +138,12 @@ module OpenDirectoryUtils
     end
     # sudo dscl . -create /Users/someuser PrimaryGroupID 80
     def user_set_gidnumber(attribs, dir_info)
-      attribs[:shortname] = user_shortname_alternatives(attribs)
-      attribs[:value]     = attribs[:value] || attribs[:group_id]
-      attribs[:value]     = attribs[:value] || attribs[:gidnumber]
-      attribs[:value]     = attribs[:value] || attribs[:group_number]
-      attribs[:value]     = attribs[:value] || attribs[:primary_group_id]
+      attribs = user_shortname_alternatives(attribs)
+
+      attribs[:value] = attribs[:value] || attribs[:group_id]
+      attribs[:value] = attribs[:value] || attribs[:gidnumber]
+      attribs[:value] = attribs[:value] || attribs[:group_number]
+      attribs[:value] = attribs[:value] || attribs[:primary_group_id]
 
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value, :group_id )
@@ -151,10 +157,11 @@ module OpenDirectoryUtils
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/someuser NFSHomeDirectory /Users/someuser
     def user_set_nfs_home_directory(attribs, dir_info)
-      attribs[:shortname] = user_shortname_alternatives(attribs)
-      attribs[:value]     = attribs[:value] || attribs[:home_directory]
-      attribs[:value]     = attribs[:value] || attribs[:nfs_home_directory]
-      attribs[:value]     = attribs[:value] || '/Volumes/Macintosh HD/Users/someone'
+      attribs = user_shortname_alternatives(attribs)
+
+      attribs[:value] = attribs[:value] || attribs[:home_directory]
+      attribs[:value] = attribs[:value] || attribs[:nfs_home_directory]
+      attribs[:value] = attribs[:value] || '/Volumes/Macintosh HD/Users/someone'
 
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value, :home_directory )
@@ -167,10 +174,11 @@ module OpenDirectoryUtils
     end
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME homedirectory "$VALUE"
     def user_set_home_directory(attribs, dir_info)
-      attribs[:shortname] = user_shortname_alternatives(attribs)
-      attribs[:value]     = attribs[:value] || attribs[:home_directory]
-      attribs[:value]     = attribs[:value] || attribs[:nfs_home_directory]
-      attribs[:value]     = attribs[:value] || '/Volumes/Macintosh HD/Users/someone'
+      attribs = user_shortname_alternatives(attribs)
+
+      attribs[:value] = attribs[:value] || attribs[:home_directory]
+      attribs[:value] = attribs[:value] || attribs[:nfs_home_directory]
+      attribs[:value] = attribs[:value] || '/Volumes/Macintosh HD/Users/someone'
 
       command = {action: 'create', scope: 'Users', attribute: 'homedirectory'}
       attribs = attribs.merge(command)
@@ -185,11 +193,11 @@ module OpenDirectoryUtils
     # /usr/bin/pwpolicy -a diradmin -p "TopSecret" -u username -setpassword "AnotherSecret"
     # /usr/bin/dscl -plist -u diradmin -P #{adminpw} /LDAPv3/127.0.0.1/ -passwd /Users/#{shortname} "#{passwd}"
     def user_set_password(attribs, dir_info)
-      attribs[:shortname] = user_shortname_alternatives(attribs)
+      attribs = user_shortname_alternatives(attribs)
 
-      attribs[:value]     = attribs[:value] || attribs[:password]
-      attribs[:value]     = attribs[:value] || attribs[:passwd]
-      attribs[:value]     = attribs[:value] || '*'
+      attribs[:value] = attribs[:value] || attribs[:password]
+      attribs[:value] = attribs[:value] || attribs[:passwd]
+      attribs[:value] = attribs[:value] || '*'
 
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value, :password )
@@ -202,9 +210,10 @@ module OpenDirectoryUtils
     end
     # /usr/bin/dscl /LDAPv3/127.0.0.1 -auth #{shortname} "#{passwd}"
     def user_verify_password(attribs, dir_info)
-      attribs[:shortname] = user_shortname_alternatives(attribs)
-      attribs[:value]     = attribs[:value] || attribs[:password]
-      attribs[:value]     = attribs[:value] || attribs[:passwd]
+      attribs = user_shortname_alternatives(attribs)
+
+      attribs[:value] = attribs[:value] || attribs[:password]
+      attribs[:value] = attribs[:value] || attribs[:passwd]
 
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value, :password )
@@ -218,10 +227,11 @@ module OpenDirectoryUtils
 
     # sudo dscl . -create /Users/someuser UserShell /bin/bash
     def user_set_shell(attribs, dir_info)
-      attribs[:shortname] = user_shortname_alternatives(attribs)
-      attribs[:value]     = attribs[:value] || attribs[:user_shell]
-      attribs[:value]     = attribs[:value] || attribs[:shell]
-      attribs[:value]     = attribs[:value] || '/bin/bash'
+      attribs = user_shortname_alternatives(attribs)
+
+      attribs[:value] = attribs[:value] || attribs[:user_shell]
+      attribs[:value] = attribs[:value] || attribs[:shell]
+      attribs[:value] = attribs[:value] || '/bin/bash'
 
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value, :shell )
@@ -234,10 +244,11 @@ module OpenDirectoryUtils
     end
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME loginShell "$VALUE"
     def user_set_login_shell(attribs, dir_info)
-      attribs[:shortname] = user_shortname_alternatives(attribs)
-      attribs[:value]     = attribs[:value] || attribs[:user_shell]
-      attribs[:value]     = attribs[:value] || attribs[:shell]
-      attribs[:value]     = attribs[:value] || '/bin/bash'
+      attribs = user_shortname_alternatives(attribs)
+
+      attribs[:value] = attribs[:value] || attribs[:user_shell]
+      attribs[:value] = attribs[:value] || attribs[:shell]
+      attribs[:value] = attribs[:value] || '/bin/bash'
 
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value, :shell )
@@ -256,11 +267,12 @@ module OpenDirectoryUtils
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME email "$VALUE"
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-user-mailattribute "$VALUE"
     def user_set_email(attribs, dir_info)
-      attribs[:shortname] = user_shortname_alternatives(attribs)
-      attribs[:value]     = attribs[:value] || attribs['apple-user-mailattribute']
-      attribs[:value]     = attribs[:value] || attribs[:apple_user_mailattribute]
-      attribs[:value]     = attribs[:value] || attribs[:email]
-      attribs[:value]     = attribs[:value] || attribs[:mail]
+      attribs = user_shortname_alternatives(attribs)
+      
+      attribs[:value] = attribs[:value] || attribs['apple-user-mailattribute']
+      attribs[:value] = attribs[:value] || attribs[:apple_user_mailattribute]
+      attribs[:value] = attribs[:value] || attribs[:email]
+      attribs[:value] = attribs[:value] || attribs[:mail]
 
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value, :email )
@@ -287,7 +299,7 @@ module OpenDirectoryUtils
     # dscl . -delete /Users/yourUserName
     # https://tutorialforlinux.com/2011/09/15/delete-users-and-groups-from-terminal/
     def user_delete(attribs, dir_info)
-      attribs[:shortname] = user_shortname_alternatives(attribs)
+      attribs = user_shortname_alternatives(attribs)
 
       check_critical_attribute( attribs, :shortname )
       attribs    = tidy_attribs(attribs)
@@ -302,7 +314,7 @@ module OpenDirectoryUtils
     # https://serverfault.com/questions/20702/how-do-i-create-user-accounts-from-the-terminal-in-mac-os-x-10-5?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
     # https://superuser.com/questions/1154564/how-to-create-a-user-from-the-macos-command-line
     def user_create_min(attribs, dir_info)
-      attribs[:shortname] = user_shortname_alternatives(attribs)
+      attribs = user_shortname_alternatives(attribs)
 
       check_critical_attribute( attribs, :shortname )
       attribs    = tidy_attribs(attribs)
@@ -317,7 +329,7 @@ module OpenDirectoryUtils
     # https://serverfault.com/questions/20702/how-do-i-create-user-accounts-from-the-terminal-in-mac-os-x-10-5?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
     # https://superuser.com/questions/1154564/how-to-create-a-user-from-the-macos-command-line
     def user_create_full(attribs, dir_info)
-      attribs[:shortname] = user_shortname_alternatives(attribs)
+      attribs = user_shortname_alternatives(attribs)
 
       check_critical_attribute( attribs, :shortname )
       attribs    = tidy_attribs(attribs).dup
