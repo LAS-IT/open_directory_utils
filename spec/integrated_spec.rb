@@ -4,12 +4,17 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
 
   let!(:od )          { OpenDirectoryUtils::Connection.new }
   let( :existing_uid) { {uid: 'btihen'} }
-  let( :existing_gid) { {gid: 'employee'} }
   let( :not_here_uid) { {uid: 'nobody'} }
-  let( :new_user_r_n) { {uid: 'od_util_test', real_name: "Od_Util TEST",
-                        uidnumber: 987654321, gidnumber: "1031", email: "user@example.com" } }
-  let( :new_user_fnl) { {uid: 'od_util_test', uidnumber: 987654321, gidnumber: "1031",
-                        first_name: "Od_Util", last_name: "TEST", email: "user@example.com" } }
+  let( :new_user_r_n) { {uid: 'odusertest', real_name: "OD_User TEST",
+                        uidnumber: 987654321, gidnumber: "1031",
+                        email: "user@example.com" } }
+  let( :new_user_fnl) { {uid: 'od_util_test', uidnumber: 987654321,
+                        first_name: "Od_Util", last_name: "TEST",
+                        gidnumber: "1031", email: "user@example.com" } }
+  let( :existing_gid) { {gid: 'employee'} }
+  let( :not_here_gid) { {gid: 'nogroup'} }
+  let( :new_group )   { {gid: 'odgrouptest', real_name: "OD_Gruop TEST",
+                         gidnumber: '54321'} }
 
   context "query od info" do
     describe "without uid info" do
@@ -39,6 +44,34 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
       it "answers false when user does not exist" do
         answer  = od.run(command: :user_exists?, params: not_here_uid)
         correct = {:success=>{:response=>[false], :command=>:user_exists?, :attributes=>{:uid=>"nobody", :shortname=>"nobody"}}}
+        expect( answer ).to eq(correct)
+        expect( answer[:success][:response] ).to eq( [false] )
+      end
+    end
+
+    describe "group_get_info" do
+      it "with existing group" do
+        answer  = od.run(command: :group_get_info, params: existing_gid)
+        correct = "RecordName: #{existing_gid[:gid]}"
+        expect( answer[:success][:response].first ).to match( correct )
+      end
+      it "with non-existing user" do
+        answer  = od.run(command: :group_get_info, params: not_here_gid)
+        correct = "eDSRecordNotFound"
+        expect( answer[:error][:response].first ).to match( correct )
+      end
+    end
+
+    describe "group_exists?" do
+      it "answers true when group group_exists" do
+        answer  = od.run(command: :group_exists?, params: existing_gid)
+        correct = {:success=>{:response=>[true], :command=>:group_exists?, :attributes=>{:gid=>"employee", :shortname=>"employee"}}}
+        expect( answer ).to eq(correct)
+        expect( answer[:success][:response] ).to eq( [true] )
+      end
+      it "answers false when group does not exist" do
+        answer  = od.run(command: :group_exists?, params: not_here_gid)
+        correct = {:success=>{:response=>[false], :command=>:group_exists?, :attributes=>{:gid=>"nogroup", :shortname=>"nogroup"}}}
         expect( answer ).to eq(correct)
         expect( answer[:success][:response] ).to eq( [false] )
       end

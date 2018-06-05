@@ -322,23 +322,23 @@ module OpenDirectoryUtils
       check_critical_attribute( attribs, :shortname )
       attribs    = tidy_attribs(attribs).dup
 
-      answer  = []
+      answer          = []
       attribs[:value] = nil
-      answer << user_create_min(attribs, dir_info)
+      answer         << user_create_min(attribs, dir_info)
       attribs[:value] = nil
-      answer << user_set_password(attribs, dir_info)
+      answer         << user_set_password(attribs, dir_info)
       attribs[:value] = nil
-      answer << user_set_shell(attribs, dir_info)
+      answer         << user_set_shell(attribs, dir_info)
       attribs[:value] = nil
-      answer << user_set_real_name(attribs, dir_info)
+      answer         << user_set_real_name(attribs, dir_info)
       attribs[:value] = nil
-      answer << user_set_unique_id(attribs, dir_info)
+      answer         << user_set_unique_id(attribs, dir_info)
       attribs[:value] = nil
-      answer << user_set_primary_group_id(attribs, dir_info)
+      answer         << user_set_primary_group_id(attribs, dir_info)
       attribs[:value] = nil
-      answer << user_set_nfs_home_directory(attribs, dir_info)
+      answer         << user_set_nfs_home_directory(attribs, dir_info)
       attribs[:value] = nil
-      answer << user_set_email(attribs, dir_info)
+      answer         << user_set_email(attribs, dir_info)
 
       return answer.flatten
     end
