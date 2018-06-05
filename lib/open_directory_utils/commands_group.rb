@@ -12,6 +12,8 @@ module OpenDirectoryUtils
 
     def group_record_name_alternatives(attribs)
       attribs[:record_name] = attribs[:record_name] || attribs[:record_name]
+      attribs[:record_name] = attribs[:record_name] || attribs[:recordname]
+      attribs[:record_name] = attribs[:record_name] || attribs[:group_name]
       attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
       attribs[:record_name] = attribs[:record_name] || attribs[:gid]
       attribs[:record_name] = attribs[:record_name] || attribs[:cn]
@@ -37,10 +39,32 @@ module OpenDirectoryUtils
 
     # add 1st user   -- dscl . create /Groups/ladmins GroupMembership localadmin
     # add more users -- dscl . append /Groups/ladmins GroupMembership 2ndlocaladmin
+    def group_add_first_user(attribs, dir_info)
+      attribs = group_record_name_alternatives(attribs)
+
+      # value = username
+      attribs[:value]     = attribs[:value] || attribs[:user_name]
+      attribs[:value]     = attribs[:value] || attribs[:username]
+      attribs[:value]     = attribs[:value] || attribs[:uid]
+
+      check_critical_attribute( attribs, :record_name )
+      check_critical_attribute( attribs, :value, :username )
+
+      # Will assume we are not adding the first user!
+      command = { action: 'create', scope: 'Groups',
+                  attribute: 'GroupMembership'}
+      user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
+    end
+
+    # add 1st user   -- dscl . create /Groups/ladmins GroupMembership localadmin
+    # add more users -- dscl . append /Groups/ladmins GroupMembership 2ndlocaladmin
     def group_add_user(attribs, dir_info)
       attribs = group_record_name_alternatives(attribs)
 
-      # value <- is username
+      # value = username
+      attribs[:value]     = attribs[:value] || attribs[:user_name]
       attribs[:value]     = attribs[:value] || attribs[:username]
       attribs[:value]     = attribs[:value] || attribs[:uid]
 
@@ -61,6 +85,7 @@ module OpenDirectoryUtils
       attribs = group_record_name_alternatives(attribs)
 
       # value <- is username
+      attribs[:value]     = attribs[:value] || attribs[:user_name]
       attribs[:value]     = attribs[:value] || attribs[:username]
       attribs[:value]     = attribs[:value] || attribs[:uid]
 

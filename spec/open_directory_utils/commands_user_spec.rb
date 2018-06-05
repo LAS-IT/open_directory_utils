@@ -11,8 +11,26 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
                       pwpol: '/usr/bin/pwpolicy'} }
 
     describe "user_get_info" do
-      it "with shortname" do
+      it "with record_name" do
         attribs = {record_name: 'someone'}
+        answer  = user.send(:user_get_info, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+        expect( answer ).to eq( correct )
+      end
+      it "with recordname" do
+        attribs = {recordname: 'someone'}
+        answer  = user.send(:user_get_info, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+        expect( answer ).to eq( correct )
+      end
+      it "with short_name" do
+        attribs = {short_name: 'someone'}
+        answer  = user.send(:user_get_info, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+        expect( answer ).to eq( correct )
+      end
+      it "with shortname" do
+        attribs = {shortname: 'someone'}
         answer  = user.send(:user_get_info, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
         expect( answer ).to eq( correct )
@@ -659,20 +677,44 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
       end
     end
 
-    xdescribe "user_add_to_group" do
-      it "group student" do
-        attribs = {uid: 'someone', group_name: 'student'}
+    describe "user_add_to_group" do
+      it "with user_name & group_name" do
+        attribs = {user_name: 'someone', group_name: 'student'}
         answer  = user.send(:user_add_to_group, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/student GroupMembership someone'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/student GroupMembership "someone"'
+        expect( answer ).to eq( correct )
+      end
+      it "with username & groupname" do
+        attribs = {username: 'someone', groupname: 'student'}
+        answer  = user.send(:user_add_to_group, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/student GroupMembership "someone"'
+        expect( answer ).to eq( correct )
+      end
+      it "with uid & gid" do
+        attribs = {uid: 'someone', gid: 'student'}
+        answer  = user.send(:user_add_to_group, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/student GroupMembership "someone"'
         expect( answer ).to eq( correct )
       end
     end
 
-    xdescribe "user_remove_from_group" do
-      it "user_remove_from_group" do
-        attribs = {uid: 'someone', group_name: 'student'}
+    describe "user_remove_from_group" do
+      it "with user_name & group_name" do
+        attribs = {user_name: 'someone', group_name: 'student'}
         answer  = user.send(:user_remove_from_group, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/student GroupMembership someone'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/student GroupMembership "someone"'
+        expect( answer ).to eq( correct )
+      end
+      it "with username & groupname" do
+        attribs = {username: 'someone', groupname: 'student'}
+        answer  = user.send(:user_remove_from_group, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/student GroupMembership "someone"'
+        expect( answer ).to eq( correct )
+      end
+      it "with uid & gid" do
+        attribs = {uid: 'someone', gid: 'student'}
+        answer  = user.send(:user_remove_from_group, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/student GroupMembership "someone"'
         expect( answer ).to eq( correct )
       end
     end

@@ -13,8 +13,20 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
                       pwpol: '/usr/bin/pwpolicy'} }
 
     describe "group_get_info" do
-      it "with od names" do
+      it "with record_name" do
         attribs = {record_name: 'somegroup'}
+        answer  = group.send(:group_get_info, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/somegroup'
+        expect( answer ).to eq( correct )
+      end
+      it "with recordname" do
+        attribs = {recordname: 'somegroup'}
+        answer  = group.send(:group_get_info, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/somegroup'
+        expect( answer ).to eq( correct )
+      end
+      it "with group_name" do
+        attribs = {group_name: 'somegroup'}
         answer  = group.send(:group_get_info, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/somegroup'
         expect( answer ).to eq( correct )
@@ -66,6 +78,26 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
       end
     end
 
+    describe "group_add_first_user" do
+      it "with value" do
+        attribs = {record_name: 'somegroup', value: 'newuser'}
+        answer  = group.send(:group_add_first_user, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup GroupMembership "newuser"'
+        expect( answer ).to eq( correct )
+      end
+      it "with username" do
+        attribs = {groupname: 'somegroup', username: 'newuser'}
+        answer  = group.send(:group_add_first_user, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup GroupMembership "newuser"'
+        expect( answer ).to eq( correct )
+      end
+      it "with uid" do
+        attribs = {cn: 'somegroup', uid: 'newuser'}
+        answer  = group.send(:group_add_first_user, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup GroupMembership "newuser"'
+        expect( answer ).to eq( correct )
+      end
+    end
     describe "group_add_user" do
       it "with value" do
         attribs = {record_name: 'somegroup', value: 'newuser'}

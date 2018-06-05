@@ -11,6 +11,9 @@ module OpenDirectoryUtils
     include OpenDirectoryUtils::CleanCheck
 
     def user_record_name_alternatives(attribs)
+      attribs[:record_name] = attribs[:record_name] || attribs[:recordname]
+      attribs[:record_name] = attribs[:record_name] || attribs[:short_name]
+      attribs[:record_name] = attribs[:record_name] || attribs[:shortname]
       attribs[:record_name] = attribs[:record_name] || attribs[:username]
       attribs[:record_name] = attribs[:record_name] || attribs[:uid]
       return attribs
@@ -447,56 +450,43 @@ module OpenDirectoryUtils
     # add 1st user   -- dscl . -create /Groups/ladmins GroupMembership localadmin
     # add more users -- dscl . -append /Groups/ladmins GroupMembership 2ndlocaladmin
     def user_add_to_group(attribs, dir_info)
-      attribs = user_record_name_alternatives(attribs)
+      attribs[:record_name] = attribs[:record_name] || attribs[:group_name]
+      attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
+      attribs[:record_name] = attribs[:record_name] || attribs[:gid]
 
-      attribs[:value] = attribs[:value] || attribs[:user_shell]
-      attribs[:value] = attribs[:value] || attribs[:shell]
-      attribs[:value] = attribs[:value] || '/bin/bash'
+      attribs[:value]       = attribs[:value]       || attribs[:user_name]
+      attribs[:value]       = attribs[:value]       || attribs[:username]
+      attribs[:value]       = attribs[:value]       || attribs[:uid]
 
-      check_critical_attribute( attribs, :record_name )
-      check_critical_attribute( attribs, :value, :shell )
+      check_critical_attribute( attribs, :record_name, :groupname )
+      check_critical_attribute( attribs, :value, :username )
       attribs    = tidy_attribs(attribs)
 
-      command    = {action: 'create', scope: 'Users', attribute: 'loginShell'}
+      command    = {action: 'append', scope: 'Groups', attribute: 'GroupMembership'}
       user_attrs  = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
-
-      # check_critical_attribute( attribs, :record_name, :user_add_to_group )
-      # user_attrs = tidy_attribs(attribs)
-      #
-      # answer  = add_dscl_info( dir_info, attribs[:format] )
-      # answer += %Q[ -append /Groups/#{user_attrs[:group_name]} GroupMembership #{user_attrs[:record_name]}]
-      #
-      # raise ArgumentError, "group blank" if user_attrs[:group_name].to_s.eql? ''
-      # return answer
     end
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -delete /Groups/$VALUE GroupMembership $shortname_USERNAME
     def user_remove_from_group(attribs, dir_info)
-      attribs = user_record_name_alternatives(attribs)
+      attribs[:record_name] = attribs[:record_name] || attribs[:group_name]
+      attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
+      attribs[:record_name] = attribs[:record_name] || attribs[:gid]
 
-      attribs[:value] = attribs[:value] || attribs[:user_shell]
-      attribs[:value] = attribs[:value] || attribs[:shell]
-      attribs[:value] = attribs[:value] || '/bin/bash'
+      attribs[:value]       = attribs[:value]       || attribs[:user_name]
+      attribs[:value]       = attribs[:value]       || attribs[:username]
+      attribs[:value]       = attribs[:value]       || attribs[:uid]
 
-      check_critical_attribute( attribs, :record_name )
-      check_critical_attribute( attribs, :value, :shell )
+      check_critical_attribute( attribs, :record_name, :groupname )
+      check_critical_attribute( attribs, :value, :username )
       attribs    = tidy_attribs(attribs)
 
-      command    = {action: 'create', scope: 'Users', attribute: 'loginShell'}
+      command    = {action: 'delete', scope: 'Groups', attribute: 'GroupMembership'}
       user_attrs  = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
-
-      # check_critical_attribute( attribs, :record_name, :user_remove_from_group )
-      # user_attrs = tidy_attribs(attribs)
-      #
-      # answer  = add_dscl_info( dir_info, attribs[:format] )
-      # answer += %Q[ -delete /Groups/#{user_attrs[:group_name]} GroupMembership #{user_attrs[:record_name]}]
-      #
-      # raise ArgumentError, "group blank" if user_attrs[:group_name].to_s.eql? ''
-      # return answer
     end
+    
     # 1st keyword    -- /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-keyword "$VALUE"
     # other keywords --  /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
     def user_set_keywords

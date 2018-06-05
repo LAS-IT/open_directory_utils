@@ -4,7 +4,7 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
 
   let!(:od )          { OpenDirectoryUtils::Connection.new }
 
-  let( :existing_gid) { {gid: 'employee'} }
+  let( :existing_gid) { {gid: 'test'} }
   let( :not_here_gid) { {gid: 'nogroup'} }
   let( :new_group )   { {gid: 'odgrouptest', real_name: "OD Group TEST",
                           gidnumber: '54321'} }
@@ -13,7 +13,8 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
   let( :not_here_uid) { {uid: 'nobody'} }
   let( :new_user)     { {uid: 'odusertest', uidnumber: 987654321,
                           first_name: "OD User", last_name: "TEST",
-                          gidnumber: "1031", email: "user@example.com"} }
+                          gidnumber: "1031", email: "user@example.com",
+                          group_name: 'test'} }
 
   context "live open directory group testing" do
     describe "group_get_info" do
@@ -42,7 +43,7 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
     describe "group_exists?" do
       it "answers true when group group_exists" do
         answer  = od.run(command: :group_exists?, params: existing_gid)
-        correct = {:success=>{:response=>[true], :command=>:group_exists?, :attributes=>{:gid=>"employee", :record_name=>"employee"}}}
+        correct = {:success=>{:response=>[true], :command=>:group_exists?, :attributes=>{:gid=>"test", :record_name=>"test"}}}
         expect( answer ).to eq(correct)
         expect( answer[:success][:response] ).to eq( [true] )
       end
@@ -170,10 +171,13 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
       od.run(command: :user_delete, params: new_user)
       od.run(command: :group_delete, params: new_group)
     end
-    it "can add a user to a group" do
-      
+    xit "add additional user to an existing group" do
+
     end
-    it "can remove a user from a group" do
+    xit "add first users to a new group" do
+
+    end
+    xit "remove a user from a group" do
 
     end
   end
