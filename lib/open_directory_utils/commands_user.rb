@@ -440,7 +440,29 @@ module OpenDirectoryUtils
     end
 
     # ADD USER TO GROUPS
-    ####################
+    ####################    #
+    # add 1st user   -- dscl . -read /Groups/ladmins
+    def user_in_group?(attribs, dir_info)
+      attribs[:record_name] = attribs[:record_name] || attribs[:group_name]
+      attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
+      attribs[:record_name] = attribs[:record_name] || attribs[:gid]
+
+      check_critical_attribute( attribs, :record_name, :groupname )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'read', scope: 'Groups', attribute: nil, value: nil}
+      user_attrs  = attribs.merge(command)
+
+      answer = dscl( user_attrs, dir_info )
+
+      attribs[:value] = attribs[:value] || attribs[:user_name]
+      attribs[:value] = attribs[:value] || attribs[:username]
+      attribs[:value] = attribs[:value] || attribs[:uid]
+
+      check_critical_attribute( attribs, :value, :username )
+      return answer
+    end
+
     # http://krypted.com/mac-os-x/create-groups-using-dscl/
     # https://superuser.com/questions/214004/how-to-add-user-to-a-group-from-mac-os-x-command-line?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
     # sudo dseditgroup -o edit -a $username_to_add -t user admin
@@ -486,7 +508,7 @@ module OpenDirectoryUtils
 
       dscl( user_attrs, dir_info )
     end
-    
+
     # 1st keyword    -- /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-keyword "$VALUE"
     # other keywords --  /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
     def user_set_keywords

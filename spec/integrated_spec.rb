@@ -4,12 +4,14 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
 
   let!(:od )          { OpenDirectoryUtils::Connection.new }
 
-  let( :existing_gid) { {gid: 'test'} }
+  let( :existing_gid) { {gid: 'employee'} }
+  let( :existing_uid) { {uid: 'btihen'} }
+
+  let( :old_test_gid) { {gid: 'test'} }
   let( :not_here_gid) { {gid: 'nogroup'} }
   let( :new_group )   { {gid: 'odgrouptest', real_name: "OD Group TEST",
                           gidnumber: '54321'} }
 
-  let( :existing_uid) { {uid: 'btihen'} }
   let( :not_here_uid) { {uid: 'nobody'} }
   let( :new_user)     { {uid: 'odusertest', uidnumber: 987654321,
                           first_name: "OD User", last_name: "TEST",
@@ -42,7 +44,7 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
 
     describe "group_exists?" do
       it "answers true when group group_exists" do
-        answer  = od.run(command: :group_exists?, params: existing_gid)
+        answer  = od.run(command: :group_exists?, params: old_test_gid)
         correct = {:success=>{:response=>[true], :command=>:group_exists?, :attributes=>{:gid=>"test", :record_name=>"test"}}}
         expect( answer ).to eq(correct)
         expect( answer[:success][:response] ).to eq( [true] )
@@ -162,7 +164,24 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
     end
   end
 
-  context "test user and group interactions" do
+  context "test existing user and group interactions" do
+    let(:params_home) { {uid: 'btihen', gid: 'home'} }
+    let(:params_test) { {uid: 'btihen', gid: 'test'} }
+    xit "verify existing user is in an existing 'home' group" do
+
+    end
+    xit "verify existing user is NOT in existing 'test' group" do
+
+    end
+    xit "add existing user to an existing 'test' group" do
+
+    end
+    xit "remove existing user from existing 'test' group" do
+
+    end
+  end
+
+  context "test new user and group interactions" do
     before(:each) do
       od.run(command: :group_create_full, params: new_group)
       od.run(command: :user_create_full, params: new_user)
@@ -171,13 +190,13 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
       od.run(command: :user_delete, params: new_user)
       od.run(command: :group_delete, params: new_group)
     end
-    xit "add additional user to an existing group" do
+    xit "verify existing user is NOT in an existing group" do
 
     end
     xit "add first users to a new group" do
 
     end
-    xit "remove a user from a group" do
+    xit "add new user to new group with append insread of create" do
 
     end
   end

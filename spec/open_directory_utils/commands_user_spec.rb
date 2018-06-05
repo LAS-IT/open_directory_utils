@@ -677,6 +677,27 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
       end
     end
 
+    describe "user_in_group?" do
+      it "with user_name & group_name" do
+        attribs = {user_name: 'someone', group_name: 'student'}
+        answer  = user.send(:user_in_group?, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/student'
+        expect( answer ).to eq( correct )
+      end
+      it "with username & groupname" do
+        attribs = {username: 'someone', groupname: 'student'}
+        answer  = user.send(:user_in_group?, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/student'
+        expect( answer ).to eq( correct )
+      end
+      it "with uid & gid" do
+        attribs = {uid: 'someone', gid: 'student'}
+        answer  = user.send(:user_in_group?, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/student'
+        expect( answer ).to eq( correct )
+      end
+    end
+
     describe "user_add_to_group" do
       it "with user_name & group_name" do
         attribs = {user_name: 'someone', group_name: 'student'}

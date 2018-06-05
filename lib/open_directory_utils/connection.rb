@@ -71,6 +71,14 @@ module OpenDirectoryUtils
         end
       end
 
+      if command.eql?(:user_in_group?) or command.eql?(:group_has_user?)
+        if results.to_s.include?(params[:value])
+          results = [true]
+        else
+          results = [false]
+        end
+      end
+
       ans = case errors
       when false
         {success:{response: results, command: command, attributes: params}}
