@@ -144,7 +144,7 @@ module OpenDirectoryUtils
       check_critical_attribute( attribs, :shortname )
       check_critical_attribute( attribs, :value, :password )
 
-      command = {action: 'create', scope: 'Groups', attribute: 'passwd'}
+      command = {action: 'passwd', scope: 'Groups', attribute: nil}
       user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )

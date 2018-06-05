@@ -201,21 +201,21 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
         attribs = { shortname: 'somegroup', real_name: "Some Group",
                     primary_group_id: "54321", password: "TopSecret"}
         answer  = group.send(:group_set_passwd, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup passwd "TopSecret"'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Groups/somegroup "TopSecret"'
         expect( answer ).to eq( correct )
       end
       it "with passwd" do
         attribs = { shortname: 'somegroup', real_name: "Some Group",
                     primary_group_id: "54321", passwd: "TopSecret"}
         answer  = group.send(:group_set_passwd, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup passwd "TopSecret"'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Groups/somegroup "TopSecret"'
         expect( answer ).to eq( correct )
       end
       it "without password" do
         attribs = { shortname: 'somegroup', real_name: "Some Group",
                     primary_group_id: "54321"}
         answer  = group.send(:group_set_passwd, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup passwd "*"'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Groups/somegroup "*"'
         expect( answer ).to eq( correct )
       end
       it "without shortname" do
@@ -234,7 +234,7 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup PrimaryGroupID "54321"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup RealName "Some Group"',
-          # '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup passwd "*"',
+          # '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Groups/somegroup "*"',
         ]
         expect( answer ).to eq( correct )
       end
