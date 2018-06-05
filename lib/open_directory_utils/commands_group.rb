@@ -156,13 +156,13 @@ module OpenDirectoryUtils
 
       answer          = []
       attribs[:value] = nil
-      answer         << group_create_min( grp_attrs, dir_info )
+      answer         << group_create_min( attribs, dir_info )
       attribs[:value] = nil
-      answer         << group_set_primary_group_id( grp_attrs, dir_info )
+      answer         << group_set_primary_group_id( attribs, dir_info )
       attribs[:value] = nil
-      answer         << group_set_real_name( grp_attrs, dir_info )
+      answer         << group_set_real_name( attribs, dir_info )
       attribs[:value] = nil
-      answer         << group_set_password( grp_attrs, dir_info )
+      answer         << group_set_password( attribs, dir_info )
 
       return answer
     end

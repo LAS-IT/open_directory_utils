@@ -219,7 +219,7 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
       end
     end
 
-    xdescribe "group_create" do
+    describe "group_create" do
       it "using good data" do
         attribs = { shortname: 'somegroup', real_name: "Some Group",
                     primary_group_id: "54321"}
