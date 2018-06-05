@@ -117,6 +117,120 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
       end
     end
 
+    describe "user_set_first_name" do
+      it "with value" do
+        attribs = {shortname: 'someone', value: "John"}
+        answer  = user.send(:user_set_first_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone FirstName "John"'
+        expect( answer ).to eq( correct )
+      end
+      it "with real_name" do
+        attribs = {username: 'someone', first_name: "John"}
+        answer  = user.send(:user_set_first_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone FirstName "John"'
+        expect( answer ).to eq( correct )
+      end
+      it "with realname" do
+        attribs = {uid: 'someone', given_name: "John"}
+        answer  = user.send(:user_set_first_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone FirstName "John"'
+        expect( answer ).to eq( correct )
+      end
+      it "without first name" do
+        attribs = {uid: 'someone', last_name: "DOE"}
+        expect { user.send(:user_set_first_name, attribs, srv_info) }.
+            to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :first_name/)
+      end
+    end
+    describe "user_set_given_name" do
+      it "with value" do
+        attribs = {shortname: 'someone', value: "John"}
+        answer  = user.send(:user_set_given_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone givenName "John"'
+        expect( answer ).to eq( correct )
+      end
+      it "with real_name" do
+        attribs = {username: 'someone', first_name: "John"}
+        answer  = user.send(:user_set_given_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone givenName "John"'
+        expect( answer ).to eq( correct )
+      end
+      it "with realname" do
+        attribs = {uid: 'someone', given_name: "John"}
+        answer  = user.send(:user_set_given_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone givenName "John"'
+        expect( answer ).to eq( correct )
+      end
+      it "without first name" do
+        attribs = {uid: 'someone', last_name: "DOE"}
+        expect { user.send(:user_set_given_name, attribs, srv_info) }.
+            to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :given_name/)
+      end
+    end
+
+    describe "user_set_last_name" do
+      it "with value" do
+        attribs = {shortname: 'someone', value: "Doe"}
+        answer  = user.send(:user_set_last_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone LastName "Doe"'
+        expect( answer ).to eq( correct )
+      end
+      it "with last_name" do
+        attribs = {username: 'someone', last_name: "Doe"}
+        answer  = user.send(:user_set_last_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone LastName "Doe"'
+        expect( answer ).to eq( correct )
+      end
+      it "with surname" do
+        attribs = {uid: 'someone', surname: "Doe"}
+        answer  = user.send(:user_set_last_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone LastName "Doe"'
+        expect( answer ).to eq( correct )
+      end
+      it "with sn" do
+        attribs = {uid: 'someone', sn: "Doe"}
+        answer  = user.send(:user_set_last_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone LastName "Doe"'
+        expect( answer ).to eq( correct )
+      end
+      it "without last name" do
+        attribs = {uid: 'someone', first_name: "DOE"}
+        expect { user.send(:user_set_last_name, attribs, srv_info) }.
+            to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :last_name/)
+      end
+    end
+    describe "user_set_surname" do
+      it "with value" do
+        attribs = {shortname: 'someone', value: "Doe"}
+        answer  = user.send(:user_set_surname, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone sn "Doe"'
+        expect( answer ).to eq( correct )
+      end
+      it "with last_name" do
+        attribs = {username: 'someone', last_name: "Doe"}
+        answer  = user.send(:user_set_sn, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone sn "Doe"'
+        expect( answer ).to eq( correct )
+      end
+      it "with surname" do
+        attribs = {uid: 'someone', surname: "DOE"}
+        answer  = user.send(:user_set_surname, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone sn "DOE"'
+        expect( answer ).to eq( correct )
+      end
+      it "with surname" do
+        attribs = {uid: 'someone', sn: "DOE"}
+        answer  = user.send(:user_set_sn, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone sn "DOE"'
+        expect( answer ).to eq( correct )
+      end
+      it "without surname" do
+        attribs = {uid: 'someone', first_name: "John"}
+        expect { user.send(:user_set_surname, attribs, srv_info) }.
+            to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :surname/)
+      end
+    end
+
     describe "user_set_unique_id" do
       it "with uniqueid" do
         attribs = {shortname: 'someone', uniqueid: 987654}
@@ -481,7 +595,7 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
       end
     end
 
-    describe "user_create_full" do
+    xdescribe "user_create_full" do
       let(:correct) {[
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "*"',
