@@ -36,8 +36,8 @@ module OpenDirectoryUtils
       answer = {}
       ssh_cmds = send(command, params, dir_info)
       results  = send_cmds_to_od_server(ssh_cmds)
-      # pp ssh_cmds
-      # pp resutls
+      pp ssh_cmds
+      pp results
       format_results(results, command, params, ssh_cmds)
       rescue ArgumentError, NoMethodError => error
         {error:  {response: error.message, command: command,

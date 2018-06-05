@@ -11,10 +11,7 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
 
   let( :existing_uid) { {uid: 'btihen'} }
   let( :not_here_uid) { {uid: 'nobody'} }
-  let( :new_user_r_n) { {uid: 'odusertest', real_name: "OD User TEST",
-                          uidnumber: 987654321, gidnumber: "1031",
-                          email: "user@example.com"} }
-  let( :new_user_fnl) { {uid: 'od_util_test', uidnumber: 987654321,
+  let( :new_user)     { {uid: 'odusertest', uidnumber: 987654321,
                           first_name: "OD User", last_name: "TEST",
                           gidnumber: "1031", email: "user@example.com"} }
 
@@ -125,13 +122,30 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
       end
     end
 
-    describe "create new minimal od_test user" do
-      it "with username" do
-
+    describe "create new odusertest" do
+      after(:each) do
+        od.run(command: :user_delete, params: new_user)
+      end
+      it "with minimal user" do
+        account = od.run(command: :user_exists?, params: new_user)
+        expect( account[:success][:response] ).to eq( [false] )
+        answer  = od.run(command: :user_create_min, params: new_user)
+        expect( answer[:success] ).not_to be(nil)
+        expect( answer.to_s ).to match('odusertest')
       end
     end
+    
     describe "delete od_test user" do
+      before(:each) do
+        od.run(command: :user_create_min, params: new_user)
+      end
       it "with username" do
+        account = od.run(command: :user_exists?, params: new_user)
+        expect( account[:success][:response] ).to eq( [true] )
+        follow  = od.run(command: :user_delete, params: new_user)
+        expect( follow[:success] ).not_to be(nil)
+        no_acct = od.run(command: :user_exists?, params: new_user)
+        expect( no_acct[:success][:response] ).to eq( [false] )
       end
     end
   end
