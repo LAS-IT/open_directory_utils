@@ -149,15 +149,39 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup'
         expect( answer ).to eq( correct )
       end
+      it "missing shortname" do
+        attribs = { real_name: "Some Group", primary_group_id: "54321"}
+        expect { group.send(:group_create_min, attribs, srv_info) }.
+            to raise_error(ArgumentError, /shortname: 'nil' invalid/)
+      end
     end
 
     describe "group_set_primary_group_id" do
-      it "creates group id with all data" do
+      it "with primary_group_id" do
         attribs = { shortname: 'somegroup', real_name: "Some Group",
                     primary_group_id: "54321"}
         answer  = group.send(:group_set_primary_group_id, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup PrimaryGroupID "54321"'
         expect( answer ).to eq( correct )
+      end
+      it "with gidnumber" do
+        attribs = { shortname: 'somegroup', real_name: "Some Group",
+                    gidnumber: "54321"}
+        answer  = group.send(:group_set_primary_group_id, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup PrimaryGroupID "54321"'
+        expect( answer ).to eq( correct )
+      end
+      it "with group_id" do
+        attribs = { shortname: 'somegroup', real_name: "Some Group",
+                    group_id: "54321"}
+        answer  = group.send(:group_set_primary_group_id, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup PrimaryGroupID "54321"'
+        expect( answer ).to eq( correct )
+      end
+      it "without group_id" do
+        attribs = { shortname: 'somegroup', real_name: "Some Group"}
+        expect { group.send(:group_set_primary_group_id, attribs, srv_info) }.
+            to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :group_id/)
       end
     end
 

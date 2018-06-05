@@ -106,7 +106,7 @@ module OpenDirectoryUtils
       attribs[:value]     = attribs[:value]     || attribs[:group_id]
 
       check_critical_attribute( attribs, :shortname )
-      check_critical_attribute( attribs, :value, :password )
+      check_critical_attribute( attribs, :value, :group_id )
 
       command = {action: 'create', scope: 'Groups', attribute: 'PrimaryGroupID'}
       user_attrs = attribs.merge(command)
