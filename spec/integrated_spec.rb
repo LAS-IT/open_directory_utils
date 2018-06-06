@@ -242,11 +242,17 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
       end
     end
 
-    xdescribe "user_append_to_group" do
+    describe "user_append_to_group" do
+      let(:params)  { {uid: 'odtestuser', gid: 'test'} }
+      before(:each) do
+        od.run( command: :user_create_min, params: params )
+      end
+      after(:each) do
+        od.run( command: :user_remove_from_group, params: params )
+        od.run( command: :user_delete, params: params )
+      end
       it "add existing user to an existing 'test' group" do
-        params = {uid: 'testuser', gid: 'test'}
-        od.run( command: :user_create_minx, params: params )
-        notthere = od.run( command: :group_has_user?, params: params )
+        notthere = od.run( command: :user_in_group?, params: params )
         pp notthere
         expect( notthere.to_s ).to match('false')
         # expect( notthere.to_s ).to match('true')

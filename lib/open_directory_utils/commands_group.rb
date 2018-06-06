@@ -11,9 +11,8 @@ module OpenDirectoryUtils
     include OpenDirectoryUtils::CleanCheck
 
     def group_record_name_alternatives(attribs)
-      attribs[:record_name] = attribs[:record_name] || attribs[:record_name]
-      attribs[:record_name] = attribs[:record_name] || attribs[:recordname]
-      attribs[:record_name] = attribs[:record_name] || attribs[:group_name]
+      attribs[:record_name] = nil
+      attribs[:record_name] = attribs[:group_name]
       attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
       attribs[:record_name] = attribs[:record_name] || attribs[:gid]
       attribs[:record_name] = attribs[:record_name] || attribs[:cn]
@@ -146,9 +145,12 @@ module OpenDirectoryUtils
     def group_set_real_name(attribs, dir_info)
       attribs = group_record_name_alternatives(attribs)
 
-      attribs[:value] = attribs[:value] || attribs[:group_name]
       attribs[:value] = attribs[:value] || attribs[:real_name]
       attribs[:value] = attribs[:value] || attribs[:name]
+      attribs[:value] = attribs[:value] || attribs[:group_name]
+      attribs[:value] = attribs[:value] || attribs[:groupname]
+      attribs[:value] = attribs[:value] || attribs[:gid]
+      attribs[:value] = attribs[:value] || attribs[:cn]
 
       check_critical_attribute( attribs, :record_name )
       check_critical_attribute( attribs, :value, :real_name )

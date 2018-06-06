@@ -13,17 +13,15 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
                       pwpol: '/usr/bin/pwpolicy'} }
 
     describe "group_get_info" do
-      it "with record_name" do
+      it "with record_name - errors" do
         attribs = {record_name: 'somegroup'}
-        answer  = group.send(:group_get_info, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/somegroup'
-        expect( answer ).to eq( correct )
+        expect { group.send(:group_get_info, attribs, srv_info) }.
+            to raise_error(ArgumentError, /record_name: 'nil' invalid/)
       end
-      it "with recordname" do
+      it "with recordname - errors" do
         attribs = {recordname: 'somegroup'}
-        answer  = group.send(:group_get_info, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/somegroup'
-        expect( answer ).to eq( correct )
+        expect { group.send(:group_get_info, attribs, srv_info) }.
+            to raise_error(ArgumentError, /record_name: 'nil' invalid/)
       end
       it "with group_name" do
         attribs = {group_name: 'somegroup'}
@@ -52,8 +50,8 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
     end
 
     describe "group_exists?" do
-      it "shortname" do
-        attribs = {record_name: 'somegroup'}
+      it "group_name" do
+        attribs = {group_name: 'somegroup'}
         answer  = group.send(:group_exists?, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/somegroup'
         expect( answer ).to eq( correct )
@@ -64,14 +62,14 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/somegroup'
         expect( answer ).to eq( correct )
       end
-      it "cn" do
-        attribs = {cn: 'somegroup'}
+      it "with gid" do
+        attribs = {gid: 'somegroup'}
         answer  = group.send(:group_exists?, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/somegroup'
         expect( answer ).to eq( correct )
       end
-      it "with gid" do
-        attribs = {gid: 'somegroup'}
+      it "cn" do
+        attribs = {cn: 'somegroup'}
         answer  = group.send(:group_exists?, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/somegroup'
         expect( answer ).to eq( correct )
@@ -79,8 +77,8 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
     end
 
     describe "group_add_first_user" do
-      it "with value" do
-        attribs = {record_name: 'somegroup', value: 'newuser'}
+      it "with group_name" do
+        attribs = {group_name: 'somegroup', value: 'newuser'}
         answer  = group.send(:group_add_first_user, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup GroupMembership "newuser"'
         expect( answer ).to eq( correct )
@@ -99,13 +97,13 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
       end
     end
     describe "group_add_user" do
-      it "with value" do
-        attribs = {record_name: 'somegroup', value: 'newuser'}
+      it "with group_name" do
+        attribs = {group_name: 'somegroup', value: 'newuser'}
         answer  = group.send(:group_add_user, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/somegroup GroupMembership "newuser"'
         expect( answer ).to eq( correct )
       end
-      it "with username" do
+      it "with groupname" do
         attribs = {groupname: 'somegroup', username: 'newuser'}
         answer  = group.send(:group_add_user, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/somegroup GroupMembership "newuser"'
@@ -120,8 +118,8 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
     end
 
     describe "group_remove_user" do
-      it "using value" do
-        attribs = {record_name: 'somegroup', value: 'newuser'}
+      it "using group_name" do
+        attribs = {group_name: 'somegroup', value: 'newuser'}
         answer  = group.send(:group_remove_user, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/somegroup GroupMembership "newuser"'
         expect( answer ).to eq( correct )
@@ -132,14 +130,14 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/somegroup GroupMembership "newuser"'
         expect( answer ).to eq( correct )
       end
-      it "using cn" do
-        attribs = {cn: 'somegroup', uid: 'newuser'}
+      it "using gid" do
+        attribs = {gid: 'somegroup', uid: 'newuser'}
         answer  = group.send(:group_remove_user, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/somegroup GroupMembership "newuser"'
         expect( answer ).to eq( correct )
       end
-      it "using uid" do
-        attribs = {gid: 'somegroup', uid: 'newuser'}
+      it "using cn" do
+        attribs = {cn: 'somegroup', uid: 'newuser'}
         answer  = group.send(:group_remove_user, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/somegroup GroupMembership "newuser"'
         expect( answer ).to eq( correct )
@@ -147,14 +145,8 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
     end
 
     describe "group_delete" do
-      it "using shortname" do
-        attribs = {record_name: 'somegroup'}
-        answer  = group.send(:group_delete, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/somegroup'
-        expect( answer ).to eq( correct )
-      end
-      it "using record_name" do
-        attribs = {record_name: 'somegroup'}
+      it "using group_name" do
+        attribs = {group_name: 'somegroup'}
         answer  = group.send(:group_delete, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/somegroup'
         expect( answer ).to eq( correct )
@@ -177,11 +169,17 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/somegroup'
         expect( answer ).to eq( correct )
       end
+      it "using record_name" do
+        attribs = {record_name: 'somegroup'}
+        # answer  = group.send(:group_delete, attribs, srv_info)
+        expect { group.send(:group_delete, attribs, srv_info) }.
+            to raise_error(ArgumentError, /record_name: 'nil' invalid/)
+      end
     end
 
     describe "group_create_min" do
       it "using good data" do
-        attribs = { record_name: 'somegroup', real_name: "Some Group",
+        attribs = { group_name: 'somegroup', real_name: "Some Group",
                     primary_group_id: "54321"}
         answer  = group.send(:group_create_min, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup'
@@ -196,33 +194,33 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
 
     describe "group_set_primary_group_id" do
       it "with primary_group_id" do
-        attribs = { record_name: 'somegroup', real_name: "Some Group",
+        attribs = { group_name: 'somegroup', real_name: "Some Group",
                     primary_group_id: "54321"}
         answer  = group.send(:group_set_primary_group_id, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup PrimaryGroupID "54321"'
         expect( answer ).to eq( correct )
       end
       it "with gidnumber" do
-        attribs = { record_name: 'somegroup', real_name: "Some Group",
+        attribs = { group_name: 'somegroup', real_name: "Some Group",
                     gidnumber: "54321"}
         answer  = group.send(:group_set_primary_group_id, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup PrimaryGroupID "54321"'
         expect( answer ).to eq( correct )
       end
       it "with group_id" do
-        attribs = { record_name: 'somegroup', real_name: "Some Group",
+        attribs = { group_name: 'somegroup', real_name: "Some Group",
                     group_id: "54321"}
         answer  = group.send(:group_set_primary_group_id, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup PrimaryGroupID "54321"'
         expect( answer ).to eq( correct )
       end
-      it "without shortname" do
+      it "without group_name" do
         attribs = { real_name: "Some Group", group_id: "54321"}
         expect { group.send(:group_set_primary_group_id, attribs, srv_info) }.
             to raise_error(ArgumentError, /record_name: 'nil' invalid/)
       end
       it "without group_id" do
-        attribs = { record_name: 'somegroup', real_name: "Some Group"}
+        attribs = { group_name: 'somegroup', real_name: "Some Group"}
         expect { group.send(:group_set_primary_group_id, attribs, srv_info) }.
             to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :group_id/)
       end
@@ -230,21 +228,21 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
 
     describe "group_set_passwd" do
       it "with password" do
-        attribs = { record_name: 'somegroup', real_name: "Some Group",
+        attribs = { group_name: 'somegroup', real_name: "Some Group",
                     primary_group_id: "54321", password: "TopSecret"}
         answer  = group.send(:group_set_passwd, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Groups/somegroup "TopSecret"'
         expect( answer ).to eq( correct )
       end
       it "with passwd" do
-        attribs = { record_name: 'somegroup', real_name: "Some Group",
+        attribs = { group_name: 'somegroup', real_name: "Some Group",
                     primary_group_id: "54321", passwd: "TopSecret"}
         answer  = group.send(:group_set_passwd, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Groups/somegroup "TopSecret"'
         expect( answer ).to eq( correct )
       end
       it "without password" do
-        attribs = { record_name: 'somegroup', real_name: "Some Group",
+        attribs = { group_name: 'somegroup', real_name: "Some Group",
                     primary_group_id: "54321"}
         answer  = group.send(:group_set_passwd, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Groups/somegroup "*"'
@@ -259,9 +257,10 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
 
     describe "group_create" do
       it "using good data" do
-        attribs = { record_name: 'somegroup', real_name: "Some Group",
+        attribs = { group_name: 'somegroup', real_name: "Some Group",
                     primary_group_id: "54321"}
         answer  = group.send(:group_create, attribs, srv_info)
+        # pp answer
         correct = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup PrimaryGroupID "54321"',
