@@ -253,18 +253,35 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
       end
       it "add existing user to an existing 'test' group" do
         notthere = od.run( command: :user_in_group?, params: params )
-        pp notthere
+        # pp notthere
         expect( notthere.to_s ).to match('false')
-        # expect( notthere.to_s ).to match('true')
         answer = od.run( command: :user_append_to_group, params: params )
-        pp answer
+        # pp answer
         isthere = od.run( command: :group_has_user?, params: params )
-        pp isthere
-        # expect( isthere.to_s ).to match('false')
+        # pp isthere
         expect( isthere.to_s ).to match('true')
+      end
+      it "remove user from group - when not in group" do
+        params = {uid: 'testuser', gid: 'test'}
+        notthere = od.run( command: :group_has_user?, params: params )
+        # pp notthere
+        expect( notthere.to_s ).to match('false')
+        # expect( notthere.to_s ).to match('false')
+        answer = od.run( command: :user_remove_from_group, params: params )
+        # pp answer
+        expect( answer.to_s ).to match('attribute status: eDSAttributeNotFound')
       end
     end
     xdescribe "user_remove_from_group" do
+      let(:params)  { {uid: 'odtestuser', gid: 'test'} }
+      before(:each) do
+        od.run( command: :user_create_min, params: params )
+        od.run( command: :user_append_to_group, params: params )
+      end
+      after(:each) do
+        od.run( command: :user_remove_from_group, params: params )
+        od.run( command: :user_delete, params: params )
+      end
       it "remove existing user from existing 'test' group" do
         params = {uid: 'testuser', gid: 'test'}
         isthere = od.run( command: :group_has_user?, params: params )
