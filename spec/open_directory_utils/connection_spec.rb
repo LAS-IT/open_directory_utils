@@ -160,27 +160,27 @@ RSpec.describe OpenDirectoryUtils::Connection do
   #   end
   # end
 
-  context "send_cmds_to_od_server via ssh with ONE connection" do
-    it "returns expected answer with one command" do
-      od     = OpenDirectoryUtils::Connection.new
-      action = 'echo "student"'
-      answer  = od.send(:send_cmds_to_od_server, action)
-      correct = ['student']
-      expect(answer).to eq(correct)
-    end
-    it "returns expected answers with multiple commands" do
-      od     = OpenDirectoryUtils::Connection.new
-      actions = [
-        'echo "student"',
-        'echo "departed"',
-      ]
-      answer  = od.send(:send_cmds_to_od_server, actions)
-      correct = [
-        'student',
-        'departed',
-      ]
-      expect(answer).to eq(correct)
-    end
-  end
+  # context "send_cmds_to_od_server via ssh with ONE connection" do
+  #   it "returns expected answer with one command" do
+  #     od     = OpenDirectoryUtils::Connection.new
+  #     action = 'echo "student"'
+  #     answer  = od.send(:send_cmds_to_od_server, action)
+  #     correct = ['student']
+  #     expect(answer).to eq(correct)
+  #   end
+  #   it "returns expected answers with multiple commands" do
+  #     od     = OpenDirectoryUtils::Connection.new
+  #     actions = [
+  #       'echo "student"',
+  #       'echo "departed"',
+  #     ]
+  #     answer  = od.send(:send_cmds_to_od_server, actions)
+  #     correct = [
+  #       'student',
+  #       'departed',
+  #     ]
+  #     expect(answer).to eq(correct)
+  #   end
+  # end
 
 end

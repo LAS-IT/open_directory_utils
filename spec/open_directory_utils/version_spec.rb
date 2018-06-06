@@ -5,6 +5,6 @@ RSpec.describe OpenDirectoryUtils::Version do
     expect(OpenDirectoryUtils::Version::VERSION).not_to be nil
   end
   it "has correct version number" do
-    expect(OpenDirectoryUtils::Version::VERSION).to eq '0.1.0'
+    expect(OpenDirectoryUtils::Version::VERSION).to eq '0.1.1'
   end
 end

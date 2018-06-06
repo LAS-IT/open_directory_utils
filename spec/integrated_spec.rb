@@ -143,6 +143,20 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
       end
     end
 
+    describe "set & test a users password" do
+      # before - create a new account
+      # after  - remove new account
+      it "without error set's a password"
+      it "verifies a know reset password"
+    end
+
+    describe "lock / unlock a user account" do
+      # before - create a new account & set password
+      # after  - remove new account
+      it "verifies an account cannot authenticate"
+      it "verifies an account can authenticate"
+    end
+
     describe "delete od_test user" do
       before(:each) do
         od.run(command: :user_create_min, params: new_user)
@@ -247,18 +261,18 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
       end
       it "add existing user to an existing 'test' group" do
         notthere = od.run( command: :user_in_group?, params: params )
-        pp notthere
+        # pp notthere
         expect( notthere.to_s ).to match('false')
         answer = od.run( command: :user_append_to_group, params: params )
-        pp answer
+        # pp answer
         isthere = od.run( command: :group_has_user?, params: params )
-        pp isthere
+        # pp isthere
         expect( isthere.to_s ).to match('true')
       end
       it "attribute error when remove user from group - when not in group" do
         params = {uid: 'testuser', gid: 'test'}
         notthere = od.run( command: :group_has_user?, params: params )
-        pp notthere
+        # pp notthere
         expect( notthere.to_s ).to match('false')
         # expect( notthere.to_s ).to match('false')
         answer = od.run( command: :user_remove_from_group, params: params )

@@ -1,8 +1,9 @@
 require 'net/ssh'
 require "open_directory_utils/dscl"
 require "open_directory_utils/pwpolicy"
-require "open_directory_utils/commands_user"
 require "open_directory_utils/commands_group"
+require "open_directory_utils/commands_user_attribs_od"
+require "open_directory_utils/commands_user_attribs_ldap"
 
 module OpenDirectoryUtils
   class Connection
@@ -11,8 +12,9 @@ module OpenDirectoryUtils
 
     include OpenDirectoryUtils::Dscl
     include OpenDirectoryUtils::Pwpolicy
-    include OpenDirectoryUtils::CommandsUser
     include OpenDirectoryUtils::CommandsGroup
+    include OpenDirectoryUtils::CommandsUserAttribsOd
+    include OpenDirectoryUtils::CommandsUserAttribsLdap
 
     # configure connection with ENV_VARS (or parameters)
     # @params [Hash] - reqiured info includes: srv_hostname:, srv_username: (password: if not using ssh-keys)

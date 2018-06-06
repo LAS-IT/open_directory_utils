@@ -26,5 +26,15 @@ module OpenDirectoryUtils
       return user_attrs
     end
 
+    def user_record_name_alternatives(attribs)
+      attribs[:record_name] = nil
+      attribs[:record_name] = attribs[:user_name]
+      attribs[:record_name] = attribs[:record_name] || attribs[:short_name]
+      attribs[:record_name] = attribs[:record_name] || attribs[:shortname]
+      attribs[:record_name] = attribs[:record_name] || attribs[:username]
+      attribs[:record_name] = attribs[:record_name] || attribs[:uid]
+      return attribs
+    end
+
   end
 end

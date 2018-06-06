@@ -38,6 +38,91 @@ module OpenDirectoryUtils
       group_get_info(attribs, dir_info)
     end
 
+    # add 1st user   -- dscl . -read /Groups/ladmins
+    def user_in_group?(attribs, dir_info)
+      attribs = group_record_name_alternatives(attribs)
+      # attribs[:record_name] = attribs[:record_name] || attribs[:group_name]
+      # attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
+      # attribs[:record_name] = attribs[:record_name] || attribs[:gid]
+
+      check_critical_attribute( attribs, :record_name, :groupname )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'read', scope: 'Groups', attribute: nil, value: nil}
+      user_attrs  = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
+    end
+
+    # http://krypted.com/mac-os-x/create-groups-using-dscl/
+    # https://superuser.com/questions/214004/how-to-add-user-to-a-group-from-mac-os-x-command-line?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+    # sudo dseditgroup -o edit -a $username_to_add -t user admin
+    # sudo dseditgroup -o edit -a $username_to_add -t user wheel
+    # http://osxdaily.com/2007/10/29/how-to-add-a-user-from-the-os-x-command-line-works-with-leopard/
+    #
+    # add 1st user   -- dscl . -create /Groups/ladmins GroupMembership localadmin
+    # add more users -- dscl . -append /Groups/ladmins GroupMembership 2ndlocaladmin
+    def user_first_in_group(attribs, dir_info)
+      attribs = group_record_name_alternatives(attribs)
+      # attribs[:record_name] = attribs[:record_name] || attribs[:group_name]
+      # attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
+      # attribs[:record_name] = attribs[:record_name] || attribs[:gid]
+
+      attribs[:value]       = attribs[:value]       || attribs[:user_name]
+      attribs[:value]       = attribs[:value]       || attribs[:username]
+      attribs[:value]       = attribs[:value]       || attribs[:uid]
+
+      check_critical_attribute( attribs, :record_name, :groupname )
+      check_critical_attribute( attribs, :value, :username )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Groups', attribute: 'GroupMembership'}
+      user_attrs  = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
+    end
+    def user_append_to_group(attribs, dir_info)
+      attribs = group_record_name_alternatives(attribs)
+      # attribs[:record_name] = attribs[:record_name] || attribs[:group_name]
+      # attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
+      # attribs[:record_name] = attribs[:record_name] || attribs[:gid]
+
+      attribs[:value]       = attribs[:value]       || attribs[:user_name]
+      attribs[:value]       = attribs[:value]       || attribs[:username]
+      attribs[:value]       = attribs[:value]       || attribs[:uid]
+
+      check_critical_attribute( attribs, :record_name, :groupname )
+      check_critical_attribute( attribs, :value, :username )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'append', scope: 'Groups', attribute: 'GroupMembership'}
+      user_attrs  = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
+    end
+    alias_method :user_add_to_group, :user_append_to_group
+
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -delete /Groups/$VALUE GroupMembership $shortname_USERNAME
+    def user_remove_from_group(attribs, dir_info)
+      attribs = group_record_name_alternatives(attribs)
+      # attribs[:record_name] = attribs[:record_name] || attribs[:group_name]
+      # attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
+      # attribs[:record_name] = attribs[:record_name] || attribs[:gid]
+
+      attribs[:value]       = attribs[:value]       || attribs[:user_name]
+      attribs[:value]       = attribs[:value]       || attribs[:username]
+      attribs[:value]       = attribs[:value]       || attribs[:uid]
+
+      check_critical_attribute( attribs, :record_name, :groupname )
+      check_critical_attribute( attribs, :value, :username )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'delete', scope: 'Groups', attribute: 'GroupMembership'}
+      user_attrs  = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
+    end
+
     # add 1st user   -- dscl . create /Groups/ladmins GroupMembership localadmin
     # add more users -- dscl . append /Groups/ladmins GroupMembership 2ndlocaladmin
     def group_add_first_user(attribs, dir_info)
