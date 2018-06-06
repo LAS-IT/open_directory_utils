@@ -34,6 +34,8 @@ module OpenDirectoryUtils
 
     def run(command:, params:, formatting: nil)
       answer = {}
+      # just in case clear record_name and calculate later
+      params[:record_name] = nil
       ssh_cmds = send(command, params, dir_info)
       results  = send_cmds_to_od_server(ssh_cmds)
       # pp ssh_cmds
