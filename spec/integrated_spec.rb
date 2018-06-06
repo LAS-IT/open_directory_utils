@@ -241,9 +241,11 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
         expect( answer.to_s ).to match('username invalid or missing')
       end
     end
+
     xdescribe "user_append_to_group" do
       it "add existing user to an existing 'test' group" do
-        params = {uid: 'lweisbecker', gid: 'test'}
+        params = {uid: 'testuser', gid: 'test'}
+        od.run( command: :user_create_minx, params: params )
         notthere = od.run( command: :group_has_user?, params: params )
         pp notthere
         expect( notthere.to_s ).to match('false')
@@ -258,7 +260,7 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
     end
     xdescribe "user_remove_from_group" do
       it "remove existing user from existing 'test' group" do
-        params = {uid: 'lweisbecker', gid: 'test'}
+        params = {uid: 'testuser', gid: 'test'}
         isthere = od.run( command: :group_has_user?, params: params )
         pp isthere
         expect( isthere.to_s ).to match('true')

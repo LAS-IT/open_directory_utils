@@ -53,7 +53,10 @@ module OpenDirectoryUtils
       attribs[:value] = attribs[:value] || attribs[:cn]
       attribs[:value] = attribs[:value] || attribs[:realname]
       attribs[:value] = attribs[:value] || attribs[:real_name]
-      attribs[:value] = attribs[:value] || "#{attribs[:first_name]} #{attribs[:last_name]}"
+      if attribs[:last_name]
+        attribs[:value] = attribs[:value] || "#{attribs[:first_name]} #{attribs[:last_name]}"
+      end
+      attribs[:value] = attribs[:value] || attribs[:record_name]
 
       check_critical_attribute( attribs, :record_name )
       check_critical_attribute( attribs, :value, :real_name )
@@ -403,6 +406,16 @@ module OpenDirectoryUtils
       user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
+
+      answer          = []
+      attribs[:value] = nil
+      answer         << dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      answer         << user_set_password(attribs, dir_info)
+      attribs[:value] = nil
+      answer         << user_set_real_name(attribs, dir_info)
+
+      return answer
     end
 
     # https://images.apple.com/server/docs/Command_Line.pdf
@@ -418,11 +431,7 @@ module OpenDirectoryUtils
       attribs[:value] = nil
       answer         << user_create_min(attribs, dir_info)
       attribs[:value] = nil
-      answer         << user_set_password(attribs, dir_info)
-      attribs[:value] = nil
       answer         << user_set_shell(attribs, dir_info)
-      attribs[:value] = nil
-      answer         << user_set_real_name(attribs, dir_info)
       attribs[:value] = nil
       answer         << user_set_first_name(attribs, dir_info)
       attribs[:value] = nil
