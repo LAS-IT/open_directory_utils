@@ -11,22 +11,22 @@ One can also build custom DSCL commands and send them to the server as needed to
   - can adjust and delete OD attributes for users and groups (pre-built ldap attributes comming soon)
 * **v0.1.1** - 2018-06-06
   - refactored to separate OD attribute from LDAP attribute commands (shortened methods and better organization and shorter tests)
+* **v0.1.2** - 2018-06-07
+  - new user creation will add user to a group if group_membership attribute included
+  - now repo include example code (to create accounts)
 
 ## ToDo
 
+* ADD Lock and unlock account authentication (& TEST) - sync and create
 * Do not return dir admin password with command on errors
-* test user_set_group_memebership
-* test full creation again
-* fix group cn tests
-* LDAP attributes
+* LDAP attributes (so las can sync accounts easily)
 * ADD EXAMPLE CODE
 * Verify setting Password
 * Verify testing Password
 * Refactor Process Results
 * Test dscl direct commands
 * Check Connection Unit Tests
-* Learn dscl property names from LDAP
-* Lock and unlock account authentication
+* Learn dscl OD property names from LDAP
 * verify which email address is LDAP (& seen in GUI)
 
 ## Installation
