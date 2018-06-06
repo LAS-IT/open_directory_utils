@@ -39,6 +39,18 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
         expect( answer ).to eq( correct )
       end
+      it "with short_name" do
+        attribs = {short_name: 'someone'}
+        answer  = user.send(:user_get_info, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+        expect( answer ).to eq( correct )
+      end
+      it "with shortname" do
+        attribs = {shortname: 'someone'}
+        answer  = user.send(:user_get_info, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+        expect( answer ).to eq( correct )
+      end
       it "with uid" do
         attribs = {uid: 'someone'}
         answer  = user.send(:user_get_info, attribs, srv_info)
@@ -666,6 +678,23 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
         # pp answer
         expect( answer ).to eq( correct )
       end
+      it "without email" do
+        attribs  = {uid: 'someone', gidnumber: '1032',
+                    first_name: 'Someone', last_name: 'SPECIAL', uniqueid: '9876543'}
+        answer   = user.send(:user_create_full, attribs, srv_info)
+        no_email = [
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "*"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "Someone SPECIAL"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/bash"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone FirstName "Someone"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone LastName "SPECIAL"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UniqueID "9876543"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone PrimaryGroupID "1032"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone NFSHomeDirectory "/Volumes/Macintosh HD/Users/someone"',
+        ]
+        expect(answer).to eq( no_email )
+      end
       it "with missing attributes (no username)" do
         attribs = { email: 'user@example.com', gidnumber: '1032',
                     first_name: 'Someone', last_name: 'SPECIAL', uniqueid: '9876543'}
@@ -683,12 +712,6 @@ RSpec.describe OpenDirectoryUtils::CommandsUser do
                     first_name: 'Someone', uniqueid: '9876543'}
         expect { user.send(:user_create_full, attribs, srv_info) }.
             to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :last_name/)
-      end
-      it "with missing attributes (no email)" do
-        attribs = { uid: 'someone', gidnumber: '1032',
-                    first_name: 'Someone', last_name: 'SPECIAL', uniqueid: '9876543'}
-        expect {  user.send(:user_create_full, attribs, srv_info) }.
-            to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :email/)
       end
       it "with missing attributes (no PrimaryGroupID)" do
         attribs = { uid: 'someone', email: 'user@example.com',

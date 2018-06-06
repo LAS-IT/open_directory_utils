@@ -13,16 +13,6 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
                       pwpol: '/usr/bin/pwpolicy'} }
 
     describe "group_get_info" do
-      it "with record_name - errors" do
-        attribs = {record_name: 'somegroup'}
-        expect { group.send(:group_get_info, attribs, srv_info) }.
-            to raise_error(ArgumentError, /record_name: 'nil' invalid/)
-      end
-      it "with recordname - errors" do
-        attribs = {recordname: 'somegroup'}
-        expect { group.send(:group_get_info, attribs, srv_info) }.
-            to raise_error(ArgumentError, /record_name: 'nil' invalid/)
-      end
       it "with group_name" do
         attribs = {group_name: 'somegroup'}
         answer  = group.send(:group_get_info, attribs, srv_info)
@@ -194,7 +184,7 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
 
     describe "group_set_primary_group_id" do
       it "with primary_group_id" do
-        attribs = { group_name: 'somegroup', real_name: "Some Group",
+        attribs = { group_name: 'somegroup', long_name: "Some Group",
                     primary_group_id: "54321"}
         answer  = group.send(:group_set_primary_group_id, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup PrimaryGroupID "54321"'

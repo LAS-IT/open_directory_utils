@@ -3,8 +3,10 @@ require "open_directory_utils/clean_check"
 
 module OpenDirectoryUtils
 
-  # https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man1/dscl.1.html
-  # https://superuser.com/questions/592921/mac-osx-users-vs-dscl-command-to-list-user/621055?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+  # this is a long list of pre-built dscl commands affecting users to accomplish common actions
+  # @note - these commands were derived from the following resrouces:
+  # * https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man1/dscl.1.html
+  # * https://superuser.com/questions/592921/mac-osx-users-vs-dscl-command-to-list-user/621055?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
   module CommandsUser
 
     include OpenDirectoryUtils::Dscl
@@ -13,6 +15,8 @@ module OpenDirectoryUtils
     def user_record_name_alternatives(attribs)
       attribs[:record_name] = nil
       attribs[:record_name] = attribs[:user_name]
+      attribs[:record_name] = attribs[:record_name] || attribs[:short_name]
+      attribs[:record_name] = attribs[:record_name] || attribs[:shortname]
       attribs[:record_name] = attribs[:record_name] || attribs[:username]
       attribs[:record_name] = attribs[:record_name] || attribs[:uid]
       return attribs
@@ -52,6 +56,8 @@ module OpenDirectoryUtils
       attribs[:value] = attribs[:value] || attribs[:cn]
       attribs[:value] = attribs[:value] || attribs[:realname]
       attribs[:value] = attribs[:value] || attribs[:real_name]
+      attribs[:value] = attribs[:value] || attribs[:fullname]
+      attribs[:value] = attribs[:value] || attribs[:full_name]
       if attribs[:last_name]
         attribs[:value] = attribs[:value] || "#{attribs[:first_name]} #{attribs[:last_name]}"
       end
@@ -73,6 +79,8 @@ module OpenDirectoryUtils
       attribs[:value] = attribs[:value] || attribs[:cn]
       attribs[:value] = attribs[:value] || attribs[:realname]
       attribs[:value] = attribs[:value] || attribs[:real_name]
+      attribs[:value] = attribs[:value] || attribs[:fullname]
+      attribs[:value] = attribs[:value] || attribs[:full_name]
       attribs[:value] = attribs[:value] || "#{attribs[:first_name]} #{attribs[:last_name]}"
 
       check_critical_attribute( attribs, :record_name )
@@ -172,6 +180,8 @@ module OpenDirectoryUtils
       attribs[:value] = attribs[:value] || attribs[:uniqueid]
       attribs[:value] = attribs[:value] || attribs[:unique_id]
       attribs[:value] = attribs[:value] || attribs[:uidnumber]
+      attribs[:value] = attribs[:value] || attribs[:usernumber]
+      attribs[:value] = attribs[:value] || attribs[:user_number]
 
       check_critical_attribute( attribs, :record_name )
       check_critical_attribute( attribs, :value, :unique_id )
@@ -207,6 +217,8 @@ module OpenDirectoryUtils
 
       attribs[:value] = attribs[:value] || attribs[:group_id]
       attribs[:value] = attribs[:value] || attribs[:gidnumber]
+      attribs[:value] = attribs[:value] || attribs[:groupnumber]
+      attribs[:value] = attribs[:value] || attribs[:group_number]
       attribs[:value] = attribs[:value] || attribs[:primary_group_id]
 
       check_critical_attribute( attribs, :record_name )
@@ -348,7 +360,7 @@ module OpenDirectoryUtils
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME mail "$VALUE"
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME email "$VALUE"
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-user-mailattribute "$VALUE"
-    def user_set_email(attribs, dir_info)
+    def user_set_first_email(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
       attribs[:value] = attribs[:value] || attribs['apple-user-mailattribute']
@@ -376,7 +388,32 @@ module OpenDirectoryUtils
 
       return answer
     end
+    alias_method :user_set_email, :user_set_first_email
 
+    def user_append_email(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+
+      attribs[:value] = attribs[:value] || attribs['apple-user-mailattribute']
+      attribs[:value] = attribs[:value] || attribs[:apple_user_mailattribute]
+      attribs[:value] = attribs[:value] || attribs[:email]
+      attribs[:value] = attribs[:value] || attribs[:mail]
+
+      check_critical_attribute( attribs, :record_name )
+      check_critical_attribute( attribs, :value, :email )
+      attribs    = tidy_attribs(attribs)
+
+      answer     = []
+
+      command    = {action: 'append', scope: 'Users', attribute: 'mail'}
+      user_attrs = attribs.merge(command)
+      answer    << dscl( user_attrs, dir_info )
+
+      command    = {action: 'append', scope: 'Users', attribute: 'email'}
+      user_attrs = attribs.merge(command)
+      answer    << dscl( user_attrs, dir_info )
+
+      return answer
+    end
 
     # dscl . -delete /Users/yourUserName
     # https://tutorialforlinux.com/2011/09/15/delete-users-and-groups-from-terminal/
@@ -441,8 +478,11 @@ module OpenDirectoryUtils
       answer         << user_set_primary_group_id(attribs, dir_info)
       attribs[:value] = nil
       answer         << user_set_nfs_home_directory(attribs, dir_info)
-      attribs[:value] = nil
-      answer         << user_set_email(attribs, dir_info)
+      # skip email if non-sent
+      unless attribs[:email].nil? and attribs[:mail].nil? and attribs[:apple_user_mailattribute].nil?
+        attribs[:value] = nil
+        answer         << user_set_email(attribs, dir_info)
+      end
 
       return answer.flatten
     end

@@ -45,14 +45,10 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
     describe "group_exists?" do
       it "answers true when group group_exists" do
         answer  = od.run(command: :group_exists?, params: old_test_gid)
-        correct = {:success=>{:response=>[true], :command=>:group_exists?, :attributes=>{:gid=>"test", :record_name=>"test"}}}
-        expect( answer ).to eq(correct)
         expect( answer[:success][:response] ).to eq( [true] )
       end
       it "answers false when group does not exist" do
         answer  = od.run(command: :group_exists?, params: not_here_gid)
-        correct = {:success=>{:response=>[false], :command=>:group_exists?, :attributes=>{:gid=>"nogroup", :record_name=>"nogroup"}}}
-        expect( answer ).to eq(correct)
         expect( answer[:success][:response] ).to eq( [false] )
       end
     end
@@ -113,14 +109,12 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
     describe "users_exists?" do
       it "answers true when user exists" do
         answer  = od.run(command: :user_exists?, params: existing_uid)
-        correct = {:success=>{:response=>[true], :command=>:user_exists?, :attributes=>{:uid=>"btihen", :record_name=>"btihen"}}}
-        expect( answer ).to eq(correct)
+        # correct = {:success=>{:response=>[true], :command=>:user_exists?, :attributes=>{:uid=>"btihen", :record_name=>"btihen"}}}
+        # expect( answer ).to eq(correct)
         expect( answer[:success][:response] ).to eq( [true] )
       end
       it "answers false when user does not exist" do
         answer  = od.run(command: :user_exists?, params: not_here_uid)
-        correct = {:success=>{:response=>[false], :command=>:user_exists?, :attributes=>{:uid=>"nobody", :record_name=>"nobody"}}}
-        expect( answer ).to eq(correct)
         expect( answer[:success][:response] ).to eq( [false] )
       end
     end
@@ -253,18 +247,18 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
       end
       it "add existing user to an existing 'test' group" do
         notthere = od.run( command: :user_in_group?, params: params )
-        # pp notthere
+        pp notthere
         expect( notthere.to_s ).to match('false')
         answer = od.run( command: :user_append_to_group, params: params )
-        # pp answer
+        pp answer
         isthere = od.run( command: :group_has_user?, params: params )
-        # pp isthere
+        pp isthere
         expect( isthere.to_s ).to match('true')
       end
-      it "remove user from group - when not in group" do
+      it "attribute error when remove user from group - when not in group" do
         params = {uid: 'testuser', gid: 'test'}
         notthere = od.run( command: :group_has_user?, params: params )
-        # pp notthere
+        pp notthere
         expect( notthere.to_s ).to match('false')
         # expect( notthere.to_s ).to match('false')
         answer = od.run( command: :user_remove_from_group, params: params )
@@ -272,7 +266,7 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
         expect( answer.to_s ).to match('attribute status: eDSAttributeNotFound')
       end
     end
-    xdescribe "user_remove_from_group" do
+    describe "user_remove_from_group" do
       let(:params)  { {uid: 'odtestuser', gid: 'test'} }
       before(:each) do
         od.run( command: :user_create_min, params: params )
@@ -283,25 +277,34 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
         od.run( command: :user_delete, params: params )
       end
       it "remove existing user from existing 'test' group" do
-        params = {uid: 'testuser', gid: 'test'}
         isthere = od.run( command: :group_has_user?, params: params )
-        pp isthere
+        # pp isthere
         expect( isthere.to_s ).to match('true')
         # expect( notthere.to_s ).to match('false')
         answer = od.run( command: :user_remove_from_group, params: params )
-        pp answer
+        # pp answer
         notthere = od.run( command: :group_has_user?, params: params )
-        pp notthere
+        # pp notthere
         # expect( isthere.to_s ).to match('true')
         expect( notthere.to_s ).to match('false')
+      end
+      it "schema error when add existing user from already in group" do
+        isthere = od.run( command: :group_has_user?, params: params )
+        # pp isthere
+        expect( isthere.to_s ).to match('true')
+        # expect( notthere.to_s ).to match('false')
+        answer = od.run( command: :user_append_to_group, params: params )
+        # pp answer
+        expect( answer.to_s ).to match('attribute status: eDSSchemaError')
+        # notthere = od.run( command: :group_has_user?, params: params )
+        # pp notthere
+        # # expect( isthere.to_s ).to match('true')
+        # expect( notthere.to_s ).to match('false')
       end
     end
   end
 
-  context "test that existing user id not in a non-existant grup" do
-  end
-
-  xcontext "test new user and group interactions" do
+  xcontext "test new user and new group interactions" do
     before(:each) do
       od.run(command: :group_create_full, params: new_group)
       od.run(command: :user_create_full, params: new_user)
@@ -309,9 +312,6 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
     after(:each) do
       od.run(command: :user_delete, params: new_user)
       od.run(command: :group_delete, params: new_group)
-    end
-    xit "verify existing user is NOT in an existing group" do
-
     end
     xit "add first users to a new group" do
 

@@ -1,8 +1,9 @@
 # OpenDirectoryUtils
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/open_directory_utils`. To experiment with that code, run `bin/console` for an interactive prompt.
+This Gem allows one to build or send pre-built commands to control
+(common OD and LDAP attributes) on an OpenDirectory server.
 
-TODO: Delete this and the text above, and describe your gem
+One can also build custom DSCL commands and send them to the server as needed too.
 
 ## Installation
 
@@ -22,7 +23,69 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+require 'open_directory_utils'
+
+# Usually Instantiate using ENV-VARS -
+# srv_host_name: ENV['OD_HOSTNAME'],
+# srv_user_name: ENV['OD_USERNAME'],
+# dir_user_name: ENV['DIR_ADMIN_USER'],
+# dir_password: ENV['DIR_ADMIN_PASS'],
+
+# Instantiating using params
+od = OpenDirectoryUtils.new(
+        { srv_host_name: 'od_hostname', srv_user_name: 'od_ssh_username',
+          dir_user_name: 'directory_admin_username',
+          dir_password: 'directory_admin_password'
+        }
+      )
+
+user_params = { user_name: 'someone', user_number: 9876, group_number: 4321,
+                first_name: 'Someone', last__name: 'Special',
+              }
+group_params = {group_name: 'agroup', long_name: 'A Group', group_number: 5432}
+
+# create a user
+od.run( command: :user_create_full,  params: user_params )
+
+# update user's record (all dscl and ldap fields are available)
+od.run( command: :user_set_first_email,
+        params: {user_name: 'someone', email: 'someone@example.com'} )
+# add a second email address
+od.run( command: :user_append_email,
+        params: {user_name: 'someone', email: 'second@example.com'} )
+# fix spelling of first name
+od.run( command: :user_set_first_name,
+        params: {user_name: 'someone', first_name: 'John'} )
+
+# get user's record
+od.run( command: :user_info,  params: user_params )
+
+# create a group
+od.run( command: :group_create_full, params: group_params )
+
+# add the first user to the group
+od.run( command: :group_add_first_user,
+        params: {user_name: 'someone', group_name: 'agroup'} )
+# add additional user to the group
+od.run( command: :user_append_to_group,
+        params: {user_name: 'existinguser', group_name: 'agroup'} )
+
+# get group record and members inf
+od.run( command: :group_info,  params: user_params )
+
+# remove a user from a group
+od.run( command: :user_remove_from_group,
+        params: {user_name: 'someone', group_name: 'agroup'})
+od.run( command: :user_remove_from_group,
+        params: {user_name: 'existinguser', group_name: 'agroup'})
+
+# delete a group
+od.run( command: :group_delete, params: {group__name: 'agroup'})
+
+# delete a user
+
+```
 
 ## Development
 

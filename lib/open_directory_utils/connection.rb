@@ -14,6 +14,9 @@ module OpenDirectoryUtils
     include OpenDirectoryUtils::CommandsUser
     include OpenDirectoryUtils::CommandsGroup
 
+    # configure connection with ENV_VARS (or parameters)
+    # @params [Hash] - reqiured info includes: srv_hostname:, srv_username: (password: if not using ssh-keys)
+    # @note - mostly likely needed for better security is -- dir_username:, dir_password:
     def initialize(params={})
       config = defaults.merge(params)
 
@@ -32,8 +35,13 @@ module OpenDirectoryUtils
                                                         srv_info[:username].empty?
     end
 
-    def run(command:, params:, formatting: nil)
+    # after configuring a connection with .new - send commands via ssh to open directory
+    # @command [Symbol] - required -- to choose the action wanted
+    # @params [Hash] - required -- necessary information to accomplish action
+    # @output [String] - optional -- 'xml' or 'plist' will return responses using xml format
+    def run(command:, params:, output: nil)
       answer = {}
+      params[:format] = output
       # just in case clear record_name and calculate later
       params[:record_name] = nil
       ssh_cmds = send(command, params, dir_info)

@@ -8,10 +8,9 @@ module OpenDirectoryUtils
 
     include OpenDirectoryUtils::CleanCheck
 
-    # get user record -- dscl . -read /Users/<username>
-    # get user value  -- dscl . -read /Users/<username> <key>
-    # search od user  -- dscl . -search /Users RealName "Andrew Garrett"
-    # return as xml   -- dscl -plist . -search /Users RealName "Andrew Garrett"
+    # builds the dscl command (with complete flexibility)
+    # attribs [Hash] - required - :record_name (the resource to affect), :action (create, append, delete, passwd, etc), attribute: (resource attribute to change), value: (value to add to attribute)
+    # dir_info [Hash] - usually configured in the connection initializer and then passed to dscl to build command correctly
     def dscl(attribs, dir_info)
       check_critical_attribute( attribs, :record_name )
       check_critical_attribute( attribs, :action )
@@ -22,6 +21,8 @@ module OpenDirectoryUtils
 
     # TODO: switch to template pattern
     def build_dscl_command(attribs, dir_info)
+      # allow :recordname to be passed-in if using dscl directly
+      attribs[:record_name] = attribs[:record_name] || attribs[:recordname]
       # /usr/bin/dscl -u diradmin -P "BigSecret" /LDAPv3/127.0.0.1/ -append /Users/$UID_USERNAME apple-keyword "$VALUE"
       # "/usr/bin/dscl -plist -u #{od_username} -P #{od_password} #{od_dsclpath} -#{command} #{resource} #{params}"
       ans  = "#{dir_info[:dscl]}"

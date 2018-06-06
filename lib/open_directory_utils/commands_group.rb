@@ -3,8 +3,10 @@ require "open_directory_utils/clean_check"
 
 module OpenDirectoryUtils
 
-  # http://krypted.com/mac-os-x/create-groups-using-dscl/
-  # https://apple.stackexchange.com/questions/307173/creating-a-group-via-users-groups-in-command-line?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+  # this is a long list of pre-built dscl commands affecting groups to accomplish common actions
+  # @note - these commands were derived from the following resrouces:
+  # * http://krypted.com/mac-os-x/create-groups-using-dscl/
+  # * https://apple.stackexchange.com/questions/307173/creating-a-group-via-users-groups-in-command-line?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
   module CommandsGroup
 
     include OpenDirectoryUtils::Dscl
@@ -130,6 +132,8 @@ module OpenDirectoryUtils
       attribs = group_record_name_alternatives(attribs)
 
       attribs[:value] = attribs[:value] || attribs[:primary_group_id]
+      attribs[:value] = attribs[:value] || attribs[:group_number]
+      attribs[:value] = attribs[:value] || attribs[:groupnumber]
       attribs[:value] = attribs[:value] || attribs[:gidnumber]
       attribs[:value] = attribs[:value] || attribs[:group_id]
 
@@ -146,6 +150,10 @@ module OpenDirectoryUtils
       attribs = group_record_name_alternatives(attribs)
 
       attribs[:value] = attribs[:value] || attribs[:real_name]
+      attribs[:value] = attribs[:value] || attribs[:long_name]
+      attribs[:value] = attribs[:value] || attribs[:longname]
+      attribs[:value] = attribs[:value] || attribs[:full_name]
+      attribs[:value] = attribs[:value] || attribs[:fullname]
       attribs[:value] = attribs[:value] || attribs[:name]
       attribs[:value] = attribs[:value] || attribs[:group_name]
       attribs[:value] = attribs[:value] || attribs[:groupname]
