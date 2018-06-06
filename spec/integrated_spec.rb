@@ -134,7 +134,7 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
         expect( account[:success][:response] ).to eq( [false] )
         answer  = od.run(command: :user_create_min, params: new_user)
         details = od.run(command: :user_info, params: new_user)
-        pp details
+        # pp details
         expect( answer[:success] ).not_to be(nil)
         expect( answer.to_s ).to match('odusertest')
       end
@@ -143,7 +143,7 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
         expect( account[:success][:response] ).to eq( [false] )
         answer  = od.run(command: :user_create_full, params: new_user)
         details = od.run(command: :user_info, params: new_user)
-        pp details
+        # pp details
         expect( answer[:success] ).not_to be(nil)
         expect( answer.to_s ).to match('odusertest')
       end
@@ -165,23 +165,118 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
   end
 
   context "test existing user and group interactions" do
-    let(:params_home) { {uid: 'btihen', gid: 'home'} }
-    let(:params_test) { {uid: 'btihen', gid: 'test'} }
-    xit "verify existing user is in an existing 'home' group" do
-
+    # let(:params_emp) { {uid: 'lweisbecker', gid: 'employee'} }
+    # let(:params_tst) { {uid: 'lweisbecker', gid: 'test'} }
+    describe "user_in_group?" do
+      it "verify existing user is in an existing group" do
+        answer = od.run( command: :user_in_group?,
+                          params: {uid: 'lweisbecker', gid: 'employee'} )
+        # pp answer
+        expect( answer.to_s ).to match('[true]')
+        expect( answer[:success] ).not_to be( nil )
+      end
+      it "verify existing user is NOT in existing 'test' group" do
+        answer = od.run( command: :user_in_group?,
+                          params: {uid: 'lweisbecker', gid: 'test'} )
+        expect( answer.to_s ).to match('[false]')
+        expect( answer[:success] ).not_to be( nil )
+      end
+      it "verify non-existing user is NOT in existing 'test' group" do
+        answer = od.run( command: :user_in_group?,
+                          params:  {uid: 'nobody', gid: 'test'} )
+        expect( answer.to_s ).to match('[false]')
+        expect( answer[:success] ).not_to be( nil )
+      end
+      it "verify error when searching non-exitent group" do
+        answer = od.run( command: :user_in_group?,
+                          params: {uid: 'lweisbecker', gid: 'notthere'} )
+        # pp answer
+        expect( answer[:success] ).to   be( nil )
+        expect( answer[:error] ).not_to be( nil )
+        expect( answer.to_s ).to match('groupname invalid or missing')
+      end
+      it "verify error when searching non-exitent user" do
+        answer = od.run( command: :user_in_group?,
+                          params: {gid: 'test'} )
+        # pp answer
+        expect( answer[:success] ).to   be( nil )
+        expect( answer[:error] ).not_to be( nil )
+        expect( answer.to_s ).to match('username invalid or missing')
+      end
     end
-    xit "verify existing user is NOT in existing 'test' group" do
-
+    describe "group_has_user?" do
+      it "verify existing user is in an existing group" do
+        answer = od.run( command: :group_has_user?,
+                          params: {uid: 'lweisbecker', gid: 'employee'} )
+        # pp answer
+        expect( answer.to_s ).to match('[true]')
+        expect( answer[:success] ).not_to be( nil )
+      end
+      it "verify existing user is NOT in existing 'test' group" do
+        answer = od.run( command: :group_has_user?,
+                          params: {uid: 'lweisbecker', gid: 'test'} )
+        expect( answer.to_s ).to match('false')
+        expect( answer[:success] ).not_to be( nil )
+      end
+      it "verify non-existing user is NOT in existing 'test' group" do
+        answer = od.run( command: :group_has_user?,
+                          params:  {uid: 'nobody', gid: 'test'} )
+        expect( answer.to_s ).to match('[false]')
+        expect( answer[:success] ).not_to be( nil )
+      end
+      it "verify error when searching non-exitent group" do
+        answer = od.run( command: :group_has_user?,
+                          params: {uid: 'lweisbecker', gid: 'notthere'} )
+        # pp answer
+        expect( answer[:success] ).to   be( nil )
+        expect( answer[:error] ).not_to be( nil )
+        expect( answer.to_s ).to match('groupname invalid or missing')
+      end
+      it "verify error when searching non-exitent user" do
+        answer = od.run( command: :group_has_user?,
+                          params: {gid: 'test'} )
+        # pp answer
+        expect( answer[:success] ).to   be( nil )
+        expect( answer[:error] ).not_to be( nil )
+        expect( answer.to_s ).to match('username invalid or missing')
+      end
     end
-    xit "add existing user to an existing 'test' group" do
-
+    xdescribe "user_append_to_group" do
+      it "add existing user to an existing 'test' group" do
+        params = {uid: 'lweisbecker', gid: 'test'}
+        notthere = od.run( command: :group_has_user?, params: params )
+        pp notthere
+        expect( notthere.to_s ).to match('false')
+        # expect( notthere.to_s ).to match('true')
+        answer = od.run( command: :user_append_to_group, params: params )
+        pp answer
+        isthere = od.run( command: :group_has_user?, params: params )
+        pp isthere
+        # expect( isthere.to_s ).to match('false')
+        expect( isthere.to_s ).to match('true')
+      end
     end
-    xit "remove existing user from existing 'test' group" do
-
+    xdescribe "user_remove_from_group" do
+      it "remove existing user from existing 'test' group" do
+        params = {uid: 'lweisbecker', gid: 'test'}
+        isthere = od.run( command: :group_has_user?, params: params )
+        pp isthere
+        expect( isthere.to_s ).to match('true')
+        # expect( notthere.to_s ).to match('false')
+        answer = od.run( command: :user_remove_from_group, params: params )
+        pp answer
+        notthere = od.run( command: :group_has_user?, params: params )
+        pp notthere
+        # expect( isthere.to_s ).to match('true')
+        expect( notthere.to_s ).to match('false')
+      end
     end
   end
 
-  context "test new user and group interactions" do
+  context "test that existing user id not in a non-existant grup" do
+  end
+
+  xcontext "test new user and group interactions" do
     before(:each) do
       od.run(command: :group_create_full, params: new_group)
       od.run(command: :user_create_full, params: new_user)

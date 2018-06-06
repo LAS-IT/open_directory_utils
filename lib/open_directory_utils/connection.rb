@@ -36,8 +36,8 @@ module OpenDirectoryUtils
       answer = {}
       ssh_cmds = send(command, params, dir_info)
       results  = send_cmds_to_od_server(ssh_cmds)
-      pp ssh_cmds
-      pp results
+      # pp ssh_cmds
+      # pp results
       format_results(results, command, params, ssh_cmds)
       rescue ArgumentError, NoMethodError => error
         {error:  {response: error.message, command: command,
@@ -72,7 +72,16 @@ module OpenDirectoryUtils
       end
 
       if command.eql?(:user_in_group?) or command.eql?(:group_has_user?)
-        if results.to_s.include?(params[:value])
+        username = nil
+        username = username || params[:user_name]
+        username = username || params[:username]
+        username = username || params[:uid]
+        username = username.to_s.strip
+
+        raise ArgumentError, "username invalid or missing"  if username.eql? '' or username.include? ' '
+        raise ArgumentError, "groupname invalid or missing" if results.to_s.include?('eDSRecordNotFound')
+
+        if results.to_s.include?( username )
           results = [true]
         else
           results = [false]

@@ -453,14 +453,7 @@ module OpenDirectoryUtils
       command    = {action: 'read', scope: 'Groups', attribute: nil, value: nil}
       user_attrs  = attribs.merge(command)
 
-      answer = dscl( user_attrs, dir_info )
-
-      attribs[:value] = attribs[:value] || attribs[:user_name]
-      attribs[:value] = attribs[:value] || attribs[:username]
-      attribs[:value] = attribs[:value] || attribs[:uid]
-
-      check_critical_attribute( attribs, :value, :username )
-      return answer
+      dscl( user_attrs, dir_info )
     end
 
     # http://krypted.com/mac-os-x/create-groups-using-dscl/
@@ -471,7 +464,25 @@ module OpenDirectoryUtils
     #
     # add 1st user   -- dscl . -create /Groups/ladmins GroupMembership localadmin
     # add more users -- dscl . -append /Groups/ladmins GroupMembership 2ndlocaladmin
-    def user_add_to_group(attribs, dir_info)
+    def user_first_in_group(attribs, dir_info)
+      attribs[:record_name] = attribs[:record_name] || attribs[:group_name]
+      attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
+      attribs[:record_name] = attribs[:record_name] || attribs[:gid]
+
+      attribs[:value]       = attribs[:value]       || attribs[:user_name]
+      attribs[:value]       = attribs[:value]       || attribs[:username]
+      attribs[:value]       = attribs[:value]       || attribs[:uid]
+
+      check_critical_attribute( attribs, :record_name, :groupname )
+      check_critical_attribute( attribs, :value, :username )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Groups', attribute: 'GroupMembership'}
+      user_attrs  = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
+    end
+    def user_append_to_group(attribs, dir_info)
       attribs[:record_name] = attribs[:record_name] || attribs[:group_name]
       attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
       attribs[:record_name] = attribs[:record_name] || attribs[:gid]
@@ -489,6 +500,8 @@ module OpenDirectoryUtils
 
       dscl( user_attrs, dir_info )
     end
+    alias_method :user_add_to_group, :user_append_to_group
+
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -delete /Groups/$VALUE GroupMembership $shortname_USERNAME
     def user_remove_from_group(attribs, dir_info)
       attribs[:record_name] = attribs[:record_name] || attribs[:group_name]

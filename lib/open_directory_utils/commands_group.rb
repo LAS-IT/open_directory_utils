@@ -58,6 +58,10 @@ module OpenDirectoryUtils
       dscl( user_attrs, dir_info )
     end
 
+    def group_has_user?(attribs, dir_info)
+      group_get_info(attribs, dir_info)
+    end
+
     # add 1st user   -- dscl . create /Groups/ladmins GroupMembership localadmin
     # add more users -- dscl . append /Groups/ladmins GroupMembership 2ndlocaladmin
     def group_add_user(attribs, dir_info)
