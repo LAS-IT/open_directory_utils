@@ -9,12 +9,17 @@ One can also build custom DSCL commands and send them to the server as needed to
 
 * **v0.1.0** - 2018-06-06
   - can adjust and delete OD attributes for users and groups (pre-built ldap attributes comming soon)
-* **v0.1.1** - 2018-06-07
+* **v0.1.1** - 2018-06-06
   - refactored to separate OD attribute from LDAP attribute commands (shortened methods and better organization and shorter tests)
 
 ## ToDo
 
+* Do not return dir admin password with command on errors
+* test user_set_group_memebership
+* test full creation again
+* fix group cn tests
 * LDAP attributes
+* ADD EXAMPLE CODE
 * Verify setting Password
 * Verify testing Password
 * Refactor Process Results

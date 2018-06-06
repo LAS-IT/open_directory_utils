@@ -25,14 +25,14 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/somegroup'
         expect( answer ).to eq( correct )
       end
-      it "with cn" do
-        attribs = {cn: 'somegroup'}
+      it "with group_membership" do
+        attribs = {group_membership: 'somegroup'}
         answer  = group.send(:group_get_info, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/somegroup'
         expect( answer ).to eq( correct )
       end
-      it "with cn & value" do
-        attribs = {cn: 'somegroup', value: "junk"}
+      it "with groupmembership & value" do
+        attribs = {groupmembership: 'somegroup', value: "junk"}
         answer  = group.send(:group_get_info, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/somegroup'
         expect( answer ).to eq( correct )
@@ -58,8 +58,14 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/somegroup'
         expect( answer ).to eq( correct )
       end
-      it "cn" do
-        attribs = {cn: 'somegroup'}
+      it "group_membership" do
+        attribs = {group_membership: 'somegroup'}
+        answer  = group.send(:group_exists?, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/somegroup'
+        expect( answer ).to eq( correct )
+      end
+      it "groupmembership" do
+        attribs = {groupmembership: 'somegroup'}
         answer  = group.send(:group_exists?, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/somegroup'
         expect( answer ).to eq( correct )
@@ -67,6 +73,18 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
     end
 
     describe "user_in_group?" do
+      it "with user_name & group_membership" do
+        attribs = {user_name: 'someone', group_membership: 'student'}
+        answer  = group.send(:user_in_group?, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/student'
+        expect( answer ).to eq( correct )
+      end
+      it "with user_name & groupmembership" do
+        attribs = {user_name: 'someone', groupmembership: 'student'}
+        answer  = group.send(:user_in_group?, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Groups/student'
+        expect( answer ).to eq( correct )
+      end
       it "with user_name & group_name" do
         attribs = {user_name: 'someone', group_name: 'student'}
         answer  = group.send(:user_in_group?, attribs, srv_info)
@@ -88,6 +106,12 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
     end
 
     describe "user_add_to_group" do
+      it "with user_name & group_membership" do
+        attribs = {user_name: 'someone', group_membership: 'student'}
+        answer  = group.send(:user_add_to_group, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/student GroupMembership "someone"'
+        expect( answer ).to eq( correct )
+      end
       it "with user_name & group_name" do
         attribs = {user_name: 'someone', group_name: 'student'}
         answer  = group.send(:user_add_to_group, attribs, srv_info)
@@ -109,6 +133,12 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
     end
 
     describe "user_remove_from_group" do
+      it "with user_name & group_membership" do
+        attribs = {user_name: 'someone', group_membership: 'student'}
+        answer  = group.send(:user_remove_from_group, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/student GroupMembership "someone"'
+        expect( answer ).to eq( correct )
+      end
       it "with user_name & group_name" do
         attribs = {user_name: 'someone', group_name: 'student'}
         answer  = group.send(:user_remove_from_group, attribs, srv_info)
@@ -143,7 +173,7 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
         expect( answer ).to eq( correct )
       end
       it "with uid" do
-        attribs = {cn: 'somegroup', uid: 'newuser'}
+        attribs = {group_membership: 'somegroup', uid: 'newuser'}
         answer  = group.send(:group_add_first_user, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup GroupMembership "newuser"'
         expect( answer ).to eq( correct )
@@ -163,7 +193,7 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
         expect( answer ).to eq( correct )
       end
       it "with uid" do
-        attribs = {cn: 'somegroup', uid: 'newuser'}
+        attribs = {group_membership: 'somegroup', uid: 'newuser'}
         answer  = group.send(:group_add_user, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/somegroup GroupMembership "newuser"'
         expect( answer ).to eq( correct )
@@ -190,7 +220,7 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
         expect( answer ).to eq( correct )
       end
       it "using cn" do
-        attribs = {cn: 'somegroup', uid: 'newuser'}
+        attribs = {group_membership: 'somegroup', uid: 'newuser'}
         answer  = group.send(:group_remove_user, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/somegroup GroupMembership "newuser"'
         expect( answer ).to eq( correct )
@@ -217,7 +247,7 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
         expect( answer ).to eq( correct )
       end
       it "using cn" do
-        attribs = {cn: 'somegroup'}
+        attribs = {group_membership: 'somegroup'}
         answer  = group.send(:group_delete, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/somegroup'
         expect( answer ).to eq( correct )

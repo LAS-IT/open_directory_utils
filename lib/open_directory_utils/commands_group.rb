@@ -12,15 +12,6 @@ module OpenDirectoryUtils
     include OpenDirectoryUtils::Dscl
     include OpenDirectoryUtils::CleanCheck
 
-    def group_record_name_alternatives(attribs)
-      attribs[:record_name] = nil
-      attribs[:record_name] = attribs[:group_name]
-      attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
-      attribs[:record_name] = attribs[:record_name] || attribs[:gid]
-      attribs[:record_name] = attribs[:record_name] || attribs[:cn]
-      return attribs
-    end
-
     # dscl . read /Groups/ladmins
     def group_get_info(attribs, dir_info)
       attribs = group_record_name_alternatives(attribs)
@@ -41,9 +32,6 @@ module OpenDirectoryUtils
     # add 1st user   -- dscl . -read /Groups/ladmins
     def user_in_group?(attribs, dir_info)
       attribs = group_record_name_alternatives(attribs)
-      # attribs[:record_name] = attribs[:record_name] || attribs[:group_name]
-      # attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
-      # attribs[:record_name] = attribs[:record_name] || attribs[:gid]
 
       check_critical_attribute( attribs, :record_name, :groupname )
       attribs    = tidy_attribs(attribs)
@@ -64,9 +52,6 @@ module OpenDirectoryUtils
     # add more users -- dscl . -append /Groups/ladmins GroupMembership 2ndlocaladmin
     def user_first_in_group(attribs, dir_info)
       attribs = group_record_name_alternatives(attribs)
-      # attribs[:record_name] = attribs[:record_name] || attribs[:group_name]
-      # attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
-      # attribs[:record_name] = attribs[:record_name] || attribs[:gid]
 
       attribs[:value]       = attribs[:value]       || attribs[:user_name]
       attribs[:value]       = attribs[:value]       || attribs[:username]
@@ -83,9 +68,6 @@ module OpenDirectoryUtils
     end
     def user_append_to_group(attribs, dir_info)
       attribs = group_record_name_alternatives(attribs)
-      # attribs[:record_name] = attribs[:record_name] || attribs[:group_name]
-      # attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
-      # attribs[:record_name] = attribs[:record_name] || attribs[:gid]
 
       attribs[:value]       = attribs[:value]       || attribs[:user_name]
       attribs[:value]       = attribs[:value]       || attribs[:username]
@@ -105,9 +87,6 @@ module OpenDirectoryUtils
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -delete /Groups/$VALUE GroupMembership $shortname_USERNAME
     def user_remove_from_group(attribs, dir_info)
       attribs = group_record_name_alternatives(attribs)
-      # attribs[:record_name] = attribs[:record_name] || attribs[:group_name]
-      # attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
-      # attribs[:record_name] = attribs[:record_name] || attribs[:gid]
 
       attribs[:value]       = attribs[:value]       || attribs[:user_name]
       attribs[:value]       = attribs[:value]       || attribs[:username]

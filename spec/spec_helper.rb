@@ -1,5 +1,5 @@
 require "bundler/setup"
-require "open_directory_utils"
+# require "open_directory_utils"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

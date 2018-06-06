@@ -48,7 +48,7 @@ module OpenDirectoryUtils
       attribs[:value] = attribs[:value] || attribs[:real_name]
       attribs[:value] = attribs[:value] || attribs[:fullname]
       attribs[:value] = attribs[:value] || attribs[:full_name]
-      if attribs[:last_name]
+      if attribs[:last_name] or attribs[:first_name]
         attribs[:value] = attribs[:value] || "#{attribs[:first_name]} #{attribs[:last_name]}"
       end
       attribs[:value] = attribs[:value] || attribs[:record_name]
@@ -68,7 +68,9 @@ module OpenDirectoryUtils
       attribs = user_record_name_alternatives(attribs)
 
       attribs[:value] = attribs[:value] || attribs[:given_name]
+      attribs[:value] = attribs[:value] || attribs[:givenname]
       attribs[:value] = attribs[:value] || attribs[:first_name]
+      attribs[:value] = attribs[:value] || attribs[:firstname]
 
       check_critical_attribute( attribs, :record_name )
       check_critical_attribute( attribs, :value, :first_name )
@@ -86,6 +88,7 @@ module OpenDirectoryUtils
 
       attribs[:value] = attribs[:value] || attribs[:sn]
       attribs[:value] = attribs[:value] || attribs[:surname]
+      attribs[:value] = attribs[:value] || attribs[:lastname]
       attribs[:value] = attribs[:value] || attribs[:last_name]
 
       check_critical_attribute( attribs, :record_name )
@@ -133,6 +136,7 @@ module OpenDirectoryUtils
       attribs[:value] = attribs[:value] || attribs[:gidnumber]
       attribs[:value] = attribs[:value] || attribs[:groupnumber]
       attribs[:value] = attribs[:value] || attribs[:group_number]
+      attribs[:value] = attribs[:value] || attribs[:primarygroupid]
       attribs[:value] = attribs[:value] || attribs[:primary_group_id]
 
       check_critical_attribute( attribs, :record_name )
@@ -141,6 +145,23 @@ module OpenDirectoryUtils
 
       command    = {action: 'create', scope: 'Users', attribute: 'PrimaryGroupID'}
       user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
+    end
+
+    def user_set_group_memebership(attribs, dir_info)
+      attribs = group_record_name_alternatives(attribs)
+
+      attribs[:value]       = attribs[:value]       || attribs[:user_name]
+      attribs[:value]       = attribs[:value]       || attribs[:username]
+      attribs[:value]       = attribs[:value]       || attribs[:uid]
+
+      check_critical_attribute( attribs, :record_name, :groupname )
+      check_critical_attribute( attribs, :value, :username )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'append', scope: 'Groups', attribute: 'GroupMembership'}
+      user_attrs  = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
     end
@@ -320,27 +341,40 @@ module OpenDirectoryUtils
       attribs = user_record_name_alternatives(attribs)
 
       check_critical_attribute( attribs, :record_name )
-      attribs    = tidy_attribs(attribs).dup
+      # attribs           = tidy_attribs(attribs).dup
+      attribs           = tidy_attribs(attribs)
 
-      answer          = []
-      attribs[:value] = nil
-      answer         << user_create_min(attribs, dir_info)
-      attribs[:value] = nil
-      answer         << user_set_shell(attribs, dir_info)
-      attribs[:value] = nil
-      answer         << user_set_first_name(attribs, dir_info)
-      attribs[:value] = nil
-      answer         << user_set_last_name(attribs, dir_info)
-      attribs[:value] = nil
-      answer         << user_set_unique_id(attribs, dir_info)
-      attribs[:value] = nil
-      answer         << user_set_primary_group_id(attribs, dir_info)
-      attribs[:value] = nil
-      answer         << user_set_nfs_home_directory(attribs, dir_info)
+      answer            = []
+      attribs[:value]   = nil
+      answer           << user_create_min(attribs, dir_info)
+      attribs[:value]   = nil
+      answer           << user_set_shell(attribs, dir_info)
+      if attribs[:first_name] or attribs[:firstname] or attribs[:given_name] or
+                          attribs[:givenname]
+        attribs[:value] = nil
+        answer         << user_set_first_name(attribs, dir_info)
+      end
+      if attribs[:last_name] or attribs[:lastname] or attribs[:sn] or
+                          attribs[:surname]
+        attribs[:value] = nil
+        answer         << user_set_last_name(attribs, dir_info)
+      end
+      attribs[:value]   = nil
+      answer           << user_set_unique_id(attribs, dir_info)
+      attribs[:value]   = nil
+      answer           << user_set_primary_group_id(attribs, dir_info)
+      attribs[:value]   = nil
+      answer           << user_set_nfs_home_directory(attribs, dir_info)
       # skip email if non-sent
-      unless attribs[:email].nil? and attribs[:mail].nil? and attribs[:apple_user_mailattribute].nil?
+      if attribs[:email] or attribs[:mail] or attribs[:apple_user_mailattribute]
         attribs[:value] = nil
         answer         << user_set_email(attribs, dir_info)
+      end
+      # enroll in a group membership if info present
+      if attribs[:group_name] or attribs[:groupname] or attribs[:gid] or
+                          attribs[:group_membership] or attribs[:groupmembership]
+        attribs[:value] = nil
+        answer         << user_set_group_memebership(attribs, dir_info)
       end
 
       return answer.flatten

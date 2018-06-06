@@ -36,5 +36,15 @@ module OpenDirectoryUtils
       return attribs
     end
 
+    def group_record_name_alternatives(attribs)
+      attribs[:record_name] = nil
+      attribs[:record_name] = attribs[:group_membership]
+      attribs[:record_name] = attribs[:record_name] || attribs[:groupmembership]
+      attribs[:record_name] = attribs[:record_name] || attribs[:group_name]
+      attribs[:record_name] = attribs[:record_name] || attribs[:groupname]
+      attribs[:record_name] = attribs[:record_name] || attribs[:gid]
+      return attribs
+    end
+
   end
 end

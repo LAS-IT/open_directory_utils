@@ -1,4 +1,5 @@
 require "spec_helper"
+require "open_directory_utils/connection"
 
 RSpec.describe OpenDirectoryUtils::Connection do
 

@@ -493,6 +493,31 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         # pp answer
         expect( answer ).to eq( correct )
       end
+      it "with group_membership & password attributes" do
+        attribs  = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
+                    first_name: 'Someone', last_name: 'SPECIAL', uniqueid: '9876543',
+                    group_membership: 'testgrp', password: 'TopSecret'
+                  }
+        answer   = user.send(:user_create_full, attribs, srv_info)
+        # pp answer
+        with_all = [
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "TopSecret"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "Someone SPECIAL"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/bash"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone FirstName "Someone"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone LastName "SPECIAL"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UniqueID "9876543"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone PrimaryGroupID "1032"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone NFSHomeDirectory "/Volumes/Macintosh HD/Users/someone"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone mail "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone email "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone apple-user-mailattribute "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/testgrp GroupMembership "someone"',
+        ]
+        # pp with_all
+        expect( answer ).to eq( with_all )
+      end
       it "without email" do
         attribs  = {uid: 'someone', gidnumber: '1032',
                     first_name: 'Someone', last_name: 'SPECIAL', uniqueid: '9876543'}
@@ -510,23 +535,53 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         ]
         expect(answer).to eq( no_email )
       end
+      it "with missing attributes (no firstname)" do
+        attribs  = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
+                    last_name: 'SPECIAL', uniqueid: '9876543'}
+        answer   = user.send(:user_create_full, attribs, srv_info)
+        # pp answer
+        no_first = [
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "*"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "SPECIAL"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/bash"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone LastName "SPECIAL"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UniqueID "9876543"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone PrimaryGroupID "1032"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone NFSHomeDirectory "/Volumes/Macintosh HD/Users/someone"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone mail "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone email "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone apple-user-mailattribute "user@example.com"'
+        ]
+        # pp no_first
+        expect(answer).to eq( no_first )
+      end
+      it "with missing attributes (no lastname)" do
+        attribs = { uid: 'someoney', email: 'user@example.com', gidnumber: '1032',
+                    first_name: 'Someone', uniqueid: '9876543', password: 'TopSecret'}
+        answer  = user.send(:user_create_full, attribs, srv_info)
+        # pp answer
+        no_last = [
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someoney',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someoney "TopSecret"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someoney RealName "Someone"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someoney UserShell "/bin/bash"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someoney FirstName "Someone"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someoney UniqueID "9876543"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someoney PrimaryGroupID "1032"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someoney NFSHomeDirectory "/Volumes/Macintosh HD/Users/someone"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someoney mail "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someoney email "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someoney apple-user-mailattribute "user@example.com"'
+        ]
+        # pp no_last
+        expect(answer).to eq( no_last )
+      end
       it "with missing attributes (no username)" do
         attribs = { email: 'user@example.com', gidnumber: '1032',
                     first_name: 'Someone', last_name: 'SPECIAL', uniqueid: '9876543'}
         expect { user.send(:user_create_full, attribs, srv_info) }.
             to raise_error(ArgumentError, /record_name: 'nil' invalid/)
-      end
-      it "with missing attributes (no firstname)" do
-        attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
-                    last_name: 'SPECIAL', uniqueid: '9876543'}
-        expect { user.send(:user_create_full, attribs, srv_info) }.
-            to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :first_name/)
-      end
-      it "with missing attributes (no lastname)" do
-        attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
-                    first_name: 'Someone', uniqueid: '9876543'}
-        expect { user.send(:user_create_full, attribs, srv_info) }.
-            to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :last_name/)
       end
       it "with missing attributes (no PrimaryGroupID)" do
         attribs = { uid: 'someone', email: 'user@example.com',

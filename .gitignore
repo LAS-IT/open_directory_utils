@@ -13,3 +13,6 @@
 .rbenv-vars
 
 *.gem
+
+/examples/connection.yml
+/examples/users.yml
