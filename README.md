@@ -5,6 +5,11 @@ This Gem allows one to build or send pre-built commands to control
 
 One can also build custom DSCL commands and send them to the server as needed too.
 
+## Change Log
+
+* **v0.1.0** - 2018-06-06
+  - can adjust and delete OD attributes for users and groups (pre-built ldap attributes comming soon)
+
 ## Installation
 
 Add this line to your application's Gemfile:
