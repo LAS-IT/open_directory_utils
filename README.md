@@ -58,7 +58,7 @@ require 'open_directory_utils'
 # dir_password: ENV['DIR_ADMIN_PASS'],
 
 # Instantiating using params
-od = OpenDirectoryUtils.new(
+od = OpenDirectoryUtils::Connection.new(
         { srv_host_name: 'od_hostname', srv_user_name: 'od_ssh_username',
           dir_user_name: 'directory_admin_username',
           dir_password: 'directory_admin_password'

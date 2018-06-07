@@ -228,6 +228,7 @@ module OpenDirectoryUtils
     def user_set_primary_group_id(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
+      attribs[:value] = attribs[:value] || attribs[:groupid]
       attribs[:value] = attribs[:value] || attribs[:group_id]
       attribs[:value] = attribs[:value] || attribs[:gidnumber]
       attribs[:value] = attribs[:value] || attribs[:groupnumber]

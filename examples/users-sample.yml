@@ -7,11 +7,10 @@
   :last_name: TEST
   :email: user@example.com
   :passsword: Top-Secret
-  :enabled: true
-  :group_id: 1031
+  :enable: true
+  :primary_group_id: 1031
   :group_membership: test
-# acceptable minimal attributes (password is set to * - no login)
+# acceptable minimal attributes (password is set to * - no login) & real_name = username
 - :username: odtest
   :usernumber: 87654321
-  :fullname: OD TEST
-  :groupnumber: 1031
+  :primary_group_id: 1031

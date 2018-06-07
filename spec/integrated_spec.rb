@@ -141,6 +141,15 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
         expect( answer[:success] ).not_to be(nil)
         expect( answer.to_s ).to match('odusertest')
       end
+      it "with full user" do
+        account = od.run(command: :user_exists?, params: new_user)
+        expect( account[:success][:response] ).to eq( [false] )
+        answer  = od.run(command: :user_create, params: new_user)
+        details = od.run(command: :user_info, params: new_user)
+        # pp details
+        expect( answer[:success] ).not_to be(nil)
+        expect( answer.to_s ).to match('odusertest')
+      end
     end
 
     describe "set & test a users password" do
@@ -150,7 +159,7 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
       it "verifies a know reset password"
     end
 
-    describe "lock / unlock a user account" do
+    describe "enable and disable user authentication" do
       # before - create a new account & set password
       # after  - remove new account
       it "verifies an account cannot authenticate"
