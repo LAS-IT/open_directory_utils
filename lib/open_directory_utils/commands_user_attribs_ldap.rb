@@ -1,5 +1,6 @@
 require "open_directory_utils/dscl"
 require "open_directory_utils/clean_check"
+require "open_directory_utils/commands_base"
 
 module OpenDirectoryUtils
 
@@ -9,8 +10,9 @@ module OpenDirectoryUtils
   # * https://superuser.com/questions/592921/mac-osx-users-vs-dscl-command-to-list-user/621055?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
   module CommandsUserAttribsLdap
 
-    include OpenDirectoryUtils::Dscl
+    # include OpenDirectoryUtils::Dscl
     include OpenDirectoryUtils::CleanCheck
+    include OpenDirectoryUtils::CommandsBase
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER cn "$NAME"
     def user_set_common_name(attribs, dir_info)

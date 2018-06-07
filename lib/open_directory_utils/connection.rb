@@ -1,6 +1,7 @@
 require 'net/ssh'
-require "open_directory_utils/dscl"
-require "open_directory_utils/pwpolicy"
+# require "open_directory_utils/dscl"
+# require "open_directory_utils/pwpolicy"
+require "open_directory_utils/commands_base"
 require "open_directory_utils/commands_group"
 require "open_directory_utils/commands_user_attribs_od"
 require "open_directory_utils/commands_user_attribs_ldap"
@@ -10,8 +11,9 @@ module OpenDirectoryUtils
 
     attr_reader :srv_info, :dir_info
 
-    include OpenDirectoryUtils::Dscl
-    include OpenDirectoryUtils::Pwpolicy
+    # include OpenDirectoryUtils::Dscl
+    # include OpenDirectoryUtils::Pwpolicy
+    include OpenDirectoryUtils::CommandsBase
     include OpenDirectoryUtils::CommandsGroup
     include OpenDirectoryUtils::CommandsUserAttribsOd
     include OpenDirectoryUtils::CommandsUserAttribsLdap

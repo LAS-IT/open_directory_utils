@@ -1,5 +1,6 @@
 require "open_directory_utils/dscl"
 require "open_directory_utils/clean_check"
+require "open_directory_utils/commands_base"
 
 module OpenDirectoryUtils
 
@@ -9,8 +10,11 @@ module OpenDirectoryUtils
   # * https://apple.stackexchange.com/questions/307173/creating-a-group-via-users-groups-in-command-line?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
   module CommandsGroup
 
-    include OpenDirectoryUtils::Dscl
+    # include OpenDirectoryUtils::Dscl
     include OpenDirectoryUtils::CleanCheck
+    include OpenDirectoryUtils::CommandsBase
+
+    require "open_directory_utils/commands_group"
 
     # dscl . read /Groups/ladmins
     def group_get_info(attribs, dir_info)

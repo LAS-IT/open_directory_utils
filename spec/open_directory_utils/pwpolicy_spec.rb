@@ -5,15 +5,6 @@ RSpec.describe OpenDirectoryUtils::Pwpolicy do
 
   context "build commands" do
 
-    # before(:each) do
-    #   # test module without loading real objects
-    #   # https://www.ruby-forum.com/topic/171189
-    #   @od = Object.new
-    #   @od.extend(OpenDirectoryUtils::UserActions)
-    #   @srv_info = {diradmin: 'diradmin', password: 'TopSecret',
-    #                  data_path: '/LDAPv3/127.0.0.1/'}
-    # end
-
     let(:policy)   { Object.new.extend(OpenDirectoryUtils::Pwpolicy) }
     let(:srv_info) { {diradmin: 'diradmin', password: 'TopSecret',
                       data_path: '/LDAPv3/127.0.0.1/',

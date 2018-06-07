@@ -1,5 +1,6 @@
 require "open_directory_utils/dscl"
 require "open_directory_utils/clean_check"
+require "open_directory_utils/commands_base"
 
 module OpenDirectoryUtils
 
@@ -9,8 +10,9 @@ module OpenDirectoryUtils
   # * https://superuser.com/questions/592921/mac-osx-users-vs-dscl-command-to-list-user/621055?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
   module CommandsUserAttribsOd
 
-    include OpenDirectoryUtils::Dscl
+    # include OpenDirectoryUtils::Dscl
     include OpenDirectoryUtils::CleanCheck
+    include OpenDirectoryUtils::CommandsBase
 
     # GET INFO
     ##########
@@ -128,44 +130,6 @@ module OpenDirectoryUtils
       dscl( user_attrs, dir_info )
     end
 
-    # sudo dscl . -create /Users/someuser PrimaryGroupID 80
-    def user_set_primary_group_id(attribs, dir_info)
-      attribs = user_record_name_alternatives(attribs)
-
-      attribs[:value] = attribs[:value] || attribs[:group_id]
-      attribs[:value] = attribs[:value] || attribs[:gidnumber]
-      attribs[:value] = attribs[:value] || attribs[:groupnumber]
-      attribs[:value] = attribs[:value] || attribs[:group_number]
-      attribs[:value] = attribs[:value] || attribs[:primarygroupid]
-      attribs[:value] = attribs[:value] || attribs[:primary_group_id]
-
-      check_critical_attribute( attribs, :record_name )
-      check_critical_attribute( attribs, :value, :group_id )
-      attribs    = tidy_attribs(attribs)
-
-      command    = {action: 'create', scope: 'Users', attribute: 'PrimaryGroupID'}
-      user_attrs = attribs.merge(command)
-
-      dscl( user_attrs, dir_info )
-    end
-
-    def user_set_group_memebership(attribs, dir_info)
-      attribs = group_record_name_alternatives(attribs)
-
-      attribs[:value]       = attribs[:value]       || attribs[:user_name]
-      attribs[:value]       = attribs[:value]       || attribs[:username]
-      attribs[:value]       = attribs[:value]       || attribs[:uid]
-
-      check_critical_attribute( attribs, :record_name, :groupname )
-      check_critical_attribute( attribs, :value, :username )
-      attribs    = tidy_attribs(attribs)
-
-      command    = {action: 'append', scope: 'Groups', attribute: 'GroupMembership'}
-      user_attrs  = attribs.merge(command)
-
-      dscl( user_attrs, dir_info )
-    end
-
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/someuser NFSHomeDirectory /Users/someuser
     def user_set_nfs_home_directory(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
@@ -179,41 +143,6 @@ module OpenDirectoryUtils
       attribs    = tidy_attribs(attribs)
 
       command    = {action: 'create', scope: 'Users', attribute: 'NFSHomeDirectory'}
-      user_attrs = attribs.merge(command)
-
-      dscl( user_attrs, dir_info )
-    end
-
-    # /usr/bin/pwpolicy -a diradmin -p "TopSecret" -u username -setpassword "AnotherSecret"
-    # /usr/bin/dscl -plist -u diradmin -P #{adminpw} /LDAPv3/127.0.0.1/ -passwd /Users/#{shortname} "#{passwd}"
-    def user_set_password(attribs, dir_info)
-      attribs = user_record_name_alternatives(attribs)
-
-      attribs[:value] = attribs[:value] || attribs[:password]
-      attribs[:value] = attribs[:value] || attribs[:passwd]
-      attribs[:value] = attribs[:value] || '*'
-
-      check_critical_attribute( attribs, :record_name )
-      check_critical_attribute( attribs, :value, :password )
-      attribs    = tidy_attribs(attribs)
-
-      command    = {action: 'passwd', scope: 'Users'}
-      user_attrs = attribs.merge(command)
-
-      dscl( user_attrs, dir_info )
-    end
-    # /usr/bin/dscl /LDAPv3/127.0.0.1 -auth #{shortname} "#{passwd}"
-    def user_verify_password(attribs, dir_info)
-      attribs = user_record_name_alternatives(attribs)
-
-      attribs[:value] = attribs[:value] || attribs[:password]
-      attribs[:value] = attribs[:value] || attribs[:passwd]
-
-      check_critical_attribute( attribs, :record_name )
-      check_critical_attribute( attribs, :value, :password )
-      attribs    = tidy_attribs(attribs)
-
-      command    = {action: 'auth', scope: 'Users'}
       user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )
@@ -295,18 +224,117 @@ module OpenDirectoryUtils
       return answer
     end
 
-    # dscl . -delete /Users/yourUserName
-    # https://tutorialforlinux.com/2011/09/15/delete-users-and-groups-from-terminal/
-    def user_delete(attribs, dir_info)
+    # sudo dscl . -create /Users/someuser PrimaryGroupID 80
+    def user_set_primary_group_id(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+
+      attribs[:value] = attribs[:value] || attribs[:group_id]
+      attribs[:value] = attribs[:value] || attribs[:gidnumber]
+      attribs[:value] = attribs[:value] || attribs[:groupnumber]
+      attribs[:value] = attribs[:value] || attribs[:group_number]
+      attribs[:value] = attribs[:value] || attribs[:primarygroupid]
+      attribs[:value] = attribs[:value] || attribs[:primary_group_id]
+
+      check_critical_attribute( attribs, :record_name )
+      check_critical_attribute( attribs, :value, :group_id )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'PrimaryGroupID'}
+      user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
+    end
+
+    def user_set_group_memebership(attribs, dir_info)
+      attribs = group_record_name_alternatives(attribs)
+
+      attribs[:value]       = attribs[:value]       || attribs[:user_name]
+      attribs[:value]       = attribs[:value]       || attribs[:username]
+      attribs[:value]       = attribs[:value]       || attribs[:uid]
+
+      check_critical_attribute( attribs, :record_name, :groupname )
+      check_critical_attribute( attribs, :value, :username )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'append', scope: 'Groups', attribute: 'GroupMembership'}
+      user_attrs  = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
+    end
+
+    def user_remove_group_memebership(attribs, dir_info)
+      attribs = group_record_name_alternatives(attribs)
+
+      attribs[:value]       = attribs[:value]       || attribs[:user_name]
+      attribs[:value]       = attribs[:value]       || attribs[:username]
+      attribs[:value]       = attribs[:value]       || attribs[:uid]
+
+      check_critical_attribute( attribs, :record_name, :groupname )
+      check_critical_attribute( attribs, :value, :username )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'delete', scope: 'Groups', attribute: 'GroupMembership'}
+      user_attrs  = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
+    end
+
+    # /usr/bin/pwpolicy -a diradmin -p "TopSecret" -u username -setpassword "AnotherSecret"
+    # /usr/bin/dscl -plist -u diradmin -P #{adminpw} /LDAPv3/127.0.0.1/ -passwd /Users/#{shortname} "#{passwd}"
+    def user_set_password(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+
+      attribs[:value] = attribs[:value] || attribs[:password]
+      attribs[:value] = attribs[:value] || attribs[:passwd]
+      attribs[:value] = attribs[:value] || '*'
+
+      check_critical_attribute( attribs, :record_name )
+      check_critical_attribute( attribs, :value, :password )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'passwd', scope: 'Users'}
+      user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
+    end
+    # /usr/bin/dscl /LDAPv3/127.0.0.1 -auth #{shortname} "#{passwd}"
+    def user_verify_password(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+
+      attribs[:value] = attribs[:value] || attribs[:password]
+      attribs[:value] = attribs[:value] || attribs[:passwd]
+
+      check_critical_attribute( attribs, :record_name )
+      check_critical_attribute( attribs, :value, :password )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'auth', scope: 'Users'}
+      user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
+    end
+
+    # /usr/bin/pwpolicy -a diradmin -p A-B1g-S3cret -u $shortname_USERNAME -setpolicy "isDisabled=0"
+    def user_enable_login(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
       check_critical_attribute( attribs, :record_name )
       attribs    = tidy_attribs(attribs)
 
-      command    = {action: 'delete', scope: 'Users', value: nil, attribute: nil}
-      user_attrs = attribs.merge(command)
+      command = {attribute: 'enableuser', value: nil}
+      params  = command.merge(attribs)
+      pwpolicy(params, dir_info)
+    end
+    # /usr/bin/pwpolicy -a diradmin -p A-B1g-S3cret -u $shortname_USERNAME -setpolicy "isDisabled=1"
+    def user_disable_login(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
 
-      dscl( user_attrs, dir_info )
+      check_critical_attribute( attribs, :record_name )
+      attribs    = tidy_attribs(attribs)
+
+      command = {attribute: 'disableuser', value: nil}
+      params  = command.merge(attribs)
+      pwpolicy(params, dir_info)
     end
 
     # https://images.apple.com/server/docs/Command_Line.pdf
@@ -328,6 +356,11 @@ module OpenDirectoryUtils
       answer         << dscl( user_attrs, dir_info )
       attribs[:value] = nil
       answer         << user_set_password(attribs, dir_info)
+      attribs[:value] = nil
+      answer         << user_enable_login(attribs, dir_info)      if
+                        attribs[:enable]&.eql? 'true' or attribs[:enable]&.eql? true
+      answer         << user_disable_login(attribs, dir_info) unless
+                        attribs[:enable]&.eql? 'true' or attribs[:enable]&.eql? true
       attribs[:value] = nil
       answer         << user_set_real_name(attribs, dir_info)
 
@@ -378,6 +411,21 @@ module OpenDirectoryUtils
       end
 
       return answer.flatten
+    end
+    alias_method :user_create, :user_create_full
+
+    # dscl . -delete /Users/yourUserName
+    # https://tutorialforlinux.com/2011/09/15/delete-users-and-groups-from-terminal/
+    def user_delete(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+
+      check_critical_attribute( attribs, :record_name )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'delete', scope: 'Users', value: nil, attribute: nil}
+      user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
     end
 
     # 1st keyword    -- /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-keyword "$VALUE"

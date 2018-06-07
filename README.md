@@ -13,6 +13,7 @@ One can also build custom DSCL commands and send them to the server as needed to
   - refactored to separate OD attribute from LDAP attribute commands (shortened methods and better organization and shorter tests)
 * **v0.1.2** - 2018-06-07
   - new user creation will add user to a group if group_membership attribute included
+  - new accounts disabled by default (option to enable on creation)
   - now repo include example code (to create accounts)
 
 ## ToDo
