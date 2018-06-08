@@ -304,15 +304,15 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
       it "user_enable_login" do
         attribs = {username: 'someone'}
         answer  = user.send(:user_enable_login, attribs, srv_info)
-        correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -enableuser'
-        # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=0"'
+        correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -enableuser'
+        # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -enableuser'
         expect( answer ).to eq( correct )
       end
       it "user_disable_login" do
         attribs = {username: 'someone'}
         answer  = user.send(:user_disable_login, attribs, srv_info)
-        correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser'
-        # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=1"'
+        correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser'
+        # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser'
         expect( answer ).to eq( correct )
       end
     end
@@ -419,7 +419,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "*"',
-          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser',
+          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser',
+          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "someone"',
         ]
       }
@@ -447,7 +448,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         correct = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "*"',
-          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -enableuser',
+          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -enableuser',
+          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -enableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "Someone Special"',
         ]
         expect( answer ).to eq( correct )
@@ -460,7 +462,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         correct = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "*"',
-          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -enableuser',
+          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -enableuser',
+          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -enableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "Someone Special"',
         ]
         expect( answer ).to eq( correct )
@@ -472,7 +475,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         correct = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "*"',
-          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser',
+          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser',
+          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "Someone Special"',
         ]
         expect( answer ).to eq( correct )
@@ -484,7 +488,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         correct = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "*"',
-          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser',
+          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser',
+          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "Someone Special"',
         ]
         expect( answer ).to eq( correct )
@@ -496,7 +501,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         correct = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "*"',
-          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser',
+          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser',
+          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "Someone Special"',
         ]
         expect( answer ).to eq( correct )
@@ -508,7 +514,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         correct = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "*"',
-          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser',
+          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser',
+          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "Someone Special"',
         ]
         expect( answer ).to eq( correct )
@@ -530,7 +537,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
       let(:correct) {[
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "*"',
-        '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser',
+        '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser',
+        # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "Someone SPECIAL"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/bash"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone FirstName "Someone"',
@@ -567,7 +575,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         with_all = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "TopSecret"',
-          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -enableuser',
+          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -enableuser',
+          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -enableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "Someone SPECIAL"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/bash"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone FirstName "Someone"',
@@ -591,7 +600,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         no_email = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "*"',
-          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser',
+          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser',
+          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "Someone SPECIAL"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/bash"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone FirstName "Someone"',
@@ -610,7 +620,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         no_first = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someone "*"',
-          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser',
+          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser',
+          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone RealName "SPECIAL"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone UserShell "/bin/bash"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone LastName "SPECIAL"',
@@ -632,7 +643,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         no_last = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someoney',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Users/someoney "TopSecret"',
-          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someoney -disableuser',
+          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someoney -disableuser',
+          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someoney -disableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someoney RealName "Someone"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someoney UserShell "/bin/bash"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someoney FirstName "Someone"',

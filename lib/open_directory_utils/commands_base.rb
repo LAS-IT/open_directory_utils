@@ -48,7 +48,7 @@ module OpenDirectoryUtils
                                                       dir_info[:username].empty?
       ans += %Q[ -p "#{dir_info[:password]}"]  unless dir_info[:password].nil? or
                                                       dir_info[:password].empty?
-      ans += %Q[ -n #{dir_info[:data_path]}]
+      # ans += %Q[ -n #{dir_info[:data_path]}]
       ans += %Q[ -u #{params[:record_name]}]
       ans += %Q[ -#{params[:attribute]}]
       ans += %Q[ "#{params[:value]}"]          unless params[:value].nil? or
