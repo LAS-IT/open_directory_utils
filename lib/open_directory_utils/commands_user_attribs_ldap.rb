@@ -220,64 +220,6 @@ module OpenDirectoryUtils
       dscl( user_attrs, dir_info )
     end
 
-    # https://images.apple.com/server/docs/Command_Line.pdf
-    # https://serverfault.com/questions/20702/how-do-i-create-user-accounts-from-the-terminal-in-mac-os-x-10-5?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-    # https://superuser.com/questions/1154564/how-to-create-a-user-from-the-macos-command-line
-    def user_create_min(attribs, dir_info)
-      attribs = user_record_name_alternatives(attribs)
-
-      check_critical_attribute( attribs, :record_name )
-      attribs    = tidy_attribs(attribs)
-
-      command    = {action: 'create', scope: 'Users', value: nil, attribute: nil}
-      user_attrs = attribs.merge(command)
-
-      dscl( user_attrs, dir_info )
-
-      answer          = []
-      attribs[:value] = nil
-      answer         << dscl( user_attrs, dir_info )
-      attribs[:value] = nil
-      answer         << user_set_password(attribs, dir_info)
-      attribs[:value] = nil
-      answer         << user_set_real_name(attribs, dir_info)
-
-      return answer
-    end
-
-    # https://images.apple.com/server/docs/Command_Line.pdf
-    # https://serverfault.com/questions/20702/how-do-i-create-user-accounts-from-the-terminal-in-mac-os-x-10-5?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-    # https://superuser.com/questions/1154564/how-to-create-a-user-from-the-macos-command-line
-    def user_create_full(attribs, dir_info)
-      attribs = user_record_name_alternatives(attribs)
-
-      check_critical_attribute( attribs, :record_name )
-      attribs    = tidy_attribs(attribs).dup
-
-      answer          = []
-      attribs[:value] = nil
-      answer         << user_create_min(attribs, dir_info)
-      attribs[:value] = nil
-      answer         << user_set_shell(attribs, dir_info)
-      attribs[:value] = nil
-      answer         << user_set_first_name(attribs, dir_info)
-      attribs[:value] = nil
-      answer         << user_set_last_name(attribs, dir_info)
-      attribs[:value] = nil
-      answer         << user_set_unique_id(attribs, dir_info)
-      attribs[:value] = nil
-      answer         << user_set_primary_group_id(attribs, dir_info)
-      attribs[:value] = nil
-      answer         << user_set_nfs_home_directory(attribs, dir_info)
-      # skip email if non-sent
-      unless attribs[:email].nil? and attribs[:mail].nil? and attribs[:apple_user_mailattribute].nil?
-        attribs[:value] = nil
-        answer         << user_set_email(attribs, dir_info)
-      end
-
-      return answer.flatten
-    end
-
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME mobile "$VALUE"
     def user_set_mobile_phone
     end
