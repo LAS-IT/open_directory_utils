@@ -45,6 +45,7 @@ module OpenDirectoryUtils
     def user_set_real_name(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
+      attribs[:value] = attribs[:value] || attribs[:common_name]
       attribs[:value] = attribs[:value] || attribs[:cn]
       attribs[:value] = attribs[:value] || attribs[:realname]
       attribs[:value] = attribs[:value] || attribs[:real_name]
@@ -246,40 +247,6 @@ module OpenDirectoryUtils
       dscl( user_attrs, dir_info )
     end
 
-    def user_set_group_memebership(attribs, dir_info)
-      attribs = group_record_name_alternatives(attribs)
-
-      attribs[:value]       = attribs[:value]       || attribs[:user_name]
-      attribs[:value]       = attribs[:value]       || attribs[:username]
-      attribs[:value]       = attribs[:value]       || attribs[:uid]
-
-      check_critical_attribute( attribs, :record_name, :groupname )
-      check_critical_attribute( attribs, :value, :username )
-      attribs    = tidy_attribs(attribs)
-
-      command    = {action: 'append', scope: 'Groups', attribute: 'GroupMembership'}
-      user_attrs  = attribs.merge(command)
-
-      dscl( user_attrs, dir_info )
-    end
-
-    def user_remove_group_memebership(attribs, dir_info)
-      attribs = group_record_name_alternatives(attribs)
-
-      attribs[:value]       = attribs[:value]       || attribs[:user_name]
-      attribs[:value]       = attribs[:value]       || attribs[:username]
-      attribs[:value]       = attribs[:value]       || attribs[:uid]
-
-      check_critical_attribute( attribs, :record_name, :groupname )
-      check_critical_attribute( attribs, :value, :username )
-      attribs    = tidy_attribs(attribs)
-
-      command    = {action: 'delete', scope: 'Groups', attribute: 'GroupMembership'}
-      user_attrs  = attribs.merge(command)
-
-      dscl( user_attrs, dir_info )
-    end
-
     # /usr/bin/pwpolicy -a diradmin -p "TopSecret" -u username -setpassword "AnotherSecret"
     # /usr/bin/dscl -plist -u diradmin -P #{adminpw} /LDAPv3/127.0.0.1/ -passwd /Users/#{shortname} "#{passwd}"
     def user_set_password(attribs, dir_info)
@@ -299,7 +266,7 @@ module OpenDirectoryUtils
       dscl( user_attrs, dir_info )
     end
     # /usr/bin/dscl /LDAPv3/127.0.0.1 -auth #{shortname} "#{passwd}"
-    def user_verify_password(attribs, dir_info)
+    def user_password_verified?(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
       attribs[:value] = attribs[:value] || attribs[:password]
@@ -314,6 +281,7 @@ module OpenDirectoryUtils
 
       dscl( user_attrs, dir_info )
     end
+    alias_method :user_password_ok?, :user_password_verified?
 
     # /usr/bin/pwpolicy -a diradmin -p A-B1g-S3cret -u $shortname_USERNAME -setpolicy "isDisabled=0"
     def user_enable_login(attribs, dir_info)
@@ -337,6 +305,19 @@ module OpenDirectoryUtils
       params  = command.merge(attribs)
       pwpolicy(params, dir_info)
     end
+
+    # /usr/bin/pwpolicy -a diradmin -p A-B1g-S3cret -u $shortname_USERNAME -getpolicy
+    def user_get_policy(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+
+      check_critical_attribute( attribs, :record_name )
+      attribs    = tidy_attribs(attribs)
+
+      command = {attribute: 'getpolicy', value: nil}
+      params  = command.merge(attribs)
+      pwpolicy(params, dir_info)
+    end
+    alias_method :user_login_enabled?,  :user_get_policy
 
     # https://images.apple.com/server/docs/Command_Line.pdf
     # https://serverfault.com/questions/20702/how-do-i-create-user-accounts-from-the-terminal-in-mac-os-x-10-5?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
@@ -404,12 +385,15 @@ module OpenDirectoryUtils
         attribs[:value] = nil
         answer         << user_set_email(attribs, dir_info)
       end
-      # enroll in a group membership if info present
-      if attribs[:group_name] or attribs[:groupname] or attribs[:gid] or
-                          attribs[:group_membership] or attribs[:groupmembership]
-        attribs[:value] = nil
-        answer         << user_set_group_memebership(attribs, dir_info)
-      end
+      # TODO add to groups without error - if group present
+      # "<main> attribute status: eDSSchemaError\n" +
+      # "<dscl_cmd> DS Error: -14142 (eDSSchemaError)"]
+      # # enroll in a group membership if info present
+      # if attribs[:group_name] or attribs[:groupname] or attribs[:gid] or
+      #                   attribs[:group_membership] or attribs[:groupmembership]
+      #   attribs[:value] = nil
+      #   answer         << user_set_group_memebership(attribs, dir_info)
+      # end
 
       return answer.flatten
     end
