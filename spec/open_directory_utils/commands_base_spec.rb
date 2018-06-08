@@ -85,6 +85,13 @@ RSpec.describe OpenDirectoryUtils::CommandsBase do
     end
 
     describe "build dscl actions" do
+      it "check user membership" do
+        attribs = { record_name: 'someone', action: 'read', scope: 'Users',
+                    attribute: nil, value: nil, format: nil }
+        answer  = base.send(:dscl, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+        expect( answer ).to eq( correct )
+      end
       it "read base user (nil attributes, return text)" do
         attribs = { record_name: ' someone', action: 'read', scope: 'Users',
                     attribute: nil, value: nil, format: nil }
@@ -174,6 +181,20 @@ RSpec.describe OpenDirectoryUtils::CommandsBase do
 
   context "test dseditgroup" do
     describe "dseditgroup build by hand" do
+      it "all good data - check user membership" do
+        attribs = { operation: 'checkmember', value: 'groupname',
+                    record_name: 'username'}
+        answer  = base.send(:dseditgroup, attribs, srv_info)
+        correct = '/usr/bin/dseditgroup -o checkmember -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1/ -m username groupname'
+        expect( answer ).to eq( correct )
+      end
+      it "check user membership - with extra info" do
+        attribs = { operation: 'checkmember', value: 'groupname',
+                    record_name: 'username', action: 'add', type: 'user'}
+        answer  = base.send(:dseditgroup, attribs, srv_info)
+        correct = '/usr/bin/dseditgroup -o checkmember -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1/ -m username groupname'
+        expect( answer ).to eq( correct )
+      end
       it "all good data - to add a user" do
         attribs = { operation: 'edit', value: 'groupname',
                     record_name: 'username', action: 'add', type: 'user'}

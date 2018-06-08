@@ -364,7 +364,7 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
     end
   end
 
-  context "user into group edits" do
+  context "edit user into & out of groups" do
     describe "user_append_to_group" do
       let(:params)  { {uid: 'odtestuser', gid: 'test'} }
       before(:each) do

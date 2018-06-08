@@ -32,6 +32,9 @@ module OpenDirectoryUtils
     def dseditgroup(attribs, dir_info)
       check_critical_attribute( attribs, :value )
       check_critical_attribute( attribs, :operation )
+      if attribs[:operation].eql?('checkmember')
+        check_critical_attribute( attribs, :record_name )
+      end
       if attribs[:operation].eql?('edit')
         check_critical_attribute( attribs, :record_name )
         check_critical_attribute( attribs, :action )
@@ -109,6 +112,7 @@ module OpenDirectoryUtils
         ans += %Q[ -r "#{params[:real_name]}"] unless params[:real_name].to_s.eql?('')
         ans += %Q[ -k #{params[:keyword]}]     unless params[:keyword].to_s.eql?('')
       end
+      ans += %Q[ -m #{params[:record_name]}]       if params[:operation].to_s.eql?('checkmember')
       if params[:operation].eql?('edit')
         ans += %Q[ -a #{params[:record_name]}]     if params[:action].to_s.eql?('add')
         ans += %Q[ -d #{params[:record_name]}]     if params[:action].to_s.eql?('delete')
