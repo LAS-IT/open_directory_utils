@@ -37,13 +37,13 @@ module OpenDirectoryUtils
     def user_in_group?(attribs, dir_info)
       temp       = user_record_name_alternatives(attribs)
       username   = temp[:record_name]
-      pp username
-      pp attribs
+      # pp username
+      # pp attribs
 
       attribs    = group_record_name_alternatives(attribs)
       groupname  = attribs[:record_name]
       attribs[:value] = username
-      pp attribs
+      # pp attribs
 
       check_critical_attribute( attribs, :value, :username )
       check_critical_attribute( attribs, :record_name, :groupname )

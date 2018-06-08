@@ -274,7 +274,7 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
         expect( passwd[:success] ).not_to be nil
         expect( passwd[:error] ).to be nil
       end
-      xit "verifies a new account is enabled with policy" do
+      it "verifies a new account is enabled with policy" do
         there  = od.run(command: :user_exists?, params: {username: 'odusertest'})
         expect( there[:success].to_s ).to match('true')
 
@@ -282,7 +282,7 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
         expect( enable[:success] ).not_to be nil
 
         # why doesn't 'odusertest' has NO policies in this case?
-        pp od.run(command: :user_get_policy, params: {username: 'odusertest'})
+        # pp od.run(command: :user_get_policy, params: {username: 'odusertest'})
         answer = od.run(command: :user_login_enabled?, params: {username: 'odusertest'})
         expect( answer[:success].to_s ).to match('true')
       end
@@ -296,7 +296,7 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
         # pp od.run(command: :user_info, params: {username: 'odusertest'})
         passwd = od.run(command: :user_set_password,
                         params: {username: 'odusertest', password: "T0p-S3cret"})
-        pp passwd
+        # pp passwd
         expect( passwd[:success] ).to be nil
         expect( passwd[:error].to_s ).to match(/eDSAuthAccountDisabled/)
       end
@@ -308,7 +308,7 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
         expect( blocked[:success] ).not_to be nil
 
         answer = od.run(command: :user_login_enabled?, params: {username: 'odusertest'})
-        pp answer
+        # pp answer
         expect( answer[:success].to_s ).to match('false')
         expect( answer[:error] ).to be nil
       end

@@ -50,10 +50,10 @@ module OpenDirectoryUtils
       # just in case clear record_name and calculate later
       params[:record_name] = nil
       ssh_cmds = send(command, params, dir_info)
-      pp ssh_cmds
+      # pp ssh_cmds
 
       results  = send_cmds_to_od_server(ssh_cmds)
-      pp results
+      # pp results
 
       process_results(results, command, params, ssh_cmds)
       rescue ArgumentError, NoMethodError => error
@@ -88,7 +88,7 @@ module OpenDirectoryUtils
 
       if results.to_s.include?('eDSRecordNotFound') or            # return error if resource wasn't found
           results.to_s.include?('eDSAuthAccountDisabled') or      # can't set passwd when disabled
-          results_str.include?('unknown AuthenticationAuthority') #
+          results_str.include?('unknown AuthenticationAuthority') # can't reset password when account disabled
         return format_results(results, command, params, ssh_cmds, true)
       end
 
@@ -99,15 +99,10 @@ module OpenDirectoryUtils
       end
 
       if command.eql?(:user_login_enabled?)
-        puts "login enabled -- #{results}".upcase
-        pp results_str
+        # puts "login enabled -- #{results}".upcase
         enabled = login_enabled?(results_str)
         results = [ enabled, results ]
         return format_results(results, command, params, ssh_cmds, false)
-        # unless results.to_s.include?('eDSRecordNotFound')
-        #   results = [true, results]      if results_str.include?('isDisabled=0')
-        #   results = [false, results] unless results_str.include?('isDisabled=0')
-        # end
       end
 
       if command.eql?(:user_in_group?) or command.eql?(:group_has_user?)
@@ -124,14 +119,27 @@ module OpenDirectoryUtils
         results = ["Resource not found", results]
       end
 
-      answer = case errors
-      when false
-        {success:{response: results, command: command, attributes: params}}
-      else
-        {error:  {response: results, command: command,
-                  attributes: params, dscl_cmds: ssh_cmds}}
-      end
-      return answer
+      # if results_str.include?('eDSRecordNotFound') or             # resource wasn't found - doesn't exist
+      #     results_str.include?('unknown AuthenticationAuthority') # can't find account to reset password
+      #   results = ["Resource not found", results]
+      #   return format_results(results, command, params, ssh_cmds, true)
+      # end
+      #
+      # if results.to_s.include?('eDSAuthAccountDisabled') or      # can't set passwd when disabled
+      #   results = ["Can't reset password when account disabled", results]
+      #   return format_results(results, command, params, ssh_cmds, true)
+      # end
+
+      return format_results(results, command, params, ssh_cmds, errors)
+
+      # answer = case errors
+      # when false
+      #   {success:{response: results, command: command, attributes: params}}
+      # else
+      #   {error:  {response: results, command: command,
+      #             attributes: params, dscl_cmds: ssh_cmds}}
+      # end
+      # return answer
     end
 
     def format_results(results, command, params, ssh_cmds, errors)
@@ -146,10 +154,11 @@ module OpenDirectoryUtils
     end
 
     def login_enabled?(results_str)
-      pp results_str
       return false if results_str.include?('account is disabled')
-      return true  if results_str.include?('isDisabled=0')
-      false
+      return false if results_str.include?('isDisabled=1')
+      # some enabled accounts return no policies ?#$?
+      # return true  if results_str.include?('isDisabled=0')
+      true
     end
 
     def password_verified?(results_str)
