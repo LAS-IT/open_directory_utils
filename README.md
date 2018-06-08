@@ -48,6 +48,8 @@ Or install it yourself as:
 
 ## Usage
 
+Also see examples to see an example of multiple account creation
+
 ```ruby
 require 'open_directory_utils'
 

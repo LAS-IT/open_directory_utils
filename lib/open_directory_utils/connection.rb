@@ -32,6 +32,7 @@ module OpenDirectoryUtils
                     data_path: config[:dir_datapath],
                     dscl: config[:dscl_path],
                     pwpol: config[:pwpol_path],
+                    dsedit: config[:dsedit_path],
                   }
       raise ArgumentError, 'server hostname missing' if srv_info[:hostname].nil? or
                                                         srv_info[:hostname].empty?
@@ -49,10 +50,12 @@ module OpenDirectoryUtils
       # just in case clear record_name and calculate later
       params[:record_name] = nil
       ssh_cmds = send(command, params, dir_info)
+      pp ssh_cmds
+
       results  = send_cmds_to_od_server(ssh_cmds)
-      # pp ssh_cmds
-      # pp results
-      format_results(results, command, params, ssh_cmds)
+      pp results
+
+      process_results(results, command, params, ssh_cmds)
       rescue ArgumentError, NoMethodError => error
         {error:  {response: error.message, command: command,
                   attributes: params, dscl_cmds: ssh_cmds}}
@@ -72,44 +75,91 @@ module OpenDirectoryUtils
       return output
     end
 
-    def format_results(results, command, params, ssh_cmds)
-      errors = true         if results.to_s.include? 'Error'
-      errors = false    unless results.to_s.include? 'Error'
+    def process_results(results, command, params, ssh_cmds)
+      results_str = results.to_s
+      errors = true         if results_str.include? 'Error'
+      errors = false    unless results_str.include? 'Error'
 
       if command.eql?(:user_exists?) or command.eql?(:group_exists?)
-        errors  = false        # in this case not actually an error
-        unless results.to_s.include?('eDSRecordNotFound')
-          results = [true]
-        else
-          results = [false]
-        end
+        found   = record_found?(results_str)
+        results = [ found, results ]
+        return format_results(results, command, params, ssh_cmds, false)
+      end
+
+      if results.to_s.include?('eDSRecordNotFound') or            # return error if resource wasn't found
+          results.to_s.include?('eDSAuthAccountDisabled') or      # can't set passwd when disabled
+          results_str.include?('unknown AuthenticationAuthority') #
+        return format_results(results, command, params, ssh_cmds, true)
+      end
+
+      if command.eql?(:user_password_verified?) or command.eql?(:user_password_ok?)
+        passed  = password_verified?(results_str)
+        results = [ passed, results ]
+        return format_results(results, command, params, ssh_cmds, false)
+      end
+
+      if command.eql?(:user_login_enabled?)
+        puts "login enabled -- #{results}".upcase
+        pp results_str
+        enabled = login_enabled?(results_str)
+        results = [ enabled, results ]
+        return format_results(results, command, params, ssh_cmds, false)
+        # unless results.to_s.include?('eDSRecordNotFound')
+        #   results = [true, results]      if results_str.include?('isDisabled=0')
+        #   results = [false, results] unless results_str.include?('isDisabled=0')
+        # end
       end
 
       if command.eql?(:user_in_group?) or command.eql?(:group_has_user?)
-        username = nil
-        username = username || params[:user_name]
-        username = username || params[:username]
-        username = username || params[:uid]
-        username = username.to_s.strip
-
-        raise ArgumentError, "username invalid or missing"  if username.eql? '' or username.include? ' '
-        raise ArgumentError, "groupname invalid or missing" if results.to_s.include?('eDSRecordNotFound')
-
-        if results.to_s.include?( username )
-          results = [true]
-        else
-          results = [false]
+        username = params[:value]
+        unless username.nil? or username.eql? '' or username.include? ' ' or
+                results_str.include?('eDSRecordNotFound')
+          results = [true, results]      if results_str.include?( username )
+          results = [false, results] unless results_str.include?( username )
         end
       end
 
-      ans = case errors
+      if errors and ( results_str.include?('eDSRecordNotFound') or
+                      results_str.include?('unknown AuthenticationAuthority') )
+        results = ["Resource not found", results]
+      end
+
+      answer = case errors
       when false
         {success:{response: results, command: command, attributes: params}}
       else
         {error:  {response: results, command: command,
                   attributes: params, dscl_cmds: ssh_cmds}}
       end
-      return ans
+      return answer
+    end
+
+    def format_results(results, command, params, ssh_cmds, errors)
+      answer = case errors
+      when false
+        {success:{response: results, command: command, attributes: params}}
+      else
+        {error:  {response: results, command: command,
+                  attributes: params, dscl_cmds: ssh_cmds}}
+      end
+      return answer
+    end
+
+    def login_enabled?(results_str)
+      pp results_str
+      return false if results_str.include?('account is disabled')
+      return true  if results_str.include?('isDisabled=0')
+      false
+    end
+
+    def password_verified?(results_str)
+      return false if results_str.include?('eDSAuthFailed')
+      true
+    end
+
+    def record_found?(results_str)
+      return false  if results_str.include?('eDSRecordNotFound')
+      true
     end
 
     def defaults
@@ -122,8 +172,9 @@ module OpenDirectoryUtils
         dir_password: ENV['DIR_ADMIN_PASS'],
         dir_datapath: (ENV['DIR_DATAPATH'] || '/LDAPv3/127.0.0.1/'),
 
-        dscl_path:    ENV['DSCL_PATH']  || '/usr/bin/dscl',
-        pwpol_path:   ENV['PWPOL_PATH'] || '/usr/bin/pwpolicy'
+        dscl_path:    ENV['DSCL_PATH']   || '/usr/bin/dscl',
+        pwpol_path:   ENV['PWPOL_PATH']  || '/usr/bin/pwpolicy',
+        dsedit_path:  ENV['DSEDIT_PATH'] || '/usr/sbin/dseditgroup',
       }
     end
 

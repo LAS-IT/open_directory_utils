@@ -140,15 +140,15 @@ RSpec.describe OpenDirectoryUtils::CommandsBase do
       it "user_enable_login" do
         attribs = {record_name: 'someone', attribute: 'enableuser', value: nil}
         answer  = base.send(:pwpolicy, attribs, srv_info)
-        correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -enableuser'
-        # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=0"'
+        correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -enableuser'
+        # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -enableuser'
         expect( answer ).to eq( correct )
       end
       it "user_disable_login" do
         attribs = {record_name: 'someone', attribute: 'disableuser', value: nil}
         answer  = base.send(:pwpolicy, attribs, srv_info)
-        correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser'
-        # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -setpolicy "isDisabled=1"'
+        correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser'
+        # correct = '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1/ -u someone -disableuser'
         expect( answer ).to eq( correct )
       end
     end

@@ -105,127 +105,127 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
       end
     end
 
-    describe "user_add_to_group" do
-      it "with user_name & group_membership" do
-        attribs = {user_name: 'someone', group_membership: 'student'}
-        answer  = group.send(:user_add_to_group, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/student GroupMembership "someone"'
-        expect( answer ).to eq( correct )
-      end
-      it "with user_name & group_name" do
-        attribs = {user_name: 'someone', group_name: 'student'}
-        answer  = group.send(:user_add_to_group, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/student GroupMembership "someone"'
-        expect( answer ).to eq( correct )
-      end
-      it "with username & groupname" do
-        attribs = {username: 'someone', groupname: 'student'}
-        answer  = group.send(:user_add_to_group, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/student GroupMembership "someone"'
-        expect( answer ).to eq( correct )
-      end
-      it "with uid & gid" do
-        attribs = {uid: 'someone', gid: 'student'}
-        answer  = group.send(:user_add_to_group, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/student GroupMembership "someone"'
-        expect( answer ).to eq( correct )
-      end
-    end
+    # describe "user_add_to_group" do
+    #   it "with user_name & group_membership" do
+    #     attribs = {user_name: 'someone', group_membership: 'student'}
+    #     answer  = group.send(:user_add_to_group, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/student GroupMembership "someone"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    #   it "with user_name & group_name" do
+    #     attribs = {user_name: 'someone', group_name: 'student'}
+    #     answer  = group.send(:user_add_to_group, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/student GroupMembership "someone"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    #   it "with username & groupname" do
+    #     attribs = {username: 'someone', groupname: 'student'}
+    #     answer  = group.send(:user_add_to_group, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/student GroupMembership "someone"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    #   it "with uid & gid" do
+    #     attribs = {uid: 'someone', gid: 'student'}
+    #     answer  = group.send(:user_add_to_group, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/student GroupMembership "someone"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    # end
 
-    describe "user_remove_from_group" do
-      it "with user_name & group_membership" do
-        attribs = {user_name: 'someone', group_membership: 'student'}
-        answer  = group.send(:user_remove_from_group, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/student GroupMembership "someone"'
-        expect( answer ).to eq( correct )
-      end
-      it "with user_name & group_name" do
-        attribs = {user_name: 'someone', group_name: 'student'}
-        answer  = group.send(:user_remove_from_group, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/student GroupMembership "someone"'
-        expect( answer ).to eq( correct )
-      end
-      it "with username & groupname" do
-        attribs = {username: 'someone', groupname: 'student'}
-        answer  = group.send(:user_remove_from_group, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/student GroupMembership "someone"'
-        expect( answer ).to eq( correct )
-      end
-      it "with uid & gid" do
-        attribs = {uid: 'someone', gid: 'student'}
-        answer  = group.send(:user_remove_from_group, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/student GroupMembership "someone"'
-        expect( answer ).to eq( correct )
-      end
-    end
-
-    describe "group_add_first_user" do
-      it "with group_name" do
-        attribs = {group_name: 'somegroup', value: 'newuser'}
-        answer  = group.send(:group_add_first_user, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup GroupMembership "newuser"'
-        expect( answer ).to eq( correct )
-      end
-      it "with username" do
-        attribs = {groupname: 'somegroup', username: 'newuser'}
-        answer  = group.send(:group_add_first_user, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup GroupMembership "newuser"'
-        expect( answer ).to eq( correct )
-      end
-      it "with uid" do
-        attribs = {group_membership: 'somegroup', uid: 'newuser'}
-        answer  = group.send(:group_add_first_user, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup GroupMembership "newuser"'
-        expect( answer ).to eq( correct )
-      end
-    end
-    describe "group_add_user" do
-      it "with group_name" do
-        attribs = {group_name: 'somegroup', value: 'newuser'}
-        answer  = group.send(:group_add_user, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/somegroup GroupMembership "newuser"'
-        expect( answer ).to eq( correct )
-      end
-      it "with groupname" do
-        attribs = {groupname: 'somegroup', username: 'newuser'}
-        answer  = group.send(:group_add_user, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/somegroup GroupMembership "newuser"'
-        expect( answer ).to eq( correct )
-      end
-      it "with uid" do
-        attribs = {group_membership: 'somegroup', uid: 'newuser'}
-        answer  = group.send(:group_add_user, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/somegroup GroupMembership "newuser"'
-        expect( answer ).to eq( correct )
-      end
-    end
-
-    describe "group_remove_user" do
-      it "using group_name" do
-        attribs = {group_name: 'somegroup', value: 'newuser'}
-        answer  = group.send(:group_remove_user, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/somegroup GroupMembership "newuser"'
-        expect( answer ).to eq( correct )
-      end
-      it "using username" do
-        attribs = {groupname: 'somegroup', username: 'newuser'}
-        answer  = group.send(:group_remove_user, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/somegroup GroupMembership "newuser"'
-        expect( answer ).to eq( correct )
-      end
-      it "using gid" do
-        attribs = {gid: 'somegroup', uid: 'newuser'}
-        answer  = group.send(:group_remove_user, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/somegroup GroupMembership "newuser"'
-        expect( answer ).to eq( correct )
-      end
-      it "using cn" do
-        attribs = {group_membership: 'somegroup', uid: 'newuser'}
-        answer  = group.send(:group_remove_user, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/somegroup GroupMembership "newuser"'
-        expect( answer ).to eq( correct )
-      end
-    end
+    # describe "user_remove_from_group" do
+    #   it "with user_name & group_membership" do
+    #     attribs = {user_name: 'someone', group_membership: 'student'}
+    #     answer  = group.send(:user_remove_from_group, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/student GroupMembership "someone"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    #   it "with user_name & group_name" do
+    #     attribs = {user_name: 'someone', group_name: 'student'}
+    #     answer  = group.send(:user_remove_from_group, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/student GroupMembership "someone"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    #   it "with username & groupname" do
+    #     attribs = {username: 'someone', groupname: 'student'}
+    #     answer  = group.send(:user_remove_from_group, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/student GroupMembership "someone"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    #   it "with uid & gid" do
+    #     attribs = {uid: 'someone', gid: 'student'}
+    #     answer  = group.send(:user_remove_from_group, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/student GroupMembership "someone"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    # end
+    #
+    # describe "group_add_first_user" do
+    #   it "with group_name" do
+    #     attribs = {group_name: 'somegroup', value: 'newuser'}
+    #     answer  = group.send(:group_add_first_user, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup GroupMembership "newuser"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    #   it "with username" do
+    #     attribs = {groupname: 'somegroup', username: 'newuser'}
+    #     answer  = group.send(:group_add_first_user, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup GroupMembership "newuser"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    #   it "with uid" do
+    #     attribs = {group_membership: 'somegroup', uid: 'newuser'}
+    #     answer  = group.send(:group_add_first_user, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Groups/somegroup GroupMembership "newuser"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    # end
+    # describe "group_add_user" do
+    #   it "with group_name" do
+    #     attribs = {group_name: 'somegroup', value: 'newuser'}
+    #     answer  = group.send(:group_add_user, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/somegroup GroupMembership "newuser"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    #   it "with groupname" do
+    #     attribs = {groupname: 'somegroup', username: 'newuser'}
+    #     answer  = group.send(:group_add_user, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/somegroup GroupMembership "newuser"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    #   it "with uid" do
+    #     attribs = {group_membership: 'somegroup', uid: 'newuser'}
+    #     answer  = group.send(:group_add_user, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Groups/somegroup GroupMembership "newuser"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    # end
+    #
+    # describe "group_remove_user" do
+    #   it "using group_name" do
+    #     attribs = {group_name: 'somegroup', value: 'newuser'}
+    #     answer  = group.send(:group_remove_user, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/somegroup GroupMembership "newuser"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    #   it "using username" do
+    #     attribs = {groupname: 'somegroup', username: 'newuser'}
+    #     answer  = group.send(:group_remove_user, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/somegroup GroupMembership "newuser"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    #   it "using gid" do
+    #     attribs = {gid: 'somegroup', uid: 'newuser'}
+    #     answer  = group.send(:group_remove_user, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/somegroup GroupMembership "newuser"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    #   it "using cn" do
+    #     attribs = {group_membership: 'somegroup', uid: 'newuser'}
+    #     answer  = group.send(:group_remove_user, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -delete /Groups/somegroup GroupMembership "newuser"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    # end
 
     describe "group_delete" do
       it "using group_name" do
@@ -309,34 +309,34 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
       end
     end
 
-    describe "group_set_passwd" do
-      it "with password" do
-        attribs = { group_name: 'somegroup', real_name: "Some Group",
-                    primary_group_id: "54321", password: "TopSecret"}
-        answer  = group.send(:group_set_passwd, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Groups/somegroup "TopSecret"'
-        expect( answer ).to eq( correct )
-      end
-      it "with passwd" do
-        attribs = { group_name: 'somegroup', real_name: "Some Group",
-                    primary_group_id: "54321", passwd: "TopSecret"}
-        answer  = group.send(:group_set_passwd, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Groups/somegroup "TopSecret"'
-        expect( answer ).to eq( correct )
-      end
-      it "without password" do
-        attribs = { group_name: 'somegroup', real_name: "Some Group",
-                    primary_group_id: "54321"}
-        answer  = group.send(:group_set_passwd, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Groups/somegroup "*"'
-        expect( answer ).to eq( correct )
-      end
-      it "without shortname" do
-        attribs = { }
-        expect { group.send(:group_set_passwd, attribs, srv_info) }.
-            to raise_error(ArgumentError, /record_name: 'nil' invalid/)
-      end
-    end
+    # describe "group_set_passwd" do
+    #   it "with password" do
+    #     attribs = { group_name: 'somegroup', real_name: "Some Group",
+    #                 primary_group_id: "54321", password: "TopSecret"}
+    #     answer  = group.send(:group_set_passwd, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Groups/somegroup "TopSecret"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    #   it "with passwd" do
+    #     attribs = { group_name: 'somegroup', real_name: "Some Group",
+    #                 primary_group_id: "54321", passwd: "TopSecret"}
+    #     answer  = group.send(:group_set_passwd, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Groups/somegroup "TopSecret"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    #   it "without password" do
+    #     attribs = { group_name: 'somegroup', real_name: "Some Group",
+    #                 primary_group_id: "54321"}
+    #     answer  = group.send(:group_set_passwd, attribs, srv_info)
+    #     correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -passwd /Groups/somegroup "*"'
+    #     expect( answer ).to eq( correct )
+    #   end
+    #   it "without shortname" do
+    #     attribs = { }
+    #     expect { group.send(:group_set_passwd, attribs, srv_info) }.
+    #         to raise_error(ArgumentError, /record_name: 'nil' invalid/)
+    #   end
+    # end
 
     describe "group_create" do
       it "using good data" do
