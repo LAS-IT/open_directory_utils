@@ -54,7 +54,7 @@ RSpec.describe OpenDirectoryUtils::Connection do
     it "has correct default dir_datapath" do
       stub_const('ENV', ENV.to_hash.merge('DIR_DATAPATH' => nil))
       od = OpenDirectoryUtils::Connection.new
-      expect(od.dir_info[:data_path]).to eq('/LDAPv3/127.0.0.1/')
+      expect(od.dir_info[:data_path]).to eq('/LDAPv3/127.0.0.1')
     end
     it "dir_datapath from ENV VARS overrides defaults" do
       stub_const('ENV', ENV.to_hash.merge('DIR_DATAPATH' => '.'))

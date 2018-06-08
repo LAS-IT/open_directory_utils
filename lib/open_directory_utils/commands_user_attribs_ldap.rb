@@ -14,7 +14,7 @@ module OpenDirectoryUtils
     include OpenDirectoryUtils::CleanCheck
     include OpenDirectoryUtils::CommandsBase
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER cn "$NAME"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$USER cn "$NAME"
     def user_set_common_name(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
@@ -36,7 +36,7 @@ module OpenDirectoryUtils
     end
     alias_method :user_set_cn, :user_set_common_name
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME givenName "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME givenName "$VALUE"
     def user_set_given_name(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
@@ -53,7 +53,7 @@ module OpenDirectoryUtils
       dscl( user_attrs, dir_info )
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME sn "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME sn "$VALUE"
     def user_set_surname(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
@@ -109,7 +109,7 @@ module OpenDirectoryUtils
       dscl( user_attrs, dir_info )
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME homedirectory "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME homedirectory "$VALUE"
     def user_set_home_directory(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
@@ -127,7 +127,7 @@ module OpenDirectoryUtils
       dscl( user_attrs, dir_info )
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME loginShell "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME loginShell "$VALUE"
     def user_set_login_shell(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
@@ -148,9 +148,9 @@ module OpenDirectoryUtils
 
     # OTHER FIELDS
     #####################
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME mail "$VALUE"
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME email "$VALUE"
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-user-mailattribute "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME mail "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME email "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME apple-user-mailattribute "$VALUE"
     def user_set_first_email(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
@@ -220,59 +220,59 @@ module OpenDirectoryUtils
       dscl( user_attrs, dir_info )
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME mobile "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME mobile "$VALUE"
     def user_set_mobile_phone
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME telephoneNumber "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME telephoneNumber "$VALUE"
     def user_set_work_phone
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME homePhone "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME homePhone "$VALUE"
     def user_set_home_phone
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME title "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME title "$VALUE"
     def user_set_title
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME departmentNumber "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME departmentNumber "$VALUE"
     def user_set_department
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME street "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME street "$VALUE"
     def user_set_street
     end
     alias_method :las_set_dorm, :user_set_street
     alias_method :las_set_housing, :user_set_street
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname l "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname l "$VALUE"
     def user_set_city
     end
     alias_method :las_, :user_set_city
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME st "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME st "$VALUE"
     def user_set_state
     end
     alias_method :las_cultural_trip, :user_set_state
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME postalCode "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME postalCode "$VALUE"
     def user_set_postcode
     end
     alias_method :las_faculty_family, :user_set_postcode
 
-    #  /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER c "$VALUE"
+    #  /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$USER c "$VALUE"
     def user_set_country
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME labeledURI "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME labeledURI "$VALUE"
     def user_set_homepage
     end
     alias_method :user_set_webpage, :user_set_homepage
     alias_method :las_enrollment_date, :user_set_homepage
     alias_method :las_begin_date, :user_set_homepage
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER description "$NAME"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$USER description "$NAME"
     def user_set_comments
     end
     alias_method :user_set_description, :user_set_comments

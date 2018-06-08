@@ -41,7 +41,7 @@ module OpenDirectoryUtils
 
     # CHANGE OD
     ###########
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER RealName "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$USER RealName "$VALUE"
     def user_set_real_name(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
@@ -66,7 +66,7 @@ module OpenDirectoryUtils
       dscl( user_attrs, dir_info )
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME FirstName "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME FirstName "$VALUE"
     def user_set_first_name(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
@@ -85,7 +85,7 @@ module OpenDirectoryUtils
       dscl( user_attrs, dir_info )
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME LastName "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME LastName "$VALUE"
     def user_set_last_name(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
@@ -104,10 +104,10 @@ module OpenDirectoryUtils
       dscl( user_attrs, dir_info )
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME NameSuffix "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME NameSuffix "$VALUE"
     def user_set_name_suffix
     end
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-namesuffix "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME apple-namesuffix "$VALUE"
     def user_set_apple_name_suffix
     end
 
@@ -131,7 +131,7 @@ module OpenDirectoryUtils
       dscl( user_attrs, dir_info )
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/someuser NFSHomeDirectory /Users/someuser
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/someuser NFSHomeDirectory /Users/someuser
     def user_set_nfs_home_directory(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
@@ -167,9 +167,9 @@ module OpenDirectoryUtils
       dscl( user_attrs, dir_info )
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME mail "$VALUE"
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME email "$VALUE"
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-user-mailattribute "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME mail "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME email "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME apple-user-mailattribute "$VALUE"
     def user_set_first_email(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
@@ -248,7 +248,7 @@ module OpenDirectoryUtils
     end
 
     # /usr/bin/pwpolicy -a diradmin -p "TopSecret" -u username -setpassword "AnotherSecret"
-    # /usr/bin/dscl -plist -u diradmin -P #{adminpw} /LDAPv3/127.0.0.1/ -passwd /Users/#{shortname} "#{passwd}"
+    # /usr/bin/dscl -plist -u diradmin -P #{adminpw} /LDAPv3/127.0.0.1 -passwd /Users/#{shortname} "#{passwd}"
     def user_set_password(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
@@ -413,25 +413,25 @@ module OpenDirectoryUtils
       dscl( user_attrs, dir_info )
     end
 
-    # 1st keyword    -- /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-keyword "$VALUE"
-    # other keywords --  /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
+    # 1st keyword    -- /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME apple-keyword "$VALUE"
+    # other keywords --  /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
     def user_set_first_keyword
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
     def user_append_keyword
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-company "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME apple-company "$VALUE"
     def user_set_company
     end
     alias_method :las_program_info, :user_set_company
 
-    # first  - /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER apple-imhandle "$VALUE"
-    # others - /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -append /Users/$USER apple-imhandle "$VALUE"
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$USER apple-imhandle "AIM:created: $CREATE"
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -append /Users/$USER apple-imhandle "ICQ:start: $START"
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -append /Users/$USER apple-imhandle "MSN:end: $END"
+    # first  - /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$USER apple-imhandle "$VALUE"
+    # others - /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -append /Users/$USER apple-imhandle "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$USER apple-imhandle "AIM:created: $CREATE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -append /Users/$USER apple-imhandle "ICQ:start: $START"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -append /Users/$USER apple-imhandle "MSN:end: $END"
     def user_set_chat
     end
     alias_method :user_set_chat_channels, :user_set_chat
@@ -439,19 +439,19 @@ module OpenDirectoryUtils
     alias_method :las_start_date, :user_set_chat
     alias_method :las_end_date, :user_set_chat
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-webloguri "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME apple-webloguri "$VALUE"
     def user_set_blog
     end
     alias_method :user_set_weblog, :user_set_blog
     alias_method :las_sync_date, :user_set_blog
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-organizationinfo "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME apple-organizationinfo "$VALUE"
     def user_set_org_info
     end
     alias_method :las_set_organizational_info, :user_set_org_info
     alias_method :las_link_student_to_parent, :user_set_org_info
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1/ -create /Users/$shortname_USERNAME apple-relationships "$VALUE"
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME apple-relationships "$VALUE"
     def user_set_relationships
     end
     alias_method :las_link_parent_to_student, :user_set_relationships

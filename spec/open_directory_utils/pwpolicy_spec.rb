@@ -7,7 +7,7 @@ RSpec.describe OpenDirectoryUtils::Pwpolicy do
 
     let(:policy)   { Object.new.extend(OpenDirectoryUtils::Pwpolicy) }
     let(:srv_info) { {diradmin: 'diradmin', password: 'TopSecret',
-                      data_path: '/LDAPv3/127.0.0.1/',
+                      data_path: '/LDAPv3/127.0.0.1',
                       dscl: '/usr/bin/dscl',
                       pwpol: '/usr/bin/pwpolicy'} }
 

@@ -7,7 +7,7 @@ RSpec.describe OpenDirectoryUtils::Dscl do
 
     let(:dscl)     { Object.new.extend(OpenDirectoryUtils::Dscl) }
     let(:srv_info) { {username: 'diradmin', password: 'TopSecret',
-                      data_path: '/LDAPv3/127.0.0.1/',
+                      data_path: '/LDAPv3/127.0.0.1',
                       dscl: '/usr/bin/dscl',
                       pwpol: '/usr/bin/pwpolicy'} }
 
@@ -54,32 +54,32 @@ RSpec.describe OpenDirectoryUtils::Dscl do
       it "fixes shortname with trailing space" do
         attribs = {record_name: 'someone ', action: 'read', scope: 'Users'}
         answer  = dscl.send(:dscl, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -read /Users/someone'
         expect( answer ).to eq( correct )
       end
       it "fixes shortname with trailing spaces" do
         attribs = {record_name: 'someone  ', action: 'read', scope: 'Users'}
         answer  = dscl.send(:dscl, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -read /Users/someone'
         expect( answer ).to eq( correct )
       end
       it "fixes shortname with leading space" do
         attribs = { record_name: ' someone', action: 'read', scope: 'Users',
                     attribute: nil, value: nil}
         answer  = dscl.send(:dscl, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -read /Users/someone'
         expect( answer ).to eq( correct )
       end
       it "fixes shortname with trailing spaces" do
         attribs = {record_name: '  someone', action: 'read', scope: 'Users'}
         answer  = dscl.send(:dscl, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -read /Users/someone'
         expect( answer ).to eq( correct )
       end
       it "fixes shortname with trailing and leading spaces" do
         attribs = {record_name: '  someone  ', action: 'read', scope: 'Users'}
         answer  = dscl.send(:dscl, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -read /Users/someone'
         expect( answer ).to eq( correct )
       end
     end
@@ -89,41 +89,41 @@ RSpec.describe OpenDirectoryUtils::Dscl do
         attribs = { record_name: ' someone', action: 'read', scope: 'Users',
                     attribute: nil, value: nil, format: nil }
         answer  = dscl.send(:dscl, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -read /Users/someone'
         expect( answer ).to eq( correct )
       end
       it "read base user (return xml)" do
         attribs = { record_name: ' someone', action: 'read', scope: 'Users',
                     format: 'xml' }
         answer  = dscl.send(:dscl, attribs, srv_info)
-        correct = '/usr/bin/dscl -plist -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+        correct = '/usr/bin/dscl -plist -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -read /Users/someone'
         expect( answer ).to eq( correct )
       end
       it "read base user (return text)" do
         attribs = { record_name: ' someone', action: 'read', scope: 'Users',
                     format: 'text' }
         answer  = dscl.send(:dscl, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -read /Users/someone'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -read /Users/someone'
         expect( answer ).to eq( correct )
       end
       it "create base user (no other attributes, return text)" do
         attribs = { record_name: ' someone', action: 'create', scope: 'Users'}
         answer  = dscl.send(:dscl, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone'
         expect( answer ).to eq( correct )
       end
       it "create user first keyword (return text)" do
         attribs = { record_name: ' someone', action: 'create', scope: 'Users',
                     attribute: 'keyword', value: 'student', format: 'text' }
         answer  = dscl.send(:dscl, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -create /Users/someone keyword "student"'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone keyword "student"'
         expect( answer ).to eq( correct )
       end
       it "append user second keyword (return xml)" do
         attribs = { record_name: ' someone', action: 'append', scope: 'Users',
                     attribute: 'keyword', value: 'departed', format: 'plist' }
         answer  = dscl.send(:dscl, attribs, srv_info)
-        correct = '/usr/bin/dscl -plist -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1/ -append /Users/someone keyword "departed"'
+        correct = '/usr/bin/dscl -plist -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -append /Users/someone keyword "departed"'
         expect( answer ).to eq( correct )
       end
     end

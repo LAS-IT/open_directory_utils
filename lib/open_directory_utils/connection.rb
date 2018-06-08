@@ -179,7 +179,7 @@ module OpenDirectoryUtils
 
         dir_username: ENV['DIR_ADMIN_USER'],
         dir_password: ENV['DIR_ADMIN_PASS'],
-        dir_datapath: (ENV['DIR_DATAPATH'] || '/LDAPv3/127.0.0.1/'),
+        dir_datapath: (ENV['DIR_DATAPATH'] || '/LDAPv3/127.0.0.1'),
 
         dscl_path:    ENV['DSCL_PATH']   || '/usr/bin/dscl',
         pwpol_path:   ENV['PWPOL_PATH']  || '/usr/bin/pwpolicy',

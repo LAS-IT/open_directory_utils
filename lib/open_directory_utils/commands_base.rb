@@ -51,7 +51,7 @@ module OpenDirectoryUtils
                                                       dir_info[:username].empty?
       ans += %Q[ -p "#{dir_info[:password]}"]  unless dir_info[:password].nil? or
                                                       dir_info[:password].empty?
-      # ans += %Q[ -n #{dir_info[:data_path]}]
+      ans += %Q[ -n #{dir_info[:data_path]}]
       ans += %Q[ -u #{params[:record_name]}]
       ans += %Q[ -#{params[:attribute]}]
       ans += %Q[ "#{params[:value]}"]          unless params[:value].nil? or
@@ -63,7 +63,7 @@ module OpenDirectoryUtils
     def build_dscl_command(attribs, dir_info)
       # allow :recordname to be passed-in if using dscl directly
       attribs[:record_name] = attribs[:record_name] || attribs[:recordname]
-      # /usr/bin/dscl -u diradmin -P "BigSecret" /LDAPv3/127.0.0.1/ -append /Users/$UID_USERNAME apple-keyword "$VALUE"
+      # /usr/bin/dscl -u diradmin -P "BigSecret" /LDAPv3/127.0.0.1 -append /Users/$UID_USERNAME apple-keyword "$VALUE"
       # "/usr/bin/dscl -plist -u #{od_username} -P #{od_password} #{od_dsclpath} -#{command} #{resource} #{params}"
       ans  = %Q[#{dir_info[:dscl]}]
       unless attribs[:format].nil?

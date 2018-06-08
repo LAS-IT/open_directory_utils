@@ -164,7 +164,7 @@ module OpenDirectoryUtils
     end
 
     # # probably can't create password for group?
-    # # /usr/bin/dscl -u diradmin -P liaP-meD-Aj-pHi-hOb-en-c /LDAPv3/127.0.0.1/ -create /Groups/odgrouptest passwd "*"
+    # # /usr/bin/dscl -u diradmin -P liaP-meD-Aj-pHi-hOb-en-c /LDAPv3/127.0.0.1 -create /Groups/odgrouptest passwd "*"
     # #  "<main> attribute status: eDSNoStdMappingAvailable\n" +
     # #  "<dscl_cmd> DS Error: -14140 (eDSNoStdMappingAvailable)"]
     # def group_set_passwd(attribs, dir_info)
