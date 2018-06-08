@@ -306,6 +306,27 @@ module OpenDirectoryUtils
       pwpolicy(params, dir_info)
     end
 
+    def user_add_to_group(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+
+      attribs[:value] = attribs[:group_membership]
+      attribs[:value] = attribs[:value] || attribs[:groupmembership]
+      attribs[:value] = attribs[:value] || attribs[:group_name]
+      attribs[:value] = attribs[:value] || attribs[:groupname]
+      attribs[:value] = attribs[:value] || attribs[:gid]
+
+      check_critical_attribute( attribs, :record_name, :username )
+      check_critical_attribute( attribs, :value, :groupname )
+      attribs    = tidy_attribs(attribs)
+      command    = { operation: 'edit', action: 'add', type: 'user'}
+      user_attrs  = attribs.merge(command)
+
+      dseditgroup( user_attrs, dir_info )
+    end
+    # module_function :user_add_to_group
+    # alias_method :user_set_group_memebership, :user_add_to_group
+
+
     # /usr/bin/pwpolicy -a diradmin -p A-B1g-S3cret -u $shortname_USERNAME -getpolicy
     def user_get_policy(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
@@ -389,11 +410,11 @@ module OpenDirectoryUtils
       # "<main> attribute status: eDSSchemaError\n" +
       # "<dscl_cmd> DS Error: -14142 (eDSSchemaError)"]
       # # enroll in a group membership if info present
-      # if attribs[:group_name] or attribs[:groupname] or attribs[:gid] or
-      #                   attribs[:group_membership] or attribs[:groupmembership]
-      #   attribs[:value] = nil
-      #   answer         << user_set_group_memebership(attribs, dir_info)
-      # end
+      if attribs[:group_name] or attribs[:groupname] or attribs[:gid] or
+                        attribs[:group_membership] or attribs[:groupmembership]
+        attribs[:value] = nil
+        answer         << user_add_to_group(attribs, dir_info)
+      end
 
       return answer.flatten
     end

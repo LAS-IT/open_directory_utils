@@ -60,25 +60,6 @@ module OpenDirectoryUtils
       dscl( cmd_attribs, dir_info )
     end
 
-    def user_add_to_group(attribs, dir_info)
-      attribs = user_record_name_alternatives(attribs)
-
-      attribs[:value] = attribs[:group_membership]
-      attribs[:value] = attribs[:value] || attribs[:groupmembership]
-      attribs[:value] = attribs[:value] || attribs[:group_name]
-      attribs[:value] = attribs[:value] || attribs[:groupname]
-      attribs[:value] = attribs[:value] || attribs[:gid]
-
-      check_critical_attribute( attribs, :record_name, :username )
-      check_critical_attribute( attribs, :value, :groupname )
-      attribs    = tidy_attribs(attribs)
-      command    = { operation: 'edit', action: 'add', type: 'user'}
-      user_attrs  = attribs.merge(command)
-
-      dseditgroup( user_attrs, dir_info )
-    end
-    # alias_method :user_set_group_memebership, :user_add_to_group
-
     def user_remove_from_group(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
@@ -96,6 +77,7 @@ module OpenDirectoryUtils
 
       dseditgroup( user_attrs, dir_info )
     end
+    # module_function :user_remove_from_group
     # alias_method :user_remove_group_memebership, :user_remove_from_group
 
     # dscl . -delete /Groups/yourGroupName

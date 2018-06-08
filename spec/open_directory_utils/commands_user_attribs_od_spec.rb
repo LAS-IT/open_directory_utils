@@ -9,7 +9,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
     let(:srv_info) { {username: 'diradmin', password: 'TopSecret',
                       data_path: '/LDAPv3/127.0.0.1',
                       dscl: '/usr/bin/dscl',
-                      pwpol: '/usr/bin/pwpolicy'} }
+                      pwpol: '/usr/bin/pwpolicy',
+                      dsedit: '/usr/sbin/dseditgroup'} }
 
     describe "user_get_info" do
       it "with record_name" do
@@ -533,6 +534,33 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
       end
     end
 
+    describe "user_add_to_group" do
+      it "with user_name & group_membership" do
+        attribs = {user_name: 'someone', group_membership: 'student'}
+        answer  = user.send(:user_add_to_group, attribs, srv_info)
+        correct = '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -a someone -t user student'
+        expect( answer ).to eq( correct )
+      end
+      it "with user_name & group_name" do
+        attribs = {user_name: 'someone', group_name: 'student'}
+        answer  = user.send(:user_add_to_group, attribs, srv_info)
+        correct = '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -a someone -t user student'
+        expect( answer ).to eq( correct )
+      end
+      it "with username & groupname" do
+        attribs = {username: 'someone', groupname: 'student'}
+        answer  = user.send(:user_add_to_group, attribs, srv_info)
+        correct = '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -a someone -t user student'
+        expect( answer ).to eq( correct )
+      end
+      it "with uid & gid" do
+        attribs = {uid: 'someone', gid: 'student'}
+        answer  = user.send(:user_add_to_group, attribs, srv_info)
+        correct = '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -a someone -t user student'
+        expect( answer ).to eq( correct )
+      end
+    end
+
     describe "user_create_full" do
       let(:correct) {[
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
@@ -571,7 +599,7 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
                     group_membership: 'testgrp', password: 'TopSecret', enable: true
                   }
         answer   = user.send(:user_create_full, attribs, srv_info)
-        # pp answer
+        pp answer
         with_all = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "TopSecret"',
@@ -588,9 +616,9 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone email "user@example.com"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone apple-user-mailattribute "user@example.com"',
           # '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -append /Groups/testgrp GroupMembership "someone"',
-          # 'dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -a username -t user groupname',
+          '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -a someone -t user testgrp',
         ]
-        # pp with_all
+        pp with_all
         expect( answer ).to eq( with_all )
       end
       it "without email" do

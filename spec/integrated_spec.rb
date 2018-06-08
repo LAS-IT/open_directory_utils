@@ -378,15 +378,15 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
         notthere = od.run( command: :user_in_group?, params: params )
         # pp notthere
         expect( notthere.to_s ).to match('false')
-        answer = od.run( command: :user_append_to_group, params: params )
+        answer = od.run( command: :user_add_to_group, params: params )
         # pp answer
-        isthere = od.run( command: :group_has_user?, params: params )
+        isthere = od.run( command: :user_in_group?, params: params )
         # pp isthere
         expect( isthere.to_s ).to match('true')
       end
       it "attribute error when remove user from group - when not in group" do
         params = {uid: 'testuser', gid: 'test'}
-        notthere = od.run( command: :group_has_user?, params: params )
+        notthere = od.run( command: :user_in_group?, params: params )
         # pp notthere
         expect( notthere.to_s ).to match('false')
         # expect( notthere.to_s ).to match('false')
@@ -395,7 +395,7 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
         expect( answer.to_s ).to match('attribute status: eDSAttributeNotFound')
       end
     end
-    describe "user_remove_from_group" do
+    xdescribe "user_remove_from_group" do
       let(:params)  { {uid: 'odtestuser', gid: 'test'} }
       before(:each) do
         od.run( command: :user_create_min, params: params )
@@ -406,23 +406,23 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
         od.run( command: :user_delete, params: params )
       end
       it "remove existing user from existing 'test' group" do
-        isthere = od.run( command: :group_has_user?, params: params )
+        isthere = od.run( command: :user_in_group?, params: params )
         # pp isthere
         expect( isthere.to_s ).to match('true')
         # expect( notthere.to_s ).to match('false')
         answer = od.run( command: :user_remove_from_group, params: params )
         # pp answer
-        notthere = od.run( command: :group_has_user?, params: params )
+        notthere = od.run( command: :user_in_group?, params: params )
         # pp notthere
         # expect( isthere.to_s ).to match('true')
         expect( notthere.to_s ).to match('false')
       end
       it "schema error when add existing user from already in group" do
-        isthere = od.run( command: :group_has_user?, params: params )
+        isthere = od.run( command: :user_in_group?, params: params )
         # pp isthere
         expect( isthere.to_s ).to match('true')
         # expect( notthere.to_s ).to match('false')
-        answer = od.run( command: :user_append_to_group, params: params )
+        answer = od.run( command: :user_add_to_group, params: params )
         # pp answer
         expect( answer.to_s ).to match('attribute status: eDSSchemaError')
         # notthere = od.run( command: :group_has_user?, params: params )

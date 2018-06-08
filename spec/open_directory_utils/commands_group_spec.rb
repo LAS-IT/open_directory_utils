@@ -107,33 +107,6 @@ RSpec.describe OpenDirectoryUtils::CommandsGroup do
       end
     end
 
-    describe "user_add_to_group" do
-      it "with user_name & group_membership" do
-        attribs = {user_name: 'someone', group_membership: 'student'}
-        answer  = group.send(:user_add_to_group, attribs, srv_info)
-        correct = '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -a someone -t user student'
-        expect( answer ).to eq( correct )
-      end
-      it "with user_name & group_name" do
-        attribs = {user_name: 'someone', group_name: 'student'}
-        answer  = group.send(:user_add_to_group, attribs, srv_info)
-        correct = '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -a someone -t user student'
-        expect( answer ).to eq( correct )
-      end
-      it "with username & groupname" do
-        attribs = {username: 'someone', groupname: 'student'}
-        answer  = group.send(:user_add_to_group, attribs, srv_info)
-        correct = '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -a someone -t user student'
-        expect( answer ).to eq( correct )
-      end
-      it "with uid & gid" do
-        attribs = {uid: 'someone', gid: 'student'}
-        answer  = group.send(:user_add_to_group, attribs, srv_info)
-        correct = '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -a someone -t user student'
-        expect( answer ).to eq( correct )
-      end
-    end
-
     describe "user_remove_from_group" do
       it "with user_name & group_membership" do
         attribs = {user_name: 'someone', group_membership: 'student'}
