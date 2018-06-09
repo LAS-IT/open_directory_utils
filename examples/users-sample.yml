@@ -3,13 +3,14 @@
 # by default account is disabled unless enabled: true is present
 - :user_name: odusertest
   :user_number: 98765432
+  :primary_group_id: 1031
   :first_name: OD User
   :last_name: TEST
   :email: user@example.com
   :passsword: Top-Secret
   :enable: true
-  :primary_group_id: 1031
   :group_membership: test
+# for minimal data use user_create_min instead of user_create
 # acceptable minimal attributes (password is set to * - no login) & real_name = username
 - :username: odtest
   :usernumber: 87654321

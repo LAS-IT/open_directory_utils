@@ -430,19 +430,23 @@ RSpec.describe "Integrated OpenDirectoryUtils User Commands" do
 
     describe "user_add_to_group" do
       it "errors when adding non-exist user" do
-
+        answer = od.run( command: :user_add_to_group, params: bad_usr )
+        expect( answer[:error].to_s ).to match('Record was not found')
       end
       it "errors when adding user to non-existent group" do
-
+        answer = od.run( command: :user_add_to_group, params: bad_grp )
+        expect( answer[:error].to_s ).to match('Group not found')
       end
     end
 
     describe "user_remove_from_group" do
       it "errors when adding non-exist user" do
-
+        answer = od.run( command: :user_remove_from_group, params: bad_usr )
+        expect( answer[:error].to_s ).to match('Record was not found')
       end
       it "errors when adding user to non-existent group" do
-
+        answer = od.run( command: :user_remove_from_group, params: bad_grp )
+        expect( answer[:error].to_s ).to match('Group not found')
       end
     end
   end

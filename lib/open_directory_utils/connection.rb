@@ -50,9 +50,9 @@ module OpenDirectoryUtils
       # just in case clear record_name and calculate later
       params[:record_name] = nil
       ssh_cmds = send(command, params, dir_info)
-
+      # pp ssh_cmds
       results  = send_cmds_to_od_server(ssh_cmds)
-
+      # pp results
       process_results(results, command, params, ssh_cmds)
       rescue ArgumentError, NoMethodError => error
         {error:  {response: error.message, command: command,
@@ -84,7 +84,9 @@ module OpenDirectoryUtils
         return format_results(results, command, params, ssh_cmds, false)
       end
 
-      if results.to_s.include?('eDSRecordNotFound') or            # return error if resource wasn't found
+      if results_str.include?('Group not found') or               # can't find group to move user into
+          results.to_s.include?('eDSRecordNotFound') or           # return error if resource wasn't found
+          results_str.include?('Record was not found') or         # can't find user to move into a group
           results.to_s.include?('eDSAuthAccountDisabled') or      # can't set passwd when disabled
           results_str.include?('unknown AuthenticationAuthority') # can't reset password when account disabled
         return format_results(results, command, params, ssh_cmds, true)
@@ -117,27 +119,8 @@ module OpenDirectoryUtils
         results = ["Resource not found", results]
       end
 
-      # if results_str.include?('eDSRecordNotFound') or             # resource wasn't found - doesn't exist
-      #     results_str.include?('unknown AuthenticationAuthority') # can't find account to reset password
-      #   results = ["Resource not found", results]
-      #   return format_results(results, command, params, ssh_cmds, true)
-      # end
-      #
-      # if results.to_s.include?('eDSAuthAccountDisabled') or      # can't set passwd when disabled
-      #   results = ["Can't reset password when account disabled", results]
-      #   return format_results(results, command, params, ssh_cmds, true)
-      # end
-
       return format_results(results, command, params, ssh_cmds, errors)
 
-      # answer = case errors
-      # when false
-      #   {success:{response: results, command: command, attributes: params}}
-      # else
-      #   {error:  {response: results, command: command,
-      #             attributes: params, dscl_cmds: ssh_cmds}}
-      # end
-      # return answer
     end
 
     def format_results(results, command, params, ssh_cmds, errors)
