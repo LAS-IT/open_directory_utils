@@ -7,7 +7,7 @@ One can also build custom DSCL commands and send them to the server as needed to
 
 ## Change Log
 
-* **v0.1.2** - 2018-06-10
+* **v0.1.2** - 2018-06-09 - all user creation features enabled
 - user creation will add user to a group if group_name present
 - new accounts disabled by default (w/ option to enable on creation)
 - now repo includes example code (to create accounts)
