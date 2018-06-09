@@ -7,6 +7,8 @@ One can also build custom DSCL commands and send them to the server as needed to
 
 ## Change Log
 
+* **v0.1.3** - 2018-06-?? - able to sync all fields
+- finished adding pre-built ldap and od commands with data checks for all mac OD fields
 * **v0.1.2** - 2018-06-09 - all user creation features enabled
 - user creation will add user to a group if group_name present
 - new accounts disabled by default (w/ option to enable on creation)
@@ -18,16 +20,11 @@ One can also build custom DSCL commands and send them to the server as needed to
 
 ## ToDo
 
-* ADD Lock and unlock account authentication (& TEST) - sync and create
 * Do not return dir admin password with command on errors
 * LDAP attributes (so las can sync accounts easily)
-* ADD EXAMPLE CODE
-* Verify setting Password
-* Verify testing Password
 * Refactor Process Results
-* Test dscl direct commands
+* Test direct commands
 * Check Connection Unit Tests
-* Learn dscl OD property names from LDAP
 * verify which email address is LDAP (& seen in GUI)
 
 ## Installation
@@ -67,11 +64,13 @@ od = OpenDirectoryUtils::Connection.new(
         }
       )
 
-user_params = { user_name: 'someone', user_number: 9876, group_number: 4321,
+user_params = { user_name: 'someone', user_number: 9876,
                 first_name: 'Someone', last__name: 'Special',
+                group_number: 4321,group_name: 'employee'
               }
-group_params = {group_name: 'agroup', long_name: 'A Group', group_number: 5432}
-
+group_params = {group_name: 'agroup', real_name: 'A Group',
+                group_number: 5432
+              }
 # create a user
 od.run( command: :user_create_full,  params: user_params )
 
