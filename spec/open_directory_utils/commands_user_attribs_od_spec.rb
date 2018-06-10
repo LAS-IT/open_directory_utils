@@ -561,11 +561,37 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
       end
     end
 
+    describe "user_remove_from_group" do
+      it "with user_name & group_membership" do
+        attribs = {user_name: 'someone', group_membership: 'student'}
+        answer  = user.send(:user_remove_from_group, attribs, srv_info)
+        correct = '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -d someone -t user student'
+        expect( answer ).to eq( correct )
+      end
+      it "with user_name & group_name" do
+        attribs = {user_name: 'someone', group_name: 'student'}
+        answer  = user.send(:user_remove_from_group, attribs, srv_info)
+        correct = '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -d someone -t user student'
+        expect( answer ).to eq( correct )
+      end
+      it "with username & groupname" do
+        attribs = {username: 'someone', groupname: 'student'}
+        answer  = user.send(:user_remove_from_group, attribs, srv_info)
+        correct = '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -d someone -t user student'
+        expect( answer ).to eq( correct )
+      end
+      it "with uid & gid" do
+        attribs = {uid: 'someone', gid: 'student'}
+        answer  = user.send(:user_remove_from_group, attribs, srv_info)
+        correct = '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -d someone -t user student'
+        expect( answer ).to eq( correct )
+      end
+    end
+
     describe "user_create_full" do
       let(:correct) {[
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "*"',
-        # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser',
         '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1 -u someone -disableuser',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone RealName "Someone SPECIAL"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone UserShell "/bin/bash"',
@@ -599,11 +625,9 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
                     group_membership: 'testgrp', password: 'TopSecret', enable: true
                   }
         answer   = user.send(:user_create_full, attribs, srv_info)
-        pp answer
         with_all = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "TopSecret"',
-          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -enableuser',
           '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1 -u someone -enableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone RealName "Someone SPECIAL"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone UserShell "/bin/bash"',
@@ -615,10 +639,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone mail "user@example.com"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone email "user@example.com"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone apple-user-mailattribute "user@example.com"',
-          # '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -append /Groups/testgrp GroupMembership "someone"',
           '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -a someone -t user testgrp',
         ]
-        pp with_all
         expect( answer ).to eq( with_all )
       end
       it "without email" do
@@ -628,7 +650,6 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         no_email = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "*"',
-          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser',
           '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1 -u someone -disableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone RealName "Someone SPECIAL"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone UserShell "/bin/bash"',
@@ -648,7 +669,6 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         no_first = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "*"',
-          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser',
           '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1 -u someone -disableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone RealName "SPECIAL"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone UserShell "/bin/bash"',
@@ -671,7 +691,6 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         no_last = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someoney',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someoney "TopSecret"',
-          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someoney -disableuser',
           '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1 -u someoney -disableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someoney RealName "Someone"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someoney UserShell "/bin/bash"',
@@ -683,7 +702,6 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someoney email "user@example.com"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someoney apple-user-mailattribute "user@example.com"'
         ]
-        # pp no_last
         expect(answer).to eq( no_last )
       end
       it "with missing attributes (no username)" do

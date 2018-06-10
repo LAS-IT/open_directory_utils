@@ -118,7 +118,7 @@ module OpenDirectoryUtils
 
     def missing_resource?(results)
       results_str = results.to_s
-      return true  if results_str.include?('Group not found') or               # can't find group to move user into
+      return true  if results_str.include?('Group not found') or              # can't find group to move user into
                       results_str.include?('eDSRecordNotFound') or            # return error if resource wasn't found
                       results_str.include?('Record was not found') or         # can't find user to move into a group
                       results_str.include?('eDSAuthAccountDisabled') or       # can't set passwd when disabled
@@ -138,25 +138,19 @@ module OpenDirectoryUtils
       return false
     end
 
+    def report_login_check(results, command, params, ssh_cmds)
+      results = [false, results]     if results.to_s.include?('isDisabled=1')
+      results = [false, results]     if results.to_s.include?('account is disabled')
+      results = [true, results]  unless results.to_s.include?('isDisabled=1') or
+                                        results.to_s.include?('account is disabled')
+      return format_results(results, command, params, ssh_cmds, false)
+    end
+
     def report_in_group(results, command, params, ssh_cmds)
       username = params[:value]
       results = [true, results]      if results.to_s.include?( username )
       results = [false, results] unless results.to_s.include?( username )
       return format_results(results, command, params, ssh_cmds, false)
-    end
-
-    def report_login_check(results, command, params, ssh_cmds)
-      # puts "login enabled -- #{results}".upcase
-      enabled = login_enabled?(results.to_s)
-      results = [ enabled, results ]
-      return format_results(results, command, params, ssh_cmds, false)
-    end
-    def login_enabled?(results_str)
-      return false if results_str.include?('account is disabled')
-      return false if results_str.include?('isDisabled=1')
-      # some enabled accounts return no policies ?#$?
-      # return true  if results_str.include?('isDisabled=0')
-      true
     end
 
     def defaults

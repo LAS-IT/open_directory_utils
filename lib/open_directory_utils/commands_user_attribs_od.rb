@@ -323,9 +323,24 @@ module OpenDirectoryUtils
 
       dseditgroup( user_attrs, dir_info )
     end
-    # module_function :user_add_to_group
-    # alias_method :user_set_group_memebership, :user_add_to_group
 
+    def user_remove_from_group(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+
+      attribs[:value] = attribs[:group_membership]
+      attribs[:value] = attribs[:value] || attribs[:groupmembership]
+      attribs[:value] = attribs[:value] || attribs[:group_name]
+      attribs[:value] = attribs[:value] || attribs[:groupname]
+      attribs[:value] = attribs[:value] || attribs[:gid]
+
+      check_critical_attribute( attribs, :record_name, :username )
+      check_critical_attribute( attribs, :value, :groupname )
+      attribs    = tidy_attribs(attribs)
+      command    = { operation: 'edit', action: 'delete', type: 'user'}
+      user_attrs  = attribs.merge(command)
+
+      dseditgroup( user_attrs, dir_info )
+    end
 
     # /usr/bin/pwpolicy -a diradmin -p A-B1g-S3cret -u $shortname_USERNAME -getpolicy
     def user_get_policy(attribs, dir_info)
