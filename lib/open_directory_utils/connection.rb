@@ -74,6 +74,7 @@ module OpenDirectoryUtils
     end
 
     def process_results(results, command, params, ssh_cmds)
+
       if command.eql?(:user_exists?) or command.eql?(:group_exists?)
         return report_existence(results, command, params, ssh_cmds)
       end
@@ -125,6 +126,12 @@ module OpenDirectoryUtils
       return false
     end
 
+    def report_password_check(results, command, params, ssh_cmds)
+      results = [false, results]    if results.to_s.include?('eDSAuthFailed')
+      results = [true, results] unless results.to_s.include?('eDSAuthFailed')
+      return format_results(results, command, params, ssh_cmds, false)
+    end
+
     def missed_errors?(results)
       results_str = results.to_s
       return true  if results_str.include? 'Error'
@@ -149,16 +156,6 @@ module OpenDirectoryUtils
       return false if results_str.include?('isDisabled=1')
       # some enabled accounts return no policies ?#$?
       # return true  if results_str.include?('isDisabled=0')
-      true
-    end
-
-    def report_password_check(results, command, params, ssh_cmds)
-      passed  = password_verified?(results.to_s)
-      results = [ passed, results ]
-      return format_results(results, command, params, ssh_cmds, false)
-    end
-    def password_verified?(results_str)
-      return false if results_str.include?('eDSAuthFailed')
       true
     end
 
