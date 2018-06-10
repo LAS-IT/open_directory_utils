@@ -95,10 +95,7 @@ module OpenDirectoryUtils
       end
 
       if command.eql?(:user_login_enabled?)
-        # puts "login enabled -- #{results}".upcase
-        enabled = login_enabled?(results_str)
-        results = [ enabled, results ]
-        return format_results(results, command, params, ssh_cmds, false)
+        return login_check(results, command, params, ssh_cmds)
       end
 
       if command.eql?(:user_in_group?) or command.eql?(:group_has_user?)
@@ -130,6 +127,12 @@ module OpenDirectoryUtils
       return answer
     end
 
+    def login_check(results, command, params, ssh_cmds)
+      # puts "login enabled -- #{results}".upcase
+      enabled = login_enabled?(results.to_s)
+      results = [ enabled, results ]
+      return format_results(results, command, params, ssh_cmds, false)
+    end
     def login_enabled?(results_str)
       return false if results_str.include?('account is disabled')
       return false if results_str.include?('isDisabled=1')
