@@ -428,7 +428,6 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
       it "with needed uid" do
         attribs = { uid: 'someone'}
         answer  = user.send(:user_create_min, attribs, srv_info)
-        # pp answer
         expect( answer ).to eq( correct )
       end
       it "with needed username" do
@@ -445,11 +444,9 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
                     real_name: 'Someone Special', uniqueid: '9876543', enable: true}
         answer  = user.send(:user_create_min, attribs, srv_info)
-        # pp answer
         correct = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "*"',
-          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -enableuser',
           '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1 -u someone -enableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone RealName "Someone Special"',
         ]
@@ -459,11 +456,9 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
                     real_name: 'Someone Special', uniqueid: '9876543', enable: 'true'}
         answer  = user.send(:user_create_min, attribs, srv_info)
-        # pp answer
         correct = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "*"',
-          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -enableuser',
           '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1 -u someone -enableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone RealName "Someone Special"',
         ]
@@ -476,7 +471,6 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         correct = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "*"',
-          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser',
           '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1 -u someone -disableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone RealName "Someone Special"',
         ]
@@ -489,7 +483,6 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         correct = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "*"',
-          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser',
           '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1 -u someone -disableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone RealName "Someone Special"',
         ]
@@ -502,7 +495,6 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         correct = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "*"',
-          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser',
           '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1 -u someone -disableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone RealName "Someone Special"',
         ]
@@ -515,7 +507,6 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         correct = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "*"',
-          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser',
           '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1 -u someone -disableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone RealName "Someone Special"',
         ]
@@ -609,14 +600,12 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
                     first_name: 'Someone', last_name: "SPECIAL", uniqueid: '9876543',
                     real_name: 'Someone SPECIAL' }
         answer  = user.send(:user_create_full, attribs, srv_info)
-        # pp answer
         expect( answer ).to eq( correct )
       end
       it "with first & last name attributes" do
         attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
                     first_name: 'Someone', last_name: 'SPECIAL', uniqueid: '9876543'}
         answer  = user.send(:user_create_full, attribs, srv_info)
-        # pp answer
         expect( answer ).to eq( correct )
       end
       it "with group_membership & password attributes" do
@@ -665,7 +654,6 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
         attribs  = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
                     last_name: 'SPECIAL', uniqueid: '9876543'}
         answer   = user.send(:user_create_full, attribs, srv_info)
-        # pp answer
         no_first = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "*"',
@@ -680,14 +668,12 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsOd do
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone email "user@example.com"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone apple-user-mailattribute "user@example.com"'
         ]
-        # pp no_first
         expect(answer).to eq( no_first )
       end
       it "with missing attributes (no lastname)" do
         attribs = { uid: 'someoney', email: 'user@example.com', gidnumber: '1032',
                     first_name: 'Someone', uniqueid: '9876543', password: 'TopSecret'}
         answer  = user.send(:user_create_full, attribs, srv_info)
-        # pp answer
         no_last = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someoney',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someoney "TopSecret"',
