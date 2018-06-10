@@ -420,7 +420,6 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
         [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "*"',
-          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -u someone -disableuser',
           '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1 -u someone -disableuser',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone RealName "someone"',
         ]
@@ -595,6 +594,21 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone email "user@example.com"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone apple-user-mailattribute "user@example.com"'
       ]}
+      it "with minimal attributes" do
+        attribs = { uid: 'someone', gidnumber: '1032', uniqueid: '9876543' }
+        answer  = user.send(:user_create_full, attribs, srv_info)
+        min_correct = [
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "*"',
+          '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1 -u someone -disableuser',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone RealName "someone"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone UserShell "/bin/bash"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone UniqueID "9876543"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone PrimaryGroupID "1032"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone NFSHomeDirectory "/Volumes/Macintosh HD/Users/someone"',
+        ]
+        expect( answer ).to eq( min_correct )
+      end
       it "with real_name attributes" do
         attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
                     first_name: 'Someone', last_name: "SPECIAL", uniqueid: '9876543',

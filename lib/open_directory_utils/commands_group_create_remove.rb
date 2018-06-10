@@ -14,8 +14,6 @@ module OpenDirectoryUtils
     include OpenDirectoryUtils::CleanCheck
     include OpenDirectoryUtils::CommandsBase
 
-    require "open_directory_utils/commands_group"
-
     # dscl . read /Groups/ladmins
     def group_get_info(attribs, dir_info)
       attribs = group_record_name_alternatives(attribs)

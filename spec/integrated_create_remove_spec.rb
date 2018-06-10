@@ -115,7 +115,6 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
         expect( account[:success].to_s ).to match( 'false' )
 
         create  = od.run(command: :user_create_full, params: new_user)
-        # pp create
         expect( create[:error] ).to be nil
 
         found  = od.run(command: :user_exists?, params: new_user)
@@ -126,7 +125,6 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
         expect( account[:success].to_s ).to match( 'false' )
 
         create = od.run(command: :user_create, params: new_user)
-        # pp create
         expect( create[:error] ).to be nil
 
         found  = od.run(command: :user_exists?, params: new_user)
@@ -137,7 +135,6 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
         expect( account[:success].to_s ).to match( 'false' )
 
         create = od.run(command: :user_create, params: min_user)
-        # pp create
         expect( create[:error] ).to be nil
 
         found  = od.run(command: :user_exists?, params: min_user)
@@ -153,22 +150,16 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
       end
       it "minimal new_group" do
         success = od.run(command: :group_create_min, params: new_group)
-        # pp success
         expect( success[:success] ).not_to be( nil )
         details = od.run(command: :group_info, params: new_group)
-        # pp details
-        # expect( details.to_s ).to match( 'RecordName: odgrouptest' )
         expect( details[:success].to_s ).to match( 'RecordName: odgrouptest' )
         answer  = od.run(command: :group_exists?, params: new_group)
         expect( answer[:success].to_s ).to match( 'true' )
       end
       it "full new_group" do
         success = od.run(command: :group_create_full, params: new_group)
-        # pp success
         expect( success[:success] ).not_to eql( nil )
         details = od.run(command: :group_info, params: new_group)
-        # pp details
-        # expect( details.to_s ).to match( 'OD Group TEST' )
         expect( details[:success].to_s ).to match( 'OD Group TEST' )
       end
     end
@@ -188,27 +179,23 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
 
   context "live user edit testing" do
     describe "set & test a users password" do
-      # before - create a new account
       before(:each) do
         od.run(command: :user_create_full, params: new_user)
       end
       after(:each) do
         od.run(command: :user_delete, params: new_user)
       end
-      # after  - remove new account
       it "without error set's a password on an enabled account" do
         there  = od.run(command: :user_exists?, params: {username: 'odusertest'})
         expect( there[:success] ).to be_truthy
         od.run(command: :user_enable_login, params: {username: 'odusertest'})
         create = od.run(command: :user_set_password,
                         params: {username: 'odusertest', password: "T0p-Secret"})
-        # pp create
         expect( create[:success] ).not_to be nil
         expect( create[:error] ).to be nil
       end
       it "fails to set password on disabled account" do
         there  = od.run(command: :user_exists?, params: {username: 'odusertest'})
-        # pp there
         expect( there[:success] ).to be_truthy
         od.run(command: :user_disable_login, params: {username: 'odusertest'})
         create = od.run(command: :user_set_password,
@@ -218,29 +205,23 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
       end
       it "without error set's a password" do
         there  = od.run(command: :user_exists?, params: {username: 'odusertest'})
-        # pp there
         expect( there[:success] ).to be_truthy
         create = od.run(command: :user_set_password,
                         params: {username: 'odusertest', password: "T0p-Secret"})
-        # pp create
         expect( create[:success] ).not_to be nil
         answer = od.run(command: :user_password_verified?,
                         params: {username: 'odusertest', password: "T0p-Secret"})
-        # pp answer
         expect( answer[:success].to_s ).to match('true')
       end
 
       it "verifies bad password" do
         there  = od.run(command: :user_exists?, params: {username: 'odusertest'})
-        # pp there
         expect( there[:success] ).to be_truthy
         create = od.run(command: :user_set_password,
                         params: {username: 'odusertest', password: "T0p-S3cret"})
-        # pp create
         expect( create[:success] ).not_to be nil
         answer = od.run(command: :user_password_ok?,
                         params: {username: 'odusertest', password: "TopSecret"})
-        # pp answer
         expect( answer[:success].to_s ).to match('false')
       end
     end
@@ -248,19 +229,16 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
     describe "login policies for existing accounts" do
       it "verifies an active account is enabled with policy" do
         answer = od.run(command: :user_login_enabled?, params: {username: 'lweisbecker'})
-        # pp answer
         expect( answer[:success].to_s ).to match('true')
         expect( answer[:error] ).to be nil
       end
       it "verifies an old retired account cann't login" do
         answer = od.run(command: :user_login_enabled?, params: {username: 'gbrown'})
-        # pp answer
         expect( answer[:success].to_s ).to match('false')
         expect( answer[:error] ).to be nil
       end
       it "verifies a non-existing account can login" do
         answer = od.run(command: :user_login_enabled?, params: {username: 'odtest'})
-        # pp answer
         expect( answer[:success] ).to be nil
         expect( answer[:error].to_s ).to match('Error: unknown AuthenticationAuthority')
       end
@@ -280,10 +258,8 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
         enable = od.run(command: :user_enable_login, params: {username: 'odusertest'})
         expect( enable[:success] ).not_to be nil
 
-        # pp od.run(command: :user_info, params: {username: 'odusertest'})
         passwd = od.run(command: :user_set_password,
                         params: {username: 'odusertest', password: "T0p-S3cret"})
-        # pp passwd
         expect( passwd[:success] ).not_to be nil
         expect( passwd[:error] ).to be nil
       end
@@ -306,10 +282,8 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
         enable = od.run(command: :user_disable_login, params: {username: 'odusertest'})
         expect( enable[:success] ).not_to be nil
 
-        # pp od.run(command: :user_info, params: {username: 'odusertest'})
         passwd = od.run(command: :user_set_password,
                         params: {username: 'odusertest', password: "T0p-S3cret"})
-        # pp passwd
         expect( passwd[:success] ).to be nil
         expect( passwd[:error].to_s ).to match(/eDSAuthAccountDisabled/)
       end
@@ -321,7 +295,6 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
         expect( blocked[:success] ).not_to be nil
 
         answer = od.run(command: :user_login_enabled?, params: {username: 'odusertest'})
-        # pp answer
         expect( answer[:success].to_s ).to match('false')
         expect( answer[:error] ).to be nil
       end
@@ -343,13 +316,10 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
   end
 
   context "user in group reads" do
-    # let(:params_emp) { {uid: 'lweisbecker', gid: 'employee'} }
-    # let(:params_tst) { {uid: 'lweisbecker', gid: 'test'} }
     describe "user_in_group?" do
       it "verify existing user is in an existing group" do
         answer = od.run( command: :user_in_group?,
                           params: {uid: 'lweisbecker', gid: 'employee'} )
-        # pp answer
         expect( answer[:success].to_s ).to match('true')
       end
       it "verify existing user is NOT in existing 'test' group" do
@@ -408,7 +378,6 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
 
         answer = od.run( command: :user_add_to_group, params: params )
         expect( answer[:error] ).to be nil
-        # pp answer
       end
     end
     describe "user_remove_from_group" do
@@ -431,7 +400,6 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
 
         answer = od.run( command: :user_remove_from_group, params: params )
         expect( answer[:error] ).to be nil
-        # pp answer
       end
     end
   end
