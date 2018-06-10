@@ -578,7 +578,7 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
       end
     end
 
-    describe "user_create_full" do
+    describe "user_create" do
       let(:correct) {[
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "*"',
@@ -596,7 +596,7 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
       ]}
       it "with minimal attributes" do
         attribs = { uid: 'someone', gidnumber: '1032', uniqueid: '9876543' }
-        answer  = user.send(:user_create_full, attribs, srv_info)
+        answer  = user.send(:user_create, attribs, srv_info)
         min_correct = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "*"',
@@ -613,13 +613,13 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
         attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
                     first_name: 'Someone', last_name: "SPECIAL", uniqueid: '9876543',
                     real_name: 'Someone SPECIAL' }
-        answer  = user.send(:user_create_full, attribs, srv_info)
+        answer  = user.send(:user_create, attribs, srv_info)
         expect( answer ).to eq( correct )
       end
       it "with first & last name attributes" do
         attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
                     first_name: 'Someone', last_name: 'SPECIAL', uniqueid: '9876543'}
-        answer  = user.send(:user_create_full, attribs, srv_info)
+        answer  = user.send(:user_create, attribs, srv_info)
         expect( answer ).to eq( correct )
       end
       it "with group_membership & password attributes" do
@@ -627,7 +627,7 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
                     first_name: 'Someone', last_name: 'SPECIAL', uniqueid: '9876543',
                     group_membership: 'testgrp', password: 'TopSecret', enable: true
                   }
-        answer   = user.send(:user_create_full, attribs, srv_info)
+        answer   = user.send(:user_create, attribs, srv_info)
         with_all = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "TopSecret"',
@@ -649,7 +649,7 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
       it "without email" do
         attribs  = {uid: 'someone', gidnumber: '1032',
                     first_name: 'Someone', last_name: 'SPECIAL', uniqueid: '9876543'}
-        answer   = user.send(:user_create_full, attribs, srv_info)
+        answer   = user.send(:user_create, attribs, srv_info)
         no_email = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "*"',
@@ -667,7 +667,7 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
       it "with missing attributes (no firstname)" do
         attribs  = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
                     last_name: 'SPECIAL', uniqueid: '9876543'}
-        answer   = user.send(:user_create_full, attribs, srv_info)
+        answer   = user.send(:user_create, attribs, srv_info)
         no_first = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "*"',
@@ -687,7 +687,7 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
       it "with missing attributes (no lastname)" do
         attribs = { uid: 'someoney', email: 'user@example.com', gidnumber: '1032',
                     first_name: 'Someone', uniqueid: '9876543', password: 'TopSecret'}
-        answer  = user.send(:user_create_full, attribs, srv_info)
+        answer  = user.send(:user_create, attribs, srv_info)
         no_last = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someoney',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someoney "TopSecret"',
@@ -707,19 +707,19 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
       it "with missing attributes (no username)" do
         attribs = { email: 'user@example.com', gidnumber: '1032',
                     first_name: 'Someone', last_name: 'SPECIAL', uniqueid: '9876543'}
-        expect { user.send(:user_create_full, attribs, srv_info) }.
+        expect { user.send(:user_create, attribs, srv_info) }.
             to raise_error(ArgumentError, /record_name: 'nil' invalid/)
       end
       it "with missing attributes (no PrimaryGroupID)" do
         attribs = { uid: 'someone', email: 'user@example.com',
                     first_name: 'Someone', last_name: 'SPECIAL', uniqueid: '9876543'}
-        expect { user.send(:user_create_full, attribs, srv_info) }.
+        expect { user.send(:user_create, attribs, srv_info) }.
             to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :group_id/)
       end
       it "with missing attributes (no uniqueid)" do
         attribs = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
                     first_name: 'Someone', last_name: 'SPECIAL'}
-        expect { user.send(:user_create_full, attribs, srv_info) }.
+        expect { user.send(:user_create, attribs, srv_info) }.
             to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :unique_id/)
       end
     end

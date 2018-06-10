@@ -388,7 +388,7 @@ module OpenDirectoryUtils
     # https://images.apple.com/server/docs/Command_Line.pdf
     # https://serverfault.com/questions/20702/how-do-i-create-user-accounts-from-the-terminal-in-mac-os-x-10-5?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
     # https://superuser.com/questions/1154564/how-to-create-a-user-from-the-macos-command-line
-    def user_create_full(attribs, dir_info)
+    def user_create(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
 
       check_critical_attribute( attribs, :record_name )
@@ -433,7 +433,6 @@ module OpenDirectoryUtils
 
       return answer.flatten
     end
-    alias_method :user_create, :user_create_full
 
     # dscl . -delete /Users/yourUserName
     # https://tutorialforlinux.com/2011/09/15/delete-users-and-groups-from-terminal/

@@ -73,7 +73,7 @@ group_params = {group_name: 'agroup', real_name: 'A Group',
                 group_number: 5432
               }
 # create a user
-od.run( command: :user_create_full,  params: user_params )
+od.run( command: :user_create,  params: user_params )
 
 # update user's record (all dscl and ldap fields are available)
 od.run( command: :user_set_first_email,

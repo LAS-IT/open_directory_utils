@@ -10,7 +10,6 @@
   :passsword: Top-Secret
   :enable: true
   :group_membership: test
-# for minimal data use user_create_min instead of user_create
 # acceptable minimal attributes (password is set to * - no login) & real_name = username
 - :username: odtest
   :usernumber: 87654321

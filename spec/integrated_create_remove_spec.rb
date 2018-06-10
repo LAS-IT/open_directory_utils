@@ -110,11 +110,11 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
         found  = od.run(command: :user_exists?, params: new_user)
         expect( found[:success].to_s ).to match('true')
       end
-      it "user_create_full" do
+      it "user_create" do
         account = od.run(command: :user_exists?, params: new_user)
         expect( account[:success].to_s ).to match( 'false' )
 
-        create  = od.run(command: :user_create_full, params: new_user)
+        create  = od.run(command: :user_create, params: new_user)
         expect( create[:error] ).to be nil
 
         found  = od.run(command: :user_exists?, params: new_user)
@@ -180,7 +180,7 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
   context "live user edit testing" do
     describe "set & test a users password" do
       before(:each) do
-        od.run(command: :user_create_full, params: new_user)
+        od.run(command: :user_create, params: new_user)
       end
       after(:each) do
         od.run(command: :user_delete, params: new_user)
@@ -246,7 +246,7 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
 
     describe "enable and disable user account" do
       before(:each) do
-        od.run(command: :user_create_full, params: new_user)
+        od.run(command: :user_create, params: new_user)
       end
       after(:each) do
         od.run(command: :user_delete, params: new_user)
