@@ -76,35 +76,35 @@ module OpenDirectoryUtils
     def process_results(results, command, params, ssh_cmds)
 
       if command.eql?(:user_exists?) or command.eql?(:group_exists?)
-        return user_or_group_exist(results, command, params, ssh_cmds)
+        return report_existence(results, command, params, ssh_cmds)
       end
+
+      # if errored?(results)
+      #   return format_results(results, command, params, ssh_cmds, true)
+      # end
 
       results_str = results.to_s
       errors = true         if results_str.include? 'Error'
       errors = false    unless results_str.include? 'Error'
       if results_str.include?('Group not found') or               # can't find group to move user into
-          results.to_s.include?('eDSRecordNotFound') or           # return error if resource wasn't found
+          results_str.include?('eDSRecordNotFound') or            # return error if resource wasn't found
           results_str.include?('Record was not found') or         # can't find user to move into a group
-          results.to_s.include?('eDSAuthAccountDisabled') or      # can't set passwd when disabled
+          results_str.include?('eDSAuthAccountDisabled') or       # can't set passwd when disabled
           results_str.include?('unknown AuthenticationAuthority') # can't reset password when account disabled
+        # results = ["Resource not found", results]
         return format_results(results, command, params, ssh_cmds, true)
       end
 
       if command.eql?(:user_password_verified?) or command.eql?(:user_password_ok?)
-        return password_check(results, command, params, ssh_cmds)
+        return report_password_check(results, command, params, ssh_cmds)
       end
 
       if command.eql?(:user_login_enabled?)
-        return login_check(results, command, params, ssh_cmds)
+        return report_login_check(results, command, params, ssh_cmds)
       end
 
-      if command.eql?(:user_in_group?) or command.eql?(:group_has_user?)
-        username = params[:value]
-        unless username.nil? or username.eql? '' or username.include? ' ' or
-                results_str.include?('eDSRecordNotFound')
-          results = [true, results]      if results_str.include?( username )
-          results = [false, results] unless results_str.include?( username )
-        end
+      if command.eql?(:user_in_group?)
+        return report_in_group(results, command, params, ssh_cmds)
       end
 
       if errors and ( results_str.include?('eDSRecordNotFound') or
@@ -127,7 +127,14 @@ module OpenDirectoryUtils
       return answer
     end
 
-    def login_check(results, command, params, ssh_cmds)
+    def report_in_group(results, command, params, ssh_cmds)
+      username = params[:value]
+      results = [true, results]      if results.to_s.include?( username )
+      results = [false, results] unless results.to_s.include?( username )
+      return format_results(results, command, params, ssh_cmds, false)
+    end
+
+    def report_login_check(results, command, params, ssh_cmds)
       # puts "login enabled -- #{results}".upcase
       enabled = login_enabled?(results.to_s)
       results = [ enabled, results ]
@@ -141,7 +148,7 @@ module OpenDirectoryUtils
       true
     end
 
-    def password_check(results, command, params, ssh_cmds)
+    def report_password_check(results, command, params, ssh_cmds)
       passed  = password_verified?(results.to_s)
       results = [ passed, results ]
       return format_results(results, command, params, ssh_cmds, false)
@@ -151,7 +158,7 @@ module OpenDirectoryUtils
       true
     end
 
-    def user_or_group_exist(results, command, params, ssh_cmds)
+    def report_existence(results, command, params, ssh_cmds)
       found   = record_found?(results.to_s)
       results = [ found, results ]
       return format_results(results, command, params, ssh_cmds, false)
