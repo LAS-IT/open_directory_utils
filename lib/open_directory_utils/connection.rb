@@ -74,46 +74,28 @@ module OpenDirectoryUtils
     end
 
     def process_results(results, command, params, ssh_cmds)
-
       if command.eql?(:user_exists?) or command.eql?(:group_exists?)
         return report_existence(results, command, params, ssh_cmds)
       end
-
-      # if errored?(results)
-      #   return format_results(results, command, params, ssh_cmds, true)
-      # end
-
-      results_str = results.to_s
-      errors = true         if results_str.include? 'Error'
-      errors = false    unless results_str.include? 'Error'
-      if results_str.include?('Group not found') or               # can't find group to move user into
-          results_str.include?('eDSRecordNotFound') or            # return error if resource wasn't found
-          results_str.include?('Record was not found') or         # can't find user to move into a group
-          results_str.include?('eDSAuthAccountDisabled') or       # can't set passwd when disabled
-          results_str.include?('unknown AuthenticationAuthority') # can't reset password when account disabled
-        # results = ["Resource not found", results]
+      if missing_resource?(results)
+        results = ["Resource not found", results]
         return format_results(results, command, params, ssh_cmds, true)
       end
-
       if command.eql?(:user_password_verified?) or command.eql?(:user_password_ok?)
         return report_password_check(results, command, params, ssh_cmds)
       end
-
       if command.eql?(:user_login_enabled?)
         return report_login_check(results, command, params, ssh_cmds)
       end
-
       if command.eql?(:user_in_group?)
         return report_in_group(results, command, params, ssh_cmds)
       end
-
-      if errors and ( results_str.include?('eDSRecordNotFound') or
-                      results_str.include?('unknown AuthenticationAuthority') )
-        results = ["Resource not found", results]
+      if missed_errors?(results)
+        results = ["Unexpected Error", results]
+        format_results(results, command, params, ssh_cmds, errors)
       end
-
-      return format_results(results, command, params, ssh_cmds, errors)
-
+      # return any general success answers
+      return format_results(results, command, params, ssh_cmds, false)
     end
 
     def format_results(results, command, params, ssh_cmds, errors)
@@ -125,6 +107,28 @@ module OpenDirectoryUtils
                   attributes: params, dscl_cmds: ssh_cmds}}
       end
       return answer
+    end
+
+    def report_existence(results, command, params, ssh_cmds)
+      results = [false, results]    if results.to_s.include?('eDSRecordNotFound')
+      results = [true, results] unless results.to_s.include?('eDSRecordNotFound')
+      return format_results(results, command, params, ssh_cmds, false)
+    end
+
+    def missing_resource?(results)
+      results_str = results.to_s
+      return true  if results_str.include?('Group not found') or               # can't find group to move user into
+                      results_str.include?('eDSRecordNotFound') or            # return error if resource wasn't found
+                      results_str.include?('Record was not found') or         # can't find user to move into a group
+                      results_str.include?('eDSAuthAccountDisabled') or       # can't set passwd when disabled
+                      results_str.include?('unknown AuthenticationAuthority') # can't reset password when account disabled
+      return false
+    end
+
+    def missed_errors?(results)
+      results_str = results.to_s
+      return true  if results_str.include? 'Error'
+      return false
     end
 
     def report_in_group(results, command, params, ssh_cmds)
@@ -155,16 +159,6 @@ module OpenDirectoryUtils
     end
     def password_verified?(results_str)
       return false if results_str.include?('eDSAuthFailed')
-      true
-    end
-
-    def report_existence(results, command, params, ssh_cmds)
-      found   = record_found?(results.to_s)
-      results = [ found, results ]
-      return format_results(results, command, params, ssh_cmds, false)
-    end
-    def record_found?(results_str)
-      return false  if results_str.include?('eDSRecordNotFound')
       true
     end
 
