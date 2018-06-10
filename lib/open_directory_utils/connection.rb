@@ -74,16 +74,14 @@ module OpenDirectoryUtils
     end
 
     def process_results(results, command, params, ssh_cmds)
+
+      if command.eql?(:user_exists?) or command.eql?(:group_exists?)
+        return user_or_group_exist(results, command, params, ssh_cmds)
+      end
+
       results_str = results.to_s
       errors = true         if results_str.include? 'Error'
       errors = false    unless results_str.include? 'Error'
-
-      if command.eql?(:user_exists?) or command.eql?(:group_exists?)
-        found   = record_found?(results_str)
-        results = [ found, results ]
-        return format_results(results, command, params, ssh_cmds, false)
-      end
-
       if results_str.include?('Group not found') or               # can't find group to move user into
           results.to_s.include?('eDSRecordNotFound') or           # return error if resource wasn't found
           results_str.include?('Record was not found') or         # can't find user to move into a group
@@ -93,9 +91,7 @@ module OpenDirectoryUtils
       end
 
       if command.eql?(:user_password_verified?) or command.eql?(:user_password_ok?)
-        passed  = password_verified?(results_str)
-        results = [ passed, results ]
-        return format_results(results, command, params, ssh_cmds, false)
+        return password_check(results, command, params, ssh_cmds)
       end
 
       if command.eql?(:user_login_enabled?)
@@ -142,11 +138,21 @@ module OpenDirectoryUtils
       true
     end
 
+    def password_check(results, command, params, ssh_cmds)
+      passed  = password_verified?(results.to_s)
+      results = [ passed, results ]
+      return format_results(results, command, params, ssh_cmds, false)
+    end
     def password_verified?(results_str)
       return false if results_str.include?('eDSAuthFailed')
       true
     end
 
+    def user_or_group_exist(results, command, params, ssh_cmds)
+      found   = record_found?(results.to_s)
+      results = [ found, results ]
+      return format_results(results, command, params, ssh_cmds, false)
+    end
     def record_found?(results_str)
       return false  if results_str.include?('eDSRecordNotFound')
       true
