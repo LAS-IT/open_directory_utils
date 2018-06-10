@@ -7,7 +7,7 @@ One can also build custom DSCL commands and send them to the server as needed to
 
 ## Change Log
 
-* **v0.1.3** - 2018-06-?? - able to sync all fields
+* **v0.1.3** - 2018-06-?? - able to sync all fields in typcial OD
 - refactored results code
 - finished adding pre-built ldap and od commands with data checks for all mac OD fields
 * **v0.1.2** - 2018-06-09 - all user creation features enabled
