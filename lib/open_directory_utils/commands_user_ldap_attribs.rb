@@ -1,4 +1,4 @@
-require "open_directory_utils/dscl"
+# require "open_directory_utils/dscl"
 require "open_directory_utils/clean_check"
 require "open_directory_utils/commands_base"
 

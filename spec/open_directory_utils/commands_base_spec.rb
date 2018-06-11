@@ -82,6 +82,27 @@ RSpec.describe OpenDirectoryUtils::CommandsBase do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -read /Users/someone'
         expect( answer ).to eq( correct )
       end
+      it "builds with format xml" do
+        attribs = {record_name: 'someone', action: 'read',
+                    scope: 'Users', format: 'xml'}
+        answer  = base.send(:dscl, attribs, srv_info)
+        correct = '/usr/bin/dscl -plist -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -read /Users/someone'
+        expect( answer ).to eq( correct )
+      end
+      it "builds with format plist" do
+        attribs = {record_name: 'someone', action: 'read',
+                    scope: 'Users', format: 'xml'}
+        answer  = base.send(:dscl, attribs, srv_info)
+        correct = '/usr/bin/dscl -plist -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -read /Users/someone'
+        expect( answer ).to eq( correct )
+      end
+      it "builds text response with incorrect format" do
+        attribs = {record_name: 'someone', action: 'read',
+                    scope: 'Users', format: 'html'}
+        answer  = base.send(:dscl, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -read /Users/someone'
+        expect( answer ).to eq( correct )
+      end
     end
 
     describe "build dscl actions" do
