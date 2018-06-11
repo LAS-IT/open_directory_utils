@@ -12,7 +12,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsExtended do
                       group_number: '1032', group_name: 'test', city: 'Leysin',
                       chat: 'AIM:someone', comment: 'Hi There', company: 'LAS',
                       country: 'CH', department: 'IT', job_title: 'DevOps',
-
+                      keyword: 'employee', home_phone: "024 654 1234",
+                      mobile_phone: '079 678 4321', work_phone: 'x4890',
                     } }
     let(:srv_info) { {username: 'diradmin', password: 'TopSecret',
                       data_path: '/LDAPv3/127.0.0.1',
@@ -84,7 +85,6 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsExtended do
       it "append multiple chats" do
         attribs[:chat] = ['AIM:someone', 'MSN:someone', 'ICQ:someone']
         answer  = ext_od.send(:user_set_chat, attribs, srv_info)
-        # pp answer
         correct = [
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone IMHandle "AIM:someone"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -append /Users/someone IMHandle "MSN:someone"',
@@ -200,6 +200,99 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsExtended do
         attribs[:title] = "Support"
         answer  = ext_od.send(:user_set_title, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone JobTitle "Support"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "Set Keyword values" do
+      it "set 1st keyword" do
+        answer  = ext_od.send(:user_create_keyword, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Keywords "employee"'
+        expect( answer ).to eq( correct )
+      end
+      it "set 1st keyword" do
+        attribs[:keyword] = nil
+        attribs[:keywords] = "departed"
+        answer  = ext_od.send(:user_create_keyword, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Keywords "departed"'
+        expect( answer ).to eq( correct )
+      end
+      it "set 2nd keyword" do
+        answer  = ext_od.send(:user_append_keyword, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -append /Users/someone Keywords "employee"'
+        expect( answer ).to eq( correct )
+      end
+      it "set 2nd keyword" do
+        attribs[:keyword] = nil
+        attribs[:keywords] = "departed"
+        answer  = ext_od.send(:user_append_keyword, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -append /Users/someone Keywords "departed"'
+        expect( answer ).to eq( correct )
+      end
+      it "set multi keyword" do
+        attribs[:keyword] = ['employee', 'ops', 'it']
+        answer  = ext_od.send(:user_set_keyword, attribs, srv_info)
+        correct = [
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Keywords "employee"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -append /Users/someone Keywords "ops"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -append /Users/someone Keywords "it"',
+          ]
+        expect( answer ).to eq( correct )
+      end
+      it "set multi-keywords" do
+        attribs[:keyword] = nil
+        attribs[:keywords] = ['employee', 'ops', 'sis']
+        answer  = ext_od.send(:user_set_keywords, attribs, srv_info)
+        correct = [
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Keywords "employee"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -append /Users/someone Keywords "ops"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -append /Users/someone Keywords "sis"',
+          ]
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "Set home_phone" do
+      it "with home_phone" do
+        answer  = ext_od.send(:user_set_home_phone, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone HomePhoneNumber "024 654 1234"'
+        expect( answer ).to eq( correct )
+      end
+      it "with home_phone_number" do
+        attribs[:home_phone] = nil
+        attribs[:home_phone_number] = '024 567 8901'
+        answer  = ext_od.send(:user_set_home_phone, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone HomePhoneNumber "024 567 8901"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "Set mobile_phone" do
+      it "with mobile_phone" do
+        answer  = ext_od.send(:user_set_mobile_phone, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone MobileNumber "079 678 4321"'
+        expect( answer ).to eq( correct )
+      end
+      it "with mobile_phone" do
+        attribs[:mobile_phone] = nil
+        attribs[:mobile_phone_number] = '079 678 9876'
+        answer  = ext_od.send(:user_set_mobile_phone, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone MobileNumber "079 678 9876"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "Set work_phone" do
+      it "with work_phone" do
+        answer  = ext_od.send(:user_set_work_phone, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone PhoneNumber "x4890"'
+        expect( answer ).to eq( correct )
+      end
+      it "with work_phone" do
+        attribs[:work_phone] = nil
+        attribs[:work_phone_number] = 'x1234'
+        answer  = ext_od.send(:user_set_work_phone, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone PhoneNumber "x1234"'
         expect( answer ).to eq( correct )
       end
     end

@@ -92,18 +92,12 @@ module OpenDirectoryUtils
       answer = []
       Array(attribs[:values]).each_with_index do |value, index|
         attribs[:value] = value
-        check_critical_attribute( attribs, :value, :chat )
-        attribs    = tidy_attribs(attribs)
-
         case index
         when 0
-          command    = {action: 'create', scope: 'Users', attribute: 'IMHandle'}
+          answer << user_create_chat(attribs, dir_info)
         else
-          command    = {action: 'append', scope: 'Users', attribute: 'IMHandle'}
+          answer << user_append_chat(attribs, dir_info)
         end
-        user_attrs = attribs.merge(command)
-
-        answer << dscl( user_attrs, dir_info )
       end
 
       answer
@@ -205,28 +199,122 @@ module OpenDirectoryUtils
 
     # 1st keyword    -- /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME apple-keyword "$VALUE"
     # other keywords --  /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
-    def user_set_first_keywords(attribs, dir_info)
+    def user_create_keyword(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+      check_critical_attribute( attribs, :record_name )
+
+      attribs[:value] = attribs[:value] || attribs[:keywords]
+      attribs[:value] = attribs[:value] || attribs[:keyword]
+
+      check_critical_attribute( attribs, :value, :keyword )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'Keywords'}
+      user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
     end
+    alias_method :user_create_keywords, :user_create_keyword
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
-    def user_append_keywords(attribs, dir_info)
+    def user_append_keyword(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+      check_critical_attribute( attribs, :record_name )
+
+      attribs[:value] = attribs[:value] || attribs[:keywords]
+      attribs[:value] = attribs[:value] || attribs[:keyword]
+
+      check_critical_attribute( attribs, :value, :keyword )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'append', scope: 'Users', attribute: 'Keywords'}
+      user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
     end
+    alias_method :user_append_keywords, :user_append_keyword
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
     def user_set_keywords(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+      check_critical_attribute( attribs, :record_name )
+
+      attribs[:values] = attribs[:values] || attribs[:keywords]
+      attribs[:values] = attribs[:values] || attribs[:keyword]
+
+      answer = []
+      Array(attribs[:values]).each_with_index do |value, index|
+        attribs[:value] = value
+
+        case index
+        when 0
+          answer << user_create_keyword(attribs, dir_info)
+        else
+          answer << user_append_keyword(attribs, dir_info)
+        end
+      end
+
+      answer
     end
+    alias_method :user_set_keyword, :user_set_keywords
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
     def user_set_home_phone(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+      check_critical_attribute( attribs, :record_name )
+
+      attribs[:value] = attribs[:value] || attribs[:home_phone_number]
+      attribs[:value] = attribs[:value] || attribs[:home_number]
+      attribs[:value] = attribs[:value] || attribs[:home_phone]
+
+      check_critical_attribute( attribs, :value, :home_phone )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'HomePhoneNumber'}
+      user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
     end
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
     def user_set_mobile_phone(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+      check_critical_attribute( attribs, :record_name )
+
+      attribs[:value] = attribs[:value] || attribs[:mobile_phone_number]
+      attribs[:value] = attribs[:value] || attribs[:mobile_number]
+      attribs[:value] = attribs[:value] || attribs[:mobile_phone]
+
+      check_critical_attribute( attribs, :value, :mobile_phone )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'MobileNumber'}
+      user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
     end
     alias_method :user_set_mobile_number, :user_set_mobile_phone
+    alias_method :user_set_mobile_phone_number, :user_set_mobile_phone
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
     def user_set_work_phone(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+      check_critical_attribute( attribs, :record_name )
+
+      attribs[:value] = attribs[:value] || attribs[:work_phone_number]
+      attribs[:value] = attribs[:value] || attribs[:phone_number]
+      attribs[:value] = attribs[:value] || attribs[:work_number]
+      attribs[:value] = attribs[:value] || attribs[:work_phone]
+      attribs[:value] = attribs[:value] || attribs[:number]
+      attribs[:value] = attribs[:value] || attribs[:phone]
+
+      check_critical_attribute( attribs, :value, :work_phone )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'PhoneNumber'}
+      user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
     end
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
