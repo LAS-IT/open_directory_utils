@@ -22,7 +22,10 @@ users = []
 begin
   users  = YAML.load( File.open('users.yml') )
 rescue Errno::ENOENT, LoadError, Psych::SyntaxError, YAML::Error
-  users = [{username: 'odtest', usernumber: '87654321', primary_group_id: 1031}]
+  users = [
+    {username: 'odtest1', usernumber: '87654321', primary_group_id: 1031},
+    {username: 'odtest2', usernumber: '87654322', primary_group_id: 1031},
+  ]
 ensure
   puts "\nUSERS:"
   pp users
@@ -32,7 +35,7 @@ make   = false
 puts "Review the user data \nEnter 'Y' to create od accounts\n  (otherwise you see a dry run)"
 answer = gets.chomp.downcase
 if answer.eql? 'y'
-  make = true
+  make_accts = true
 end
 
 # create accounts
@@ -41,5 +44,5 @@ Array(users).each do |person|
   # show commands
   pp od.send(:user_create, person, od.dir_info)
   # Make Account
-  # pp od.run(command: :user_create, params: person )  if make
+  pp od.run(command: :user_create, params: person )  if make_accts.eql? true
 end
