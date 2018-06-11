@@ -5,15 +5,202 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsExtended do
 
   context "build commands for syncing extended user attributes" do
 
-    let(:user)     { Object.new.extend(OpenDirectoryUtils::CommandsUserAttribsExtended) }
+    let(:ext_od)   { Object.new.extend(OpenDirectoryUtils::CommandsUserAttribsExtended) }
+    let(:attribs)  { {username: 'someone', email: 'user@example.com',
+                      first_name: 'Someone', last_name: "SPECIAL",
+                      real_name: 'Someone (Very) SPECIAL', unique_id: '9876543',
+                      group_number: '1032', group_name: 'test', city: 'Leysin',
+                      chat: 'AIM:someone', comment: 'Hi There', company: 'LAS',
+                      country: 'CH', department: 'IT', job_title: 'DevOps',
+
+                    } }
     let(:srv_info) { {username: 'diradmin', password: 'TopSecret',
                       data_path: '/LDAPv3/127.0.0.1',
                       dscl: '/usr/bin/dscl',
                       pwpol: '/usr/bin/pwpolicy',
                       dsedit: '/usr/sbin/dseditgroup'} }
 
-    describe "sync" do
-      it "some field" do
+    describe "Set city attribute" do
+      it "city - with city" do
+        answer  = ext_od.send(:user_set_city, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone City "Leysin"'
+        expect( answer ).to eq( correct )
+      end
+      it "city - with town" do
+        attribs[:city] = nil
+        attribs[:town] = "Aigle"
+        answer  = ext_od.send(:user_set_city, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone City "Aigle"'
+        expect( answer ).to eq( correct )
+      end
+      it "city - with locale" do
+        attribs[:city] = nil
+        attribs[:locale] = "Aigle"
+        answer  = ext_od.send(:user_set_city, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone City "Aigle"'
+        expect( answer ).to eq( correct )
+      end
+      it "city - with l" do
+        attribs[:city] = nil
+        attribs[:l] = "Aigle"
+        answer  = ext_od.send(:user_set_city, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone City "Aigle"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "Set Chat values" do
+      it "set 1st chat" do
+        answer  = ext_od.send(:user_create_chat, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone IMHandle "AIM:someone"'
+        expect( answer ).to eq( correct )
+      end
+      it "set 1st chat as im_handle" do
+        attribs[:chat] = nil
+        attribs[:im_handle] = "MSN:someone"
+        answer  = ext_od.send(:user_create_chat, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone IMHandle "MSN:someone"'
+        expect( answer ).to eq( correct )
+      end
+      it "set 1st chat as im_handle" do
+        attribs[:chat] = nil
+        attribs[:imhandle] = "MSN:someone"
+        answer  = ext_od.send(:user_create_chat, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone IMHandle "MSN:someone"'
+        expect( answer ).to eq( correct )
+      end
+      it "set 1st chat as im" do
+        attribs[:chat] = nil
+        attribs[:im] = "MSN:someone"
+        answer  = ext_od.send(:user_create_chat, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone IMHandle "MSN:someone"'
+        expect( answer ).to eq( correct )
+      end
+      it "append 2nd chat" do
+        answer  = ext_od.send(:user_append_chat, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -append /Users/someone IMHandle "AIM:someone"'
+        expect( answer ).to eq( correct )
+      end
+      it "append multiple chats" do
+        attribs[:chat] = ['AIM:someone', 'MSN:someone', 'ICQ:someone']
+        answer  = ext_od.send(:user_set_chat, attribs, srv_info)
+        # pp answer
+        correct = [
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone IMHandle "AIM:someone"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -append /Users/someone IMHandle "MSN:someone"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -append /Users/someone IMHandle "ICQ:someone"',
+        ]
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "Set comment attribute" do
+      it "comment - with comment" do
+        answer  = ext_od.send(:user_set_comment, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Comment "Hi There"'
+        expect( answer ).to eq( correct )
+      end
+      it "comment - with description" do
+        attribs[:comment] = nil
+        attribs[:description] = "Hi Buddy"
+        answer  = ext_od.send(:user_set_comment, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Comment "Hi Buddy"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "Set company attribute" do
+      it "company - with company" do
+        answer  = ext_od.send(:user_set_company, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Company "LAS"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "Set country attribute" do
+      it "country - with country" do
+        answer  = ext_od.send(:user_set_country, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Country "CH"'
+        expect( answer ).to eq( correct )
+      end
+      it "country - with c" do
+        attribs[:country] = nil
+        attribs[:c] = "DE"
+        answer  = ext_od.send(:user_set_country, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Country "DE"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "Set department attribute" do
+      it "department - with department" do
+        answer  = ext_od.send(:user_set_department, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Departmemt "IT"'
+        expect( answer ).to eq( correct )
+      end
+      it "department - with dept" do
+        attribs[:department] = nil
+        attribs[:dept] = "Math"
+        answer  = ext_od.send(:user_set_department, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Departmemt "Math"'
+        expect( answer ).to eq( correct )
+      end
+      it "department - with deptnumber" do
+        attribs[:department] = nil
+        attribs[:deptnumber] = "Math"
+        answer  = ext_od.send(:user_set_department, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Departmemt "Math"'
+        expect( answer ).to eq( correct )
+      end
+      it "department - with dept_number" do
+        attribs[:department] = nil
+        attribs[:dept_number] = "Math"
+        answer  = ext_od.send(:user_set_department, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Departmemt "Math"'
+        expect( answer ).to eq( correct )
+      end
+      it "department - with departmentnumber" do
+        attribs[:department] = nil
+        attribs[:departmentnumber] = "Math"
+        answer  = ext_od.send(:user_set_department, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Departmemt "Math"'
+        expect( answer ).to eq( correct )
+      end
+      it "department - with department_number" do
+        attribs[:department] = nil
+        attribs[:department_number] = "Math"
+        answer  = ext_od.send(:user_set_department, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Departmemt "Math"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "Set JobTitle" do
+      it "with job_title" do
+        answer  = ext_od.send(:user_set_job_title, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone JobTitle "DevOps"'
+        expect( answer ).to eq( correct )
+      end
+      it "with jobtitle" do
+        attribs[:job_title] = nil
+        attribs[:jobtitle] = "Support"
+        answer  = ext_od.send(:user_set_job_title, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone JobTitle "Support"'
+        expect( answer ).to eq( correct )
+      end
+      it "with title" do
+        attribs[:job_title] = nil
+        attribs[:title] = "Support"
+        answer  = ext_od.send(:user_set_job_title, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone JobTitle "Support"'
+        expect( answer ).to eq( correct )
+      end
+      it "with title" do
+        attribs[:job_title] = nil
+        attribs[:title] = "Support"
+        answer  = ext_od.send(:user_set_title, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone JobTitle "Support"'
+        expect( answer ).to eq( correct )
       end
     end
 
