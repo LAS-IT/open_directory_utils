@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{A ruby wrapper to access MacOpenDirectory management commands remotely}
   spec.description   = %q{Create and update users and groups on a MacOpenDirectory Server}
-  spec.homepage      = "https://github.com/btihen/open_directory_utils"
+  spec.homepage      = "https://github.com/LAS-IT/open_directory_utils"
   spec.license       = "MIT"
 
   # # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
