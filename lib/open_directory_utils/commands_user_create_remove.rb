@@ -184,11 +184,11 @@ module OpenDirectoryUtils
 
       answer     = []
 
-      command    = {action: 'create', scope: 'Users', attribute: 'mail'}
+      command    = {action: 'create', scope: 'Users', attribute: 'MailAttribute'}
       user_attrs = attribs.merge(command)
       answer    << dscl( user_attrs, dir_info )
 
-      command    = {action: 'create', scope: 'Users', attribute: 'email'}
+      command    = {action: 'create', scope: 'Users', attribute: 'EMailAttribute'}
       user_attrs = attribs.merge(command)
       answer    << dscl( user_attrs, dir_info )
 
@@ -205,6 +205,8 @@ module OpenDirectoryUtils
 
       attribs[:value] = attribs[:value] || attribs['apple-user-mailattribute']
       attribs[:value] = attribs[:value] || attribs[:apple_user_mailattribute]
+      attribs[:value] = attribs[:value] || attribs[:e_mail_attribute]
+      attribs[:value] = attribs[:value] || attribs[:mail_attribute]
       attribs[:value] = attribs[:value] || attribs[:email]
       attribs[:value] = attribs[:value] || attribs[:mail]
 

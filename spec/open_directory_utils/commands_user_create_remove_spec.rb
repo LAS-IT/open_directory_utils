@@ -344,8 +344,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
         attribs = {uid: 'someone', 'apple-user-mailattribute' => 'user@example.com'}
         answer  = user.send(:user_set_email, attribs, srv_info)
         correct = [
-          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone mail "user@example.com"',
-          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone email "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone MailAttribute "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone EMailAttribute "user@example.com"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone apple-user-mailattribute "user@example.com"'
         ]
         expect( answer ).to eq( correct )
@@ -354,8 +354,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
         attribs = {uid: 'someone', apple_user_mailattribute: 'user@example.com'}
         answer  = user.send(:user_set_email, attribs, srv_info)
         correct = [
-          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone mail "user@example.com"',
-          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone email "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone MailAttribute "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone EMailAttribute "user@example.com"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone apple-user-mailattribute "user@example.com"'
         ]
         expect( answer ).to eq( correct )
@@ -364,8 +364,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
         attribs = {uid: 'someone', email: 'user@example.com'}
         answer  = user.send(:user_set_email, attribs, srv_info)
         correct = [
-          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone mail "user@example.com"',
-          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone email "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone MailAttribute "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone EMailAttribute "user@example.com"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone apple-user-mailattribute "user@example.com"'
         ]
         expect( answer ).to eq( correct )
@@ -374,8 +374,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
         attribs = {uid: 'someone', mail: 'user@example.com'}
         answer  = user.send(:user_set_email, attribs, srv_info)
         correct = [
-          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone mail "user@example.com"',
-          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone email "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone MailAttribute "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone EMailAttribute "user@example.com"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone apple-user-mailattribute "user@example.com"'
         ]
         expect( answer ).to eq( correct )
@@ -590,8 +590,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone UniqueID "9876543"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone PrimaryGroupID "1032"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone NFSHomeDirectory "/Volumes/Macintosh HD/Users/someone"',
-        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone mail "user@example.com"',
-        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone email "user@example.com"',
+        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone MailAttribute "user@example.com"',
+        '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone EMailAttribute "user@example.com"',
         '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone apple-user-mailattribute "user@example.com"'
       ]}
       it "with minimal attributes" do
@@ -639,8 +639,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone UniqueID "9876543"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone PrimaryGroupID "1032"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone NFSHomeDirectory "/Volumes/Macintosh HD/Users/someone"',
-          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone mail "user@example.com"',
-          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone email "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone MailAttribute "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone EMailAttribute "user@example.com"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone apple-user-mailattribute "user@example.com"',
           '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -a someone -t user testgrp',
         ]
@@ -678,8 +678,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone UniqueID "9876543"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone PrimaryGroupID "1032"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone NFSHomeDirectory "/Volumes/Macintosh HD/Users/someone"',
-          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone mail "user@example.com"',
-          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone email "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone MailAttribute "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone EMailAttribute "user@example.com"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone apple-user-mailattribute "user@example.com"'
         ]
         expect(answer).to eq( no_first )
@@ -698,8 +698,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someoney UniqueID "9876543"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someoney PrimaryGroupID "1032"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someoney NFSHomeDirectory "/Volumes/Macintosh HD/Users/someone"',
-          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someoney mail "user@example.com"',
-          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someoney email "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someoney MailAttribute "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someoney EMailAttribute "user@example.com"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someoney apple-user-mailattribute "user@example.com"'
         ]
         expect(answer).to eq( no_last )
