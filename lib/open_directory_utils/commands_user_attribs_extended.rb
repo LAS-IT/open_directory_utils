@@ -319,31 +319,119 @@ module OpenDirectoryUtils
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
     def user_set_name_suffix(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+      check_critical_attribute( attribs, :record_name )
+
+      attribs[:value] = attribs[:value] || attribs[:name_suffix]
+      attribs[:value] = attribs[:value] || attribs[:suffix]
+      check_critical_attribute( attribs, :value, :name_suffix )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'NameSuffix'}
+      user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
     end
 
     def user_set_organization_info(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+      check_critical_attribute( attribs, :record_name )
+
+      attribs[:value] = attribs[:value] || attribs[:organization_info]
+      attribs[:value] = attribs[:value] || attribs[:organization]
+      attribs[:value] = attribs[:value] || attribs[:org_info]
+      attribs[:value] = attribs[:value] || attribs[:org]
+      check_critical_attribute( attribs, :value, :organization_info )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'OrganizationInfo'}
+      user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
     end
     alias_method :user_set_org_info, :user_set_organization_info
     # alias_method :user_set_student_id, :user_set_organization_info
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME apple-webloguri "$VALUE"
     def user_set_postal_code(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+      check_critical_attribute( attribs, :record_name )
+
+      attribs[:value] = attribs[:value] || attribs[:postal_code]
+      attribs[:value] = attribs[:value] || attribs[:post_code]
+      attribs[:value] = attribs[:value] || attribs[:zip_code]
+      attribs[:value] = attribs[:value] || attribs[:zip]
+      check_critical_attribute( attribs, :value, :postal_code )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'PostalCode'}
+      user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
     end
     alias_method :user_set_post_code, :user_set_postal_code
+    alias_method :user_set_zip_code, :user_set_postal_code
     # alias_method :las_sync_date, :user_set_weblog
 
     def user_set_relationships(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+      check_critical_attribute( attribs, :record_name )
+
+      attribs[:value] = attribs[:value] || attribs[:relationships]
+      attribs[:value] = attribs[:value] || attribs[:relations]
+      check_critical_attribute( attribs, :value, :relationships )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'Relationships'}
+      user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
     end
 
     def user_set_state(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+      check_critical_attribute( attribs, :record_name )
+
+      attribs[:value] = attribs[:value] || attribs[:state]
+      check_critical_attribute( attribs, :value, :state )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'State'}
+      user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
     end
 
     def user_set_street(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+      check_critical_attribute( attribs, :record_name )
+
+      attribs[:value] = attribs[:value] || attribs[:address]
+      attribs[:value] = attribs[:value] || attribs[:street]
+      check_critical_attribute( attribs, :value, :street )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'Street'}
+      user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
     end
-    alias_method :user_set_address_line, :user_set_street
+    alias_method :user_set_address, :user_set_street
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME apple-webloguri "$VALUE"
     def user_set_weblog(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+      check_critical_attribute( attribs, :record_name )
+
+      attribs[:value] = attribs[:value] || attribs[:weblog]
+      attribs[:value] = attribs[:value] || attribs[:blog]
+      check_critical_attribute( attribs, :value, :weblog )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'Weblog'}
+      user_attrs = attribs.merge(command)
+
+      dscl( user_attrs, dir_info )
     end
     alias_method :user_set_blog, :user_set_weblog
     # alias_method :las_sync_date, :user_set_weblog

@@ -14,6 +14,10 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsExtended do
                       country: 'CH', department: 'IT', job_title: 'DevOps',
                       keyword: 'employee', home_phone: "024 654 1234",
                       mobile_phone: '079 678 4321', work_phone: 'x4890',
+                      name_suffix: 'Jr', org_info: 'Top', postal_code: '1234',
+                      relationships: 'John', state: 'Vaud',
+                      street: 'chemin de la Source',
+                      weblog: 'http://example.ch/weblog',
                     } }
     let(:srv_info) { {username: 'diradmin', password: 'TopSecret',
                       data_path: '/LDAPv3/127.0.0.1',
@@ -293,6 +297,104 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribsExtended do
         attribs[:work_phone_number] = 'x1234'
         answer  = ext_od.send(:user_set_work_phone, attribs, srv_info)
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone PhoneNumber "x1234"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "Set name_suffix" do
+      it "with name_suffix" do
+        answer  = ext_od.send(:user_set_name_suffix, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone NameSuffix "Jr"'
+        expect( answer ).to eq( correct )
+      end
+      it "with suffix" do
+        attribs[:name_suffix] = nil
+        attribs[:suffix] = 'Sr'
+        answer  = ext_od.send(:user_set_name_suffix, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone NameSuffix "Sr"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "Set organization_info" do
+      it "with org_info" do
+        answer  = ext_od.send(:user_set_organization_info, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone OrganizationInfo "Top"'
+        expect( answer ).to eq( correct )
+      end
+      it "with organization_info" do
+        attribs[:org_info] = nil
+        attribs[:organization_info] = 'Down'
+        answer  = ext_od.send(:user_set_organization_info, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone OrganizationInfo "Down"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "Set postal_code" do
+      it "with org_info" do
+        answer  = ext_od.send(:user_set_postal_code, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone PostalCode "1234"'
+        expect( answer ).to eq( correct )
+      end
+      it "with organization_info" do
+        attribs[:postal_code] = nil
+        attribs[:zip_code] = '4321'
+        answer  = ext_od.send(:user_set_postal_code, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone PostalCode "4321"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "Set relationships" do
+      it "with relationships" do
+        answer  = ext_od.send(:user_set_relationships, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Relationships "John"'
+        expect( answer ).to eq( correct )
+      end
+      it "with relations" do
+        attribs[:relationships] = nil
+        attribs[:relations] = 'Jane'
+        answer  = ext_od.send(:user_set_relationships, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Relationships "Jane"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "Set state" do
+      it "with state" do
+        answer  = ext_od.send(:user_set_state, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone State "Vaud"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "Set street" do
+      it "with street" do
+        answer  = ext_od.send(:user_set_street, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Street "chemin de la Source"'
+        expect( answer ).to eq( correct )
+      end
+      it "with address" do
+        attribs[:street] = nil
+        attribs[:address] = 'Ave Rollier'
+        answer  = ext_od.send(:user_set_address, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Street "Ave Rollier"'
+        expect( answer ).to eq( correct )
+      end
+    end
+
+    describe "Set weblog" do
+      it "with weblog" do
+        answer  = ext_od.send(:user_set_weblog, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Weblog "http://example.ch/weblog"'
+        expect( answer ).to eq( correct )
+      end
+      it "with blog" do
+        attribs[:weblog] = nil
+        attribs[:blog] = 'http://example.com/blog'
+        answer  = ext_od.send(:user_set_blog, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Weblog "http://example.com/blog"'
         expect( answer ).to eq( correct )
       end
     end
