@@ -1,11 +1,11 @@
 require 'spec_helper'
-require "open_directory_utils/commands_user_attribs_extended"
+require "open_directory_utils/commands_user_attribs"
 
-RSpec.describe OpenDirectoryUtils::CommandsUserAttribsExtended do
+RSpec.describe OpenDirectoryUtils::CommandsUserAttribs do
 
   context "build commands for syncing extended user attributes" do
 
-    let(:ext_od)   { Object.new.extend(OpenDirectoryUtils::CommandsUserAttribsExtended) }
+    let(:ext_od)   { Object.new.extend(OpenDirectoryUtils::CommandsUserAttribs) }
     let(:attribs)  { {username: 'someone', email: 'user@example.com',
                       first_name: 'Someone', last_name: "SPECIAL",
                       real_name: 'Someone (Very) SPECIAL', unique_id: '9876543',

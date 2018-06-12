@@ -377,13 +377,20 @@ module OpenDirectoryUtils
       attribs[:value] = nil
       answer         << user_set_password(attribs, dir_info)
       attribs[:value] = nil
+      answer         << user_set_shell(attribs, dir_info)
+      attribs[:value] = nil
+      answer         << user_set_real_name(attribs, dir_info)
+      attribs[:value] = nil
+      answer         << user_set_unique_id(attribs, dir_info)
+      attribs[:value] = nil
+      answer         << user_set_primary_group_id(attribs, dir_info)
+      attribs[:value] = nil
+      answer         << user_set_nfs_home_directory(attribs, dir_info)
+      attribs[:value] = nil
       answer         << user_enable_login(attribs, dir_info)      if
                         attribs[:enable]&.eql? 'true' or attribs[:enable]&.eql? true
       answer         << user_disable_login(attribs, dir_info) unless
                         attribs[:enable]&.eql? 'true' or attribs[:enable]&.eql? true
-      attribs[:value] = nil
-      answer         << user_set_real_name(attribs, dir_info)
-
       return answer
     end
 
@@ -400,8 +407,6 @@ module OpenDirectoryUtils
       answer            = []
       attribs[:value]   = nil
       answer           << user_create_min(attribs, dir_info)
-      attribs[:value]   = nil
-      answer           << user_set_shell(attribs, dir_info)
       if attribs[:first_name] or attribs[:firstname] or attribs[:given_name] or
                           attribs[:givenname]
         attribs[:value] = nil
@@ -412,12 +417,6 @@ module OpenDirectoryUtils
         attribs[:value] = nil
         answer         << user_set_last_name(attribs, dir_info)
       end
-      attribs[:value]   = nil
-      answer           << user_set_unique_id(attribs, dir_info)
-      attribs[:value]   = nil
-      answer           << user_set_primary_group_id(attribs, dir_info)
-      attribs[:value]   = nil
-      answer           << user_set_nfs_home_directory(attribs, dir_info)
       # skip email if non-sent
       if attribs[:email] or attribs[:mail] or attribs[:apple_user_mailattribute]
         attribs[:value] = nil

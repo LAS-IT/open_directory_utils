@@ -8,7 +8,7 @@ module OpenDirectoryUtils
   # @note - these commands were derived from the following resrouces:
   # * https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man1/dscl.1.html
   # * https://superuser.com/questions/592921/mac-osx-users-vs-dscl-command-to-list-user/621055?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-  module CommandsUserAttribsExtended
+  module CommandsUserAttribs
 
     # include OpenDirectoryUtils::Dscl
     include OpenDirectoryUtils::CleanCheck
