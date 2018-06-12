@@ -12,6 +12,8 @@ module OpenDirectoryUtils
       assert{not attrib[key].nil?}
       attrib[key] = attrib[key].to_s.strip
       assert{not attrib[key].eql? ''}
+      assert{not attrib[key].eql? '[]'}
+      assert{not attrib[key].eql? '{}'}
       assert{not attrib[key].include? ' '} if key.eql? :scope
       assert{not attrib[key].include? ' '} if [:uid, :username, :record_name].include? key
       rescue NoMethodError, ArgumentError => error
