@@ -42,6 +42,7 @@ module OpenDirectoryUtils
     # @command [Symbol] - required -- to choose the action wanted
     # @params [Hash] - required -- necessary information to accomplish action
     # @output [String] - optional -- 'xml' or 'plist' will return responses using xml format
+    # response [Hash] - { response: results, status: status, command: command, attributes: params, dscl_cmds: ssh_clean }
     def run(command:, params:, output: nil)
       answer = {}
       params[:format] = output
@@ -54,7 +55,7 @@ module OpenDirectoryUtils
       answer = process_results(results, command, params, ssh_cmds )
       return answer
       rescue ArgumentError, NoMethodError => error
-        format_results(error.message, command, params, ssh_cmds, success: false)
+        format_results(error.message, command, params, ssh_cmds, 'error')
     end
 
     private
@@ -78,7 +79,7 @@ module OpenDirectoryUtils
       if missing_resource?(results)
         results = ["Resource not found", results]
         # report lack of success
-        return format_results(results, command, params, ssh_cmds, success: false)
+        return format_results(results, command, params, ssh_cmds, 'error')
       end
       if command.eql?(:user_password_verified?) or command.eql?(:user_password_ok?)
         return report_password_check(results, command, params, ssh_cmds)
@@ -91,35 +92,28 @@ module OpenDirectoryUtils
       end
       if results.to_s.include? 'attribute status: eDSNoStdMappingAvailable'
         results = ["Bad Attribute Description", results]
-        format_results(results, command, params, ssh_cmds, success: false)
+        format_results(results, command, params, ssh_cmds, 'error')
       end
       if missed_errors?(results)
         results = ["Unexpected Error", results]
-        format_results(results, command, params, ssh_cmds, success: false)
+        format_results(results, command, params, ssh_cmds, 'error')
       end
       # return any general success answers
-      format_results(results, command, params, ssh_cmds, success: true)
+      format_results(results, command, params, ssh_cmds, 'success')
     end
 
-    def format_results(results, command, params, ssh_cmds, success:)
+    def format_results(results, command, params, ssh_cmds, status)
       ssh_clean = ssh_cmds.to_s
       ssh_clean = ssh_clean.gsub(/-[p] ".+"/, '-p "************"')
       ssh_clean = ssh_clean.gsub(/-[P] ".+"/, '-P "************"')
-
-      case success
-      when true
-        return { success:{response: results, command: command,
-                          attributes: params, dscl_cmds: ssh_clean} }
-      else
-        return { error:  {response: results, command: command,
-                          attributes: params, dscl_cmds: ssh_clean} }
-      end
+      { response: results, status: status, command: command,
+        attributes: params, dscl_cmds: ssh_clean }
     end
 
     def report_existence(results, command, params, ssh_cmds)
       results = [false, results]    if results.to_s.include?('eDSRecordNotFound')
       results = [true, results] unless results.to_s.include?('eDSRecordNotFound')
-      return format_results(results, command, params, ssh_cmds, success: true)
+      return format_results(results, command, params, ssh_cmds, 'success')
     end
 
     def missing_resource?(results)
@@ -135,7 +129,7 @@ module OpenDirectoryUtils
     def report_password_check(results, command, params, ssh_cmds)
       results = [false, results]    if results.to_s.include?('eDSAuthFailed')
       results = [true, results] unless results.to_s.include?('eDSAuthFailed')
-      return format_results(results, command, params, ssh_cmds, success: true)
+      return format_results(results, command, params, ssh_cmds, 'success')
     end
 
     def missed_errors?(results)
@@ -149,14 +143,14 @@ module OpenDirectoryUtils
       results = [false, results]     if results.to_s.include?('account is disabled')
       results = [true, results]  unless results.to_s.include?('isDisabled=1') or
                                         results.to_s.include?('account is disabled')
-      return format_results(results, command, params, ssh_cmds, success: true)
+      return format_results(results, command, params, ssh_cmds, 'success')
     end
 
     def report_in_group(results, command, params, ssh_cmds)
       username = params[:value]
       results = [true, results]      if results.to_s.include?( username )
       results = [false, results] unless results.to_s.include?( username )
-      return format_results(results, command, params, ssh_cmds, success: true)
+      return format_results(results, command, params, ssh_cmds, 'success')
     end
 
     def defaults
