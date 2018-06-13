@@ -581,14 +581,14 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribs do
     describe "Set weblog" do
       it "with weblog" do
         answer  = ext_od.send(:user_set_weblog, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Weblog "http://example.ch/weblog"'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone WeblogURI "http://example.ch/weblog"'
         expect( answer ).to eq( correct )
       end
       it "with blog" do
         attribs[:weblog] = nil
         attribs[:blog]   = 'http://example.com/blog'
         answer  = ext_od.send(:user_set_blog, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Weblog "http://example.com/blog"'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone WeblogURI "http://example.com/blog"'
         expect( answer ).to eq( correct )
       end
       it "without weblog" do

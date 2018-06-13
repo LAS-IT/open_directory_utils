@@ -429,7 +429,7 @@ module OpenDirectoryUtils
       check_critical_attribute( attribs, :value, :weblog )
       attribs    = tidy_attribs(attribs)
 
-      command    = {action: 'create', scope: 'Users', attribute: 'Weblog'}
+      command    = {action: 'create', scope: 'Users', attribute: 'WeblogURI'}
       user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )

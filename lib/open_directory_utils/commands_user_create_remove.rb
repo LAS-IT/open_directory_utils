@@ -111,13 +111,6 @@ module OpenDirectoryUtils
       dscl( user_attrs, dir_info )
     end
 
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME NameSuffix "$VALUE"
-    def user_set_name_suffix
-    end
-    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME apple-namesuffix "$VALUE"
-    def user_set_apple_name_suffix
-    end
-
     # sudo dscl . -create /Users/someuser UniqueID "1010"
     def user_set_unique_id(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)

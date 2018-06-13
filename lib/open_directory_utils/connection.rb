@@ -89,6 +89,10 @@ module OpenDirectoryUtils
       if command.eql?(:user_in_group?)
         return report_in_group(results, command, params, ssh_cmds)
       end
+      if results.to_s.include? 'attribute status: eDSNoStdMappingAvailable'
+        results = ["Bad Attribute Description", results]
+        format_results(results, command, params, ssh_cmds, success: false)
+      end
       if missed_errors?(results)
         results = ["Unexpected Error", results]
         format_results(results, command, params, ssh_cmds, success: false)
