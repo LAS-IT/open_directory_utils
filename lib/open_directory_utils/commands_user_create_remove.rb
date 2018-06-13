@@ -93,6 +93,13 @@ module OpenDirectoryUtils
       attribs[:value] = attribs[:value] || attribs[:surname]
       attribs[:value] = attribs[:value] || attribs[:lastname]
       attribs[:value] = attribs[:value] || attribs[:last_name]
+      attribs[:value] = attribs[:value] || attribs[:real_name]
+      attribs[:value] = attribs[:value] || attribs[:realname]
+      attribs[:value] = attribs[:value] || attribs[:short_name]
+      attribs[:value] = attribs[:value] || attribs[:shortname]
+      attribs[:value] = attribs[:value] || attribs[:user_name]
+      attribs[:value] = attribs[:value] || attribs[:username]
+      attribs[:value] = attribs[:value] || attribs[:uid]
 
       check_critical_attribute( attribs, :record_name )
       check_critical_attribute( attribs, :value, :last_name )
@@ -379,6 +386,8 @@ module OpenDirectoryUtils
       answer         << user_set_password(attribs, dir_info)
       attribs[:value] = nil
       answer         << user_set_shell(attribs, dir_info)
+      attribs[:value] = nil
+      answer         << user_set_last_name(attribs, dir_info)
       attribs[:value] = nil
       answer         << user_set_real_name(attribs, dir_info)
       attribs[:value] = nil

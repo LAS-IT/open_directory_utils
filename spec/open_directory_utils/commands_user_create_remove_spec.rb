@@ -15,17 +15,11 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
     describe "user_get_info" do
       it "with record_name" do
         attribs = {record_name: 'someone'}
-        # answer  = user.send(:user_get_info, attribs, srv_info)
-        # correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -read /Users/someone'
-        # expect( answer ).to eq( correct )
         expect { user.send(:user_get_info, attribs, srv_info) }.
             to raise_error(ArgumentError, /record_name: 'nil' invalid/)
       end
       it "with recordname" do
         attribs = {recordname: 'someone'}
-        # answer  = user.send(:user_get_info, attribs, srv_info)
-        # correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -read /Users/someone'
-        # expect( answer ).to eq( correct )
         expect { user.send(:user_get_info, attribs, srv_info) }.
             to raise_error(ArgumentError, /record_name: 'nil' invalid/)
       end
@@ -166,10 +160,17 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
         correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone LastName "Doe"'
         expect( answer ).to eq( correct )
       end
-      it "without last name" do
+      it "without last name - with uid" do
         attribs = {uid: 'someone', first_name: "DOE"}
-        expect { user.send(:user_set_last_name, attribs, srv_info) }.
-            to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :last_name/)
+        answer  = user.send(:user_set_last_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone LastName "someone"'
+        expect( answer ).to eq( correct )
+      end
+      it "without last name - with realname" do
+        attribs = {uid: 'someone', real_name: "John DOE"}
+        answer  = user.send(:user_set_last_name, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone LastName "John DOE"'
+        expect( answer ).to eq( correct )
       end
     end
 
