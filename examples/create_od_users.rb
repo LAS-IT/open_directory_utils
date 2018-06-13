@@ -27,7 +27,7 @@ rescue Errno::ENOENT, LoadError, Psych::SyntaxError, YAML::Error
     {username: 'odtest2', usernumber: '87654322', primary_group_id: 1031},
   ]
 ensure
-  puts "\nUSERS:"
+  pp "USERS:"
   pp users
 end
 

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'open_directory_utils'
 
-RSpec.describe "Integrated User & Group Create / Destroy" do
+RSpec.describe "Integrated - User & Group - Create / Destroy" do
 
   let!(:od )          { OpenDirectoryUtils::Connection.new }
 
@@ -349,7 +349,8 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
 
   context "edit user into & out of groups" do
 
-    let(:params)  { {uid: 'odtestuser', gid: 'test'} }
+    let(:params)  { { uid: 'odtestuser', uidnumber: '98765',
+                      gid: 'test', primary_group_id: 1031} }
     before(:each) do
       od.run( command: :user_create_min, params: params )
     end

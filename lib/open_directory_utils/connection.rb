@@ -47,25 +47,12 @@ module OpenDirectoryUtils
       params[:format] = output
       # just in case clear record_name and calculate later
       params[:record_name] = nil
-      puts "\nPARAMS"
-      pp params
       ssh_cmds = send(command, params, dir_info)
-      puts "\nSSH_CMDS"
-      pp ssh_cmds
       results   = send_cmds_to_od_server(ssh_cmds)
-      puts "\nRESULTS"
-      pp results
-      # remove password from command
       answer = process_results(results, command, params, ssh_cmds )
-      pp "\nANSWER"
-      pp answer
+      return answer
       rescue ArgumentError, NoMethodError => error
-        pp "\nERROR"
-        pp error
         format_results(error.message, command, params, ssh_cmds, success: false)
-        # {error:  {response: error.message, command: command,
-        #           attributes: params, dscl_cmds: ssh_cmds}}
-      answer
     end
 
     private
@@ -83,34 +70,27 @@ module OpenDirectoryUtils
     end
 
     def process_results(results, command, params, ssh_cmds)
-      pp "PROCESSING - exists"
       if command.eql?(:user_exists?) or command.eql?(:group_exists?)
         return report_existence(results, command, params, ssh_cmds)
       end
-      pp "PROCESSING - missing"
       if missing_resource?(results)
         results = ["Resource not found", results]
         # report lack of success
         return format_results(results, command, params, ssh_cmds, success: false)
       end
-      pp "PROCESSING - password"
       if command.eql?(:user_password_verified?) or command.eql?(:user_password_ok?)
         return report_password_check(results, command, params, ssh_cmds)
       end
-      pp "PROCESSING - enabled"
       if command.eql?(:user_login_enabled?)
         return report_login_check(results, command, params, ssh_cmds)
       end
-      pp "PROCESSING - in group"
       if command.eql?(:user_in_group?)
         return report_in_group(results, command, params, ssh_cmds)
       end
-      pp "PROCESSING - unexpected"
       if missed_errors?(results)
         results = ["Unexpected Error", results]
         format_results(results, command, params, ssh_cmds, success: false)
       end
-      pp "PROCESSING - success"
       # return any general success answers
       format_results(results, command, params, ssh_cmds, success: true)
     end

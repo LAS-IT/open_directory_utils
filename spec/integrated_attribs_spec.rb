@@ -1,19 +1,19 @@
 require 'spec_helper'
 require 'open_directory_utils'
 
-RSpec.describe "Integrated User & Group Create / Destroy" do
+RSpec.describe "Integrated - User Attribs" do
 
   let!(:od )          { OpenDirectoryUtils::Connection.new }
 
   let( :not_here_uid) { { uid: 'nobody' } }
   let( :min_user)     { { username: 'someone', unique_id: '9876543',
-                          group_number: '1032',
+                          group_number: '1031', group_name: 'test',
                           chat: 'AIM:someone', keyword: 'employee'
                       } }
   let( :new_user)     { { username: 'someone', email: 'user@example.com',
                           first_name: 'Someone', last_name: "SPECIAL",
                           real_name: 'Someone (Very) SPECIAL',
-                          unique_id: '9876543', group_number: '1032',
+                          unique_id: '9876543', group_number: '1031',
                           group_name: 'test', city: 'Leysin',
                           chat: ['AIM:someone','MSN:someone'],
                           comment: 'Hi There', company: 'LAS',
@@ -59,10 +59,8 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
     describe "user_set_chat" do
       it "works" do
         setup   = od.run(command: :user_set_chat, params: new_user)
-        pp setup
         expect( setup[:error] ).to be nil
         answer  = od.run(command: :user_get_info, params: new_user)
-        pp answer
         correct = "IMHandle: #{new_user[:chat]}"
         expect( answer[:success].to_s ).to match( correct )
       end
@@ -70,8 +68,7 @@ RSpec.describe "Integrated User & Group Create / Destroy" do
         attribs        = new_user.dup
         attribs[:chat] = nil
         answer  = od.run(command: :user_set_chat, params: attribs)
-        pp answer
-        correct = "value: 'nil' invalid, value_name: :chat"
+        correct = "values: 'nil' invalid, value_name: :chats"
         expect( answer[:success] ).to be nil
         expect( answer[:error].to_s ).to match( correct )
       end
