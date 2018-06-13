@@ -422,11 +422,6 @@ module OpenDirectoryUtils
         attribs[:value] = nil
         answer         << user_set_first_name(attribs, dir_info)
       end
-      if attribs[:last_name] or attribs[:lastname] or attribs[:sn] or
-                          attribs[:surname]
-        attribs[:value] = nil
-        answer         << user_set_last_name(attribs, dir_info)
-      end
       # skip email if non-sent
       if attribs[:email] or attribs[:mail] or attribs[:apple_user_mailattribute]
         attribs[:value] = nil
