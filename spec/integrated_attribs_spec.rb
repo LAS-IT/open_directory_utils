@@ -200,7 +200,24 @@ RSpec.describe "Integrated - User Attribs" do
       end
     end
 
-    describe "user_set_home_phone" do
+    describe "user_set_home_phone - single value" do
+      it "works" do
+        setup   = od.run(command: :user_set_home_phone, params: new_user)
+        # pp setup
+        expect( setup[:error] ).to be nil
+        answer  = od.run(command: :user_get_info, params: new_user)
+        # pp answer
+        correct = "HomePhoneNumber: #{new_user[:home_phone]}"
+        expect( answer[:success].to_s.gsub(':\n', ':') ).to match( correct )
+      end
+      it "errors" do
+        attribs              = new_user.dup
+        attribs[:home_phone] = nil
+        answer  = od.run(command: :user_set_home_phone, params: attribs)
+        correct = "value: 'nil' invalid, value_name: :home_phone"
+        expect( answer[:success] ).to be nil
+        expect( answer[:error].to_s ).to match( correct )
+      end
     end
 
     describe "user_set_mobile_phone" do
