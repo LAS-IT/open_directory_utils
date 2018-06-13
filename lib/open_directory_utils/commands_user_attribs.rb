@@ -175,7 +175,7 @@ module OpenDirectoryUtils
       check_critical_attribute( attribs, :value, :department )
       attribs    = tidy_attribs(attribs)
 
-      command    = {action: 'create', scope: 'Users', attribute: 'Departmemt'}
+      command    = {action: 'create', scope: 'Users', attribute: 'Department'}
       user_attrs = attribs.merge(command)
 
       dscl( user_attrs, dir_info )

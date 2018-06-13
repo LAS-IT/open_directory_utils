@@ -38,13 +38,13 @@ RSpec.describe "Integrated - User Attribs" do
 
   context "live user attributes testing" do
 
-    describe "user_set_city" do
+    describe "user_set_city - single value" do
       it "works" do
         setup   = od.run(command: :user_set_city, params: new_user)
         expect( setup[:error] ).to be nil
         answer  = od.run(command: :user_get_info, params: new_user)
         correct = "City: #{new_user[:city]}"
-        expect( answer[:success].to_s ).to match( correct )
+        expect( answer[:success].to_s.gsub(':\n', ':') ).to match( correct )
       end
       it "errors" do
         attribs        = new_user.dup
@@ -56,13 +56,13 @@ RSpec.describe "Integrated - User Attribs" do
       end
     end
 
-    describe "user_set_chat" do
+    describe "user_set_chat - multiple values" do
       it "works" do
         setup   = od.run(command: :user_set_chat, params: new_user)
         expect( setup[:error] ).to be nil
         answer  = od.run(command: :user_get_info, params: new_user)
         correct = "IMHandle: #{new_user[:chat]}"
-        expect( answer[:success].to_s ).to match( correct )
+        expect( answer[:success].to_s.gsub(':\n', ':') ).to match( correct )
       end
       it "errors" do
         attribs        = new_user.dup
@@ -74,16 +74,76 @@ RSpec.describe "Integrated - User Attribs" do
       end
     end
 
-    describe "user_set_comment" do
+    describe "user_set_comment - single value" do
+      it "works" do
+        setup   = od.run(command: :user_set_comment, params: new_user)
+        expect( setup[:error] ).to be nil
+        answer  = od.run(command: :user_get_info, params: new_user)
+        correct = "Comment: #{new_user[:comment]}"
+        expect( answer[:success].to_s.gsub(':\n', ':') ).to match( correct )
+      end
+      it "errors" do
+        attribs           = new_user.dup
+        attribs[:comment] = nil
+        answer  = od.run(command: :user_set_comment, params: attribs)
+        correct = "value: 'nil' invalid, value_name: :comment"
+        expect( answer[:success] ).to be nil
+        expect( answer[:error].to_s ).to match( correct )
+      end
     end
 
-    describe "user_set_company" do
+    describe "user_set_company - single value" do
+      it "works" do
+        setup   = od.run(command: :user_set_company, params: new_user)
+        expect( setup[:error] ).to be nil
+        answer  = od.run(command: :user_get_info, params: new_user)
+        correct = "Company: #{new_user[:company]}"
+        expect( answer[:success].to_s.gsub(':\n', ':') ).to match( correct )
+      end
+      it "errors" do
+        attribs           = new_user.dup
+        attribs[:company] = nil
+        answer  = od.run(command: :user_set_company, params: attribs)
+        correct = "value: 'nil' invalid, value_name: :company"
+        expect( answer[:success] ).to be nil
+        expect( answer[:error].to_s ).to match( correct )
+      end
     end
 
-    describe "user_set_country" do
+    describe "user_set_country - single value" do
+      it "works" do
+        setup   = od.run(command: :user_set_country, params: new_user)
+        expect( setup[:error] ).to be nil
+        answer  = od.run(command: :user_get_info, params: new_user)
+        correct = "Country: #{new_user[:country]}"
+        expect( answer[:success].to_s.gsub(':\n', ':') ).to match( correct )
+      end
+      it "errors" do
+        attribs           = new_user.dup
+        attribs[:country] = nil
+        answer  = od.run(command: :user_set_country, params: attribs)
+        correct = "value: 'nil' invalid, value_name: :country"
+        expect( answer[:success] ).to be nil
+        expect( answer[:error].to_s ).to match( correct )
+      end
     end
 
-    describe "user_set_department" do
+    describe "user_set_department - single value" do
+      it "works" do
+        setup   = od.run(command: :user_set_department, params: new_user)
+        expect( setup[:error] ).to be nil
+        answer  = od.run(command: :user_get_info, params: new_user)
+        correct = "Department: #{new_user[:department]}"
+        expect( answer[:success].to_s.gsub(':\n', ':') ).to match( correct )
+      end
+      it "errors" do
+        attribs              = new_user.dup
+        attribs[:department] = nil
+        answer  = od.run(command: :user_set_department, params: attribs)
+        correct = "value: 'nil' invalid, value_name: :department"
+        expect( answer[:success] ).to be nil
+        expect( answer[:error].to_s ).to match( correct )
+      end
     end
 
     describe "user_set_job_title" do

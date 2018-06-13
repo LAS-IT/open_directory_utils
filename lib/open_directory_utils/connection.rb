@@ -48,7 +48,9 @@ module OpenDirectoryUtils
       # just in case clear record_name and calculate later
       params[:record_name] = nil
       ssh_cmds = send(command, params, dir_info)
+      # pp ssh_cmds
       results   = send_cmds_to_od_server(ssh_cmds)
+      # pp results
       answer = process_results(results, command, params, ssh_cmds )
       return answer
       rescue ArgumentError, NoMethodError => error

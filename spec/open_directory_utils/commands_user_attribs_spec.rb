@@ -234,42 +234,42 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribs do
     describe "Set department attribute" do
       it "department - with department" do
         answer  = ext_od.send(:user_set_department, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Departmemt "IT"'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Department "IT"'
         expect( answer ).to eq( correct )
       end
       it "department - with dept" do
         attribs[:department] = nil
         attribs[:dept] = "Math"
         answer  = ext_od.send(:user_set_department, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Departmemt "Math"'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Department "Math"'
         expect( answer ).to eq( correct )
       end
       it "department - with deptnumber" do
         attribs[:department] = nil
         attribs[:deptnumber] = "Math"
         answer  = ext_od.send(:user_set_department, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Departmemt "Math"'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Department "Math"'
         expect( answer ).to eq( correct )
       end
       it "department - with dept_number" do
         attribs[:department] = nil
         attribs[:dept_number] = "Math"
         answer  = ext_od.send(:user_set_department, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Departmemt "Math"'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Department "Math"'
         expect( answer ).to eq( correct )
       end
       it "department - with departmentnumber" do
         attribs[:department] = nil
         attribs[:departmentnumber] = "Math"
         answer  = ext_od.send(:user_set_department, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Departmemt "Math"'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Department "Math"'
         expect( answer ).to eq( correct )
       end
       it "department - with department_number" do
         attribs[:department] = nil
         attribs[:department_number] = "Math"
         answer  = ext_od.send(:user_set_department, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Departmemt "Math"'
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Department "Math"'
         expect( answer ).to eq( correct )
       end
       it "witout department" do
