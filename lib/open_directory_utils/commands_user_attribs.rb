@@ -99,10 +99,8 @@ module OpenDirectoryUtils
           answer << user_append_chat(attribs, dir_info)
         end
       end
-      if attribs[:values].nil? or attribs[:values].empty?
-        raise ArgumentError, "values: '#{attribs[:values].inspect}' invalid, value_name: :chats"
-      end
-      answer
+      return answer  unless attribs[:values].nil? or attribs[:values].empty?
+      raise ArgumentError, "values: '#{attribs[:values].inspect}' invalid, value_name: :chats"
     end
     alias_method :user_set_im_handle, :user_set_chat
     alias_method :user_set_chat_channels, :user_set_chat
@@ -255,10 +253,8 @@ module OpenDirectoryUtils
           answer << user_append_keyword(attribs, dir_info)
         end
       end
-      if attribs[:values].nil? or attribs[:values].empty?
-        raise ArgumentError, "values: '#{attribs[:values].inspect}' invalid, value_name: :keywords"
-      end
-      answer
+      return answer  unless attribs[:values].nil? or attribs[:values].empty?
+      raise ArgumentError, "values: '#{attribs[:values].inspect}' invalid, value_name: :keywords"
     end
     alias_method :user_set_keyword, :user_set_keywords
 

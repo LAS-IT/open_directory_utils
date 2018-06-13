@@ -19,7 +19,7 @@ RSpec.describe "Integrated - User Attribs" do
                           comment: 'Hi There', company: 'LAS',
                           country: 'CH', department: 'IT',
                           job_title: 'DevOps',
-                          keyword: ['employee','ops'],
+                          keywords: ['employee','ops'],
                           home_phone: "024 654 1234",
                           mobile_phone: '079 678 4321', work_phone: 'x4890',
                           name_suffix: 'Jr', org_info: 'Top',
@@ -64,11 +64,19 @@ RSpec.describe "Integrated - User Attribs" do
         correct = "IMHandle: #{new_user[:chat]}"
         expect( answer[:success].to_s.gsub(':\n', ':') ).to match( correct )
       end
-      it "errors" do
+      it "errors with nil" do
         attribs        = new_user.dup
         attribs[:chat] = nil
         answer  = od.run(command: :user_set_chat, params: attribs)
         correct = "values: 'nil' invalid, value_name: :chats"
+        expect( answer[:success] ).to be nil
+        expect( answer[:error].to_s ).to match( correct )
+      end
+      it "errors with []" do
+        attribs        = new_user.dup
+        attribs[:chat] = []
+        answer  = od.run(command: :user_set_chat, params: attribs)
+        correct = %Q[invalid, value_name: :chats]
         expect( answer[:success] ).to be nil
         expect( answer[:error].to_s ).to match( correct )
       end
@@ -146,13 +154,50 @@ RSpec.describe "Integrated - User Attribs" do
       end
     end
 
-    describe "user_set_job_title" do
+    describe "user_set_job_title - single value" do
+      it "works" do
+        setup   = od.run(command: :user_set_job_title, params: new_user)
+        expect( setup[:error] ).to be nil
+        answer  = od.run(command: :user_get_info, params: new_user)
+        correct = "JobTitle: #{new_user[:job_title]}"
+        expect( answer[:success].to_s.gsub(':\n', ':') ).to match( correct )
+      end
+      it "errors" do
+        attribs             = new_user.dup
+        attribs[:job_title] = nil
+        answer  = od.run(command: :user_set_job_title, params: attribs)
+        correct = "value: 'nil' invalid, value_name: :job_title"
+        expect( answer[:success] ).to be nil
+        expect( answer[:error].to_s ).to match( correct )
+      end
     end
 
-    describe "user_set_keywords" do
-      it "1"
-      it "2"
-      it "3"
+    describe "user_set_keywords - multiple values" do
+      it "works" do
+        setup   = od.run(command: :user_set_keywords, params: new_user)
+        expect( setup[:error] ).to be nil
+        answer  = od.run(command: :user_get_info, params: new_user)
+        correct = "Keywords: #{new_user[:chat]}"
+        expect( answer[:success].to_s.gsub(':\n', ':') ).to match( correct )
+      end
+      it "errors with nil" do
+        attribs            = new_user.dup
+        attribs[:keyword]  = nil
+        attribs[:keywords] = nil
+        answer  = od.run(command: :user_set_keywords, params: attribs)
+        correct = "values: 'nil' invalid, value_name: :keywords"
+        expect( answer[:success] ).to be nil
+        expect( answer[:error].to_s ).to match( correct )
+      end
+      it "errors with []" do
+        attribs            = new_user.dup
+        attribs[:keyword]  = []
+        attribs[:keywords] = []
+        answer  = od.run(command: :user_set_keywords, params: attribs)
+        correct = %Q[invalid, value_name: :keywords]
+        expect( answer[:success] ).to be nil
+        expect( answer[:error].to_s ).to match( correct )
+      end
     end
 
     describe "user_set_home_phone" do
