@@ -3,6 +3,14 @@ require "open_directory_utils/connection"
 
 RSpec.describe OpenDirectoryUtils::Connection do
 
+  context "version available in connection" do
+    it "version in module matches" do
+      od      = OpenDirectoryUtils::Connection.new
+      version = OpenDirectoryUtils::Version::VERSION
+      expect( od.version ).to eql( version)
+    end
+  end
+
   context "server paramters are correct" do
 
     # SERVER HOSTNAME

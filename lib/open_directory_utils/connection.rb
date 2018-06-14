@@ -1,4 +1,5 @@
 require 'net/ssh'
+require "open_directory_utils/version"
 require "open_directory_utils/commands_base"
 require "open_directory_utils/commands_user_attribs"
 # require "open_directory_utils/commands_user_attribs_ldap"
@@ -10,6 +11,7 @@ module OpenDirectoryUtils
 
     attr_reader :srv_info, :dir_info
 
+    include OpenDirectoryUtils::Version
     include OpenDirectoryUtils::CommandsBase
     include OpenDirectoryUtils::CommandsUserAttribs
     # include OpenDirectoryUtils::CommandsUserAttribsLdap
@@ -36,6 +38,10 @@ module OpenDirectoryUtils
                                                         srv_info[:hostname].empty?
       raise ArgumentError, 'server username missing' if srv_info[:username].nil? or
                                                         srv_info[:username].empty?
+    end
+
+    def version
+      VERSION
     end
 
     # after configuring a connection with .new - send commands via ssh to open directory
