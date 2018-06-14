@@ -66,6 +66,8 @@ od = OpenDirectoryUtils::Connection.new(
           dir_password: 'directory_admin_password'
         }
       )
+# see gem version in use
+od.version
 
 user_params = { user_name: 'someone', user_number: 9876,
                 first_name: 'Someone', last__name: 'Special',
