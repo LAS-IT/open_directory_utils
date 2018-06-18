@@ -23,9 +23,9 @@ module OpenDirectoryUtils
     end
 
     def tidy_attribs(attribs)
-      user_attrs = {}
-      attribs.each{ |k,v| user_attrs[k] = v.to_s.strip }
-      return user_attrs
+      user_attribs = {}
+      attribs.each{ |k,v| user_attribs[k] = v.to_s.strip }
+      return user_attribs
     end
 
     def user_record_name_alternatives(attribs)
