@@ -1,10 +1,9 @@
 require 'net/ssh'
 require "open_directory_utils/version"
 require "open_directory_utils/commands_base"
+require "open_directory_utils/commands_groups"
 require "open_directory_utils/commands_user_attribs"
-# require "open_directory_utils/commands_user_attribs_ldap"
 require "open_directory_utils/commands_user_create_remove"
-require "open_directory_utils/commands_group_create_remove"
 
 module OpenDirectoryUtils
   class Connection
@@ -13,10 +12,9 @@ module OpenDirectoryUtils
 
     include OpenDirectoryUtils::Version
     include OpenDirectoryUtils::CommandsBase
+    include OpenDirectoryUtils::CommandsGroups
     include OpenDirectoryUtils::CommandsUserAttribs
-    # include OpenDirectoryUtils::CommandsUserAttribsLdap
     include OpenDirectoryUtils::CommandsUserCreateRemove
-    include OpenDirectoryUtils::CommandsGroupCreateRemove
 
     # configure connection with ENV_VARS (or parameters)
     # @params [Hash] - reqiured info includes: srv_hostname:, srv_username: (password: if not using ssh-keys)

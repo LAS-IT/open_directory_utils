@@ -8,7 +8,7 @@ module OpenDirectoryUtils
   # @note - these commands were derived from the following resrouces:
   # * http://krypted.com/mac-os-x/create-groups-using-dscl/
   # * https://apple.stackexchange.com/questions/307173/creating-a-group-via-users-groups-in-command-line?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-  module CommandsGroupCreateRemove
+  module CommandsGroups
 
     # include OpenDirectoryUtils::Dscl
     include OpenDirectoryUtils::CleanCheck
@@ -57,26 +57,6 @@ module OpenDirectoryUtils
 
       dscl( cmd_attribs, dir_info )
     end
-
-    # def user_remove_from_group(attribs, dir_info)
-    #   attribs = user_record_name_alternatives(attribs)
-    #
-    #   attribs[:value] = attribs[:group_membership]
-    #   attribs[:value] = attribs[:value] || attribs[:groupmembership]
-    #   attribs[:value] = attribs[:value] || attribs[:group_name]
-    #   attribs[:value] = attribs[:value] || attribs[:groupname]
-    #   attribs[:value] = attribs[:value] || attribs[:gid]
-    #
-    #   check_critical_attribute( attribs, :record_name, :username )
-    #   check_critical_attribute( attribs, :value, :groupname )
-    #   attribs    = tidy_attribs(attribs)
-    #   command    = { operation: 'edit', action: 'delete', type: 'user'}
-    #   user_attrs  = attribs.merge(command)
-    #
-    #   dseditgroup( user_attrs, dir_info )
-    # end
-    # # module_function :user_remove_from_group
-    # # alias_method :user_remove_group_memebership, :user_remove_from_group
 
     # dscl . -delete /Groups/yourGroupName
     # https://tutorialforlinux.com/2011/09/15/delete-users-and-groups-from-terminal/
@@ -142,27 +122,6 @@ module OpenDirectoryUtils
 
       dscl( user_attrs, dir_info )
     end
-
-    # # probably can't create password for group?
-    # # /usr/bin/dscl -u diradmin -P liaP-meD-Aj-pHi-hOb-en-c /LDAPv3/127.0.0.1 -create /Groups/odgrouptest passwd "*"
-    # #  "<main> attribute status: eDSNoStdMappingAvailable\n" +
-    # #  "<dscl_cmd> DS Error: -14140 (eDSNoStdMappingAvailable)"]
-    # def group_set_passwd(attribs, dir_info)
-    #   attribs = group_record_name_alternatives(attribs)
-    #
-    #   attribs[:value] = attribs[:value] || attribs[:password]
-    #   attribs[:value] = attribs[:value] || attribs[:passwd]
-    #   attribs[:value] = attribs[:value] || '*'
-    #
-    #   check_critical_attribute( attribs, :record_name )
-    #   check_critical_attribute( attribs, :value, :password )
-    #
-    #   command = {action: 'passwd', scope: 'Groups', attribute: nil}
-    #   user_attrs = attribs.merge(command)
-    #
-    #   dscl( user_attrs, dir_info )
-    # end
-    # alias_method :group_set_password, :group_set_passwd
 
     # create group     -- dscl . -create /Groups/ladmins
     # add group passwd -- dscl . -create /Groups/ladmins passwd “*”

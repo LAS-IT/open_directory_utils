@@ -7,13 +7,22 @@ One can also build custom DSCL commands and send them to the server as needed to
 
 ## Change Log
 
-* **v0.1.6** - 2018-06-14 - fixed EMailAddress (was incorrectly EMailAttribute)
-* **v0.1.5** - 2018-06-14 - add version number to connection for easy checking
-* **v0.1.4** - 2018-06-13 - changed the return hash to {response: xxx, status: 'success'}
-* **v0.1.3** - 2018-06-13 - able to sync all fields in typcial OD
+* **v0.1.7** - 2018-06-20
+- remove attribs[:value] side effect
+- add update user method
+- attributes separated from users_creation_delete_update
+* **v0.1.6** - 2018-06-18
+- fixed EMailAddress (was incorrectly EMailAttribute)
+* **v0.1.5**
+- 2018-06-14 - add version number to connection for easy checking
+* **v0.1.4** - 2018-06-13
+- changed the return hash to {response: xxx, status: 'success'}
+* **v0.1.3** - 2018-06-13
+- able to sync all fields in typcial OD
 - refactored results code (ssh_cmds have redacted passwords)
 - finished adding pre-built od commands for users - good for syncing accounts
-* **v0.1.2** - 2018-06-09 - all user creation features enabled
+* **v0.1.2** - 2018-06-09
+- all user creation features enabled
 - user creation will add user to a group if group_name present
 - new accounts disabled by default (w/ option to enable on creation)
 - now repo includes example code (to create accounts)
