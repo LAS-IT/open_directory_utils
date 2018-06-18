@@ -7,6 +7,7 @@ One can also build custom DSCL commands and send them to the server as needed to
 
 ## Change Log
 
+* **v0.1.6** - 2018-06-14 - fixed EMailAddress (was incorrectly EMailAttribute)
 * **v0.1.5** - 2018-06-14 - add version number to connection for easy checking
 * **v0.1.4** - 2018-06-13 - changed the return hash to {response: xxx, status: 'success'}
 * **v0.1.3** - 2018-06-13 - able to sync all fields in typcial OD

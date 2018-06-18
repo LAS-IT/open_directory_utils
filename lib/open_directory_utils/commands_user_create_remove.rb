@@ -189,13 +189,13 @@ module OpenDirectoryUtils
       user_attrs = attribs.merge(command)
       answer    << dscl( user_attrs, dir_info )
 
-      command    = {action: 'create', scope: 'Users', attribute: 'EMailAttribute'}
+      command    = {action: 'create', scope: 'Users', attribute: 'EMailAddress'}
       user_attrs = attribs.merge(command)
       answer    << dscl( user_attrs, dir_info )
 
-      command    = {action: 'create', scope: 'Users', attribute: 'apple-user-mailattribute'}
-      user_attrs = attribs.merge(command)
-      answer    << dscl( user_attrs, dir_info )
+      # command    = {action: 'create', scope: 'Users', attribute: 'apple-user-mailattribute'}
+      # user_attrs = attribs.merge(command)
+      # answer    << dscl( user_attrs, dir_info )
 
       return answer
     end
@@ -217,9 +217,9 @@ module OpenDirectoryUtils
 
       answer     = []
 
-      command    = {action: 'append', scope: 'Users', attribute: 'mail'}
-      user_attrs = attribs.merge(command)
-      answer    << dscl( user_attrs, dir_info )
+      # command    = {action: 'append', scope: 'Users', attribute: 'mail'}
+      # user_attrs = attribs.merge(command)
+      # answer    << dscl( user_attrs, dir_info )
 
       command    = {action: 'append', scope: 'Users', attribute: 'email'}
       user_attrs = attribs.merge(command)
