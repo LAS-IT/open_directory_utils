@@ -29,7 +29,9 @@ module OpenDirectoryUtils
       command    = {action: 'read', scope: 'Users', attribute: nil, value: nil}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
     alias_method :user_info, :user_get_info
 
@@ -63,7 +65,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'RealName'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME FirstName "$VALUE"
@@ -82,7 +86,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'FirstName'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME LastName "$VALUE"
@@ -108,7 +114,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'LastName'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     # sudo dscl . -create /Users/someuser UniqueID "1010"
@@ -129,7 +137,10 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'UniqueID'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      # dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/someuser NFSHomeDirectory /Users/someuser
@@ -147,7 +158,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'NFSHomeDirectory'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     # sudo dscl . -create /Users/someuser UserShell /bin/bash
@@ -165,7 +178,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'UserShell'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$shortname_USERNAME mail "$VALUE"
@@ -196,7 +211,7 @@ module OpenDirectoryUtils
       # command    = {action: 'create', scope: 'Users', attribute: 'apple-user-mailattribute'}
       # user_attrs = attribs.merge(command)
       # answer    << dscl( user_attrs, dir_info )
-
+      attribs[:value] = nil
       return answer
     end
     alias_method :user_set_email, :user_set_first_email
@@ -225,6 +240,7 @@ module OpenDirectoryUtils
       user_attrs = attribs.merge(command)
       answer    << dscl( user_attrs, dir_info )
 
+      attribs[:value] = nil
       return answer
     end
 
@@ -247,7 +263,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'PrimaryGroupID'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     # /usr/bin/pwpolicy -a diradmin -p "TopSecret" -u username -setpassword "AnotherSecret"
@@ -266,7 +284,9 @@ module OpenDirectoryUtils
       command    = {action: 'passwd', scope: 'Users'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
     # /usr/bin/dscl /LDAPv3/127.0.0.1 -auth #{shortname} "#{passwd}"
     def user_password_verified?(attribs, dir_info)
@@ -282,7 +302,9 @@ module OpenDirectoryUtils
       command    = {action: 'auth', scope: 'Users'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
     alias_method :user_password_ok?, :user_password_verified?
 
@@ -306,7 +328,10 @@ module OpenDirectoryUtils
 
       command = {attribute: 'disableuser', value: nil}
       params  = command.merge(attribs)
-      pwpolicy(params, dir_info)
+      # pwpolicy(params, dir_info)
+      answer = pwpolicy(params, dir_info)
+      attribs[:value] = nil
+      return answer
     end
 
     def user_add_to_group(attribs, dir_info)
@@ -324,7 +349,9 @@ module OpenDirectoryUtils
       command    = { operation: 'edit', action: 'add', type: 'user'}
       user_attrs  = attribs.merge(command)
 
-      dseditgroup( user_attrs, dir_info )
+      answer = dseditgroup( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     def user_remove_from_group(attribs, dir_info)
@@ -342,7 +369,9 @@ module OpenDirectoryUtils
       command    = { operation: 'edit', action: 'delete', type: 'user'}
       user_attrs  = attribs.merge(command)
 
-      dseditgroup( user_attrs, dir_info )
+      answer = dseditgroup( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     # /usr/bin/pwpolicy -a diradmin -p A-B1g-S3cret -u $shortname_USERNAME -getpolicy
@@ -354,7 +383,10 @@ module OpenDirectoryUtils
 
       command = {attribute: 'getpolicy', value: nil}
       params  = command.merge(attribs)
-      pwpolicy(params, dir_info)
+
+      answer = pwpolicy(params, dir_info)
+      attribs[:value] = nil
+      return answer
     end
     alias_method :user_login_enabled?,  :user_get_policy
 
@@ -373,7 +405,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'City'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     # first  - /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$USER apple-imhandle "$VALUE"
@@ -394,7 +428,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'IMHandle'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     # first  - /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$USER apple-imhandle "$VALUE"
@@ -415,7 +451,9 @@ module OpenDirectoryUtils
       command    = {action: 'append', scope: 'Users', attribute: 'IMHandle'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     # first  - /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -create /Users/$USER apple-imhandle "$VALUE"
@@ -443,6 +481,7 @@ module OpenDirectoryUtils
           answer << user_append_chat(attribs, dir_info)
         end
       end
+      attribs[:value] = nil
       return answer  unless attribs[:values].nil? or attribs[:values].empty?
       raise ArgumentError, "values: '#{attribs[:values].inspect}' invalid, value_name: :chats"
     end
@@ -466,7 +505,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'Comment'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
     alias_method :user_set_description, :user_set_comment
 
@@ -483,7 +524,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'Company'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
     # alias_method :las_program_info, :user_set_company
 
@@ -500,7 +543,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'Country'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     def user_set_department(attribs, dir_info)
@@ -520,7 +565,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'Department'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     def user_set_job_title(attribs, dir_info)
@@ -537,7 +584,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'JobTitle'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
     alias_method :user_set_title, :user_set_job_title
 
@@ -556,7 +605,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'Keywords'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
     alias_method :user_create_keywords, :user_create_keyword
 
@@ -574,7 +625,9 @@ module OpenDirectoryUtils
       command    = {action: 'append', scope: 'Users', attribute: 'Keywords'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
     alias_method :user_append_keywords, :user_append_keyword
 
@@ -617,7 +670,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'HomePhoneNumber'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
@@ -635,7 +690,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'MobileNumber'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
     alias_method :user_set_mobile_number, :user_set_mobile_phone
     alias_method :user_set_mobile_phone_number, :user_set_mobile_phone
@@ -658,7 +715,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'PhoneNumber'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
@@ -674,7 +733,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'NameSuffix'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     def user_set_organization_info(attribs, dir_info)
@@ -691,7 +752,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'OrganizationInfo'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
     alias_method :user_set_org_info, :user_set_organization_info
     # alias_method :user_set_student_id, :user_set_organization_info
@@ -711,7 +774,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'PostalCode'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
     alias_method :user_set_post_code, :user_set_postal_code
     alias_method :user_set_zip_code, :user_set_postal_code
@@ -729,7 +794,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'Relationships'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     def user_set_state(attribs, dir_info)
@@ -744,7 +811,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'State'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
 
     def user_set_street(attribs, dir_info)
@@ -759,7 +828,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'Street'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
     alias_method :user_set_address, :user_set_street
 
@@ -776,7 +847,9 @@ module OpenDirectoryUtils
       command    = {action: 'create', scope: 'Users', attribute: 'WeblogURI'}
       user_attrs = attribs.merge(command)
 
-      dscl( user_attrs, dir_info )
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
     end
     alias_method :user_set_blog, :user_set_weblog
     # alias_method :las_sync_date, :user_set_weblog

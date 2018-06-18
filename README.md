@@ -8,7 +8,7 @@ One can also build custom DSCL commands and send them to the server as needed to
 ## Change Log
 
 * **v0.1.7** - 2018-06-20
-- remove attribs[:value] side effect
+- remove attribs[:value] side effect (return original attribs - always)
 - add update user method
 - attributes separated from users_creation_delete_update
 * **v0.1.6** - 2018-06-18
