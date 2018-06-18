@@ -57,6 +57,7 @@ module OpenDirectoryUtils
       results   = send_cmds_to_od_server(ssh_cmds)
       # pp results
       answer = process_results(results, command, params, ssh_cmds )
+      params[:value] = nil
       return answer
       rescue ArgumentError, NoMethodError => error
         format_results(error.message, command, params, ssh_cmds, 'error')
