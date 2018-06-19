@@ -87,6 +87,14 @@ module OpenDirectoryUtils
         attribs[:value] = nil
         answer         << user_set_organization_info(attribs, dir_info)
       end
+      if attribs[:department] or attribs[:departmentnumber] or attribs[:department_number]
+        attribs[:value] = nil
+        answer         << user_set_department(attribs, dir_info)
+      end
+      if attribs[:keyword] or attribs[:keywords]
+        attribs[:value] = nil
+        answer         << user_set_keywords(attribs, dir_info)
+      end
       if attribs[:group_name] or attribs[:groupname] or attribs[:gid] or
                         attribs[:group_membership] or attribs[:groupmembership]
         attribs[:value] = nil
@@ -146,10 +154,13 @@ module OpenDirectoryUtils
         attribs[:value] = nil
         answer         << user_set_organization_info(attribs, dir_info)
       end
-      if attribs[:group_name] or attribs[:groupname] or attribs[:gid] or
-                        attribs[:group_membership] or attribs[:groupmembership]
+      if attribs[:department] or attribs[:departmentnumber] or attribs[:department_number]
         attribs[:value] = nil
-        answer         << user_add_to_group(attribs, dir_info)
+        answer         << user_set_department(attribs, dir_info)
+      end
+      if attribs[:keyword] or attribs[:keywords]
+        attribs[:value] = nil
+        answer         << user_set_keywords(attribs, dir_info)
       end
 
       return answer.flatten
