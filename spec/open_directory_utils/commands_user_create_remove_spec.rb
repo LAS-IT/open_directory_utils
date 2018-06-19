@@ -234,10 +234,11 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
         answer  = user.send(:user_create, attribs, srv_info)
         expect( answer ).to eq( correct )
       end
-      it "with group_membership & password attributes" do
+      it "with all possible fields" do
         attribs  = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
                     first_name: 'Someone', last_name: 'SPECIAL', uniqueid: '9876543',
-                    group_membership: 'testgrp', password: 'TopSecret', enable: true
+                    group_membership: 'testgrp', password: 'TopSecret', enable: true,
+                    relationships: '87654', organization_info: '45678',
                   }
         answer   = user.send(:user_create, attribs, srv_info)
         with_all = [
@@ -253,7 +254,8 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone FirstName "Someone"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone MailAttribute "user@example.com"',
           '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone EMailAddress "user@example.com"',
-          # '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone apple-user-mailattribute "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Relationships "87654"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone OrganizationInfo "45678"',
           '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -a someone -t user testgrp',
         ]
         expect( answer ).to eq( with_all )
@@ -334,6 +336,36 @@ RSpec.describe OpenDirectoryUtils::CommandsUserCreateRemove do
                     first_name: 'Someone', last_name: 'SPECIAL'}
         expect { user.send(:user_create, attribs, srv_info) }.
             to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :unique_id/)
+      end
+    end
+
+    context "update user" do
+      it "with all possible fields" do
+        attribs  = { uid: 'someone', email: 'user@example.com', gidnumber: '1032',
+                    first_name: 'Someone', last_name: 'SPECIAL', uniqueid: '9876543',
+                    group_membership: 'testgrp', password: 'TopSecret', enable: true,
+                    relationships: '87654', organization_info: '45678',
+                    shell: '/bin/false',
+                  }
+        answer   = user.send(:user_update, attribs, srv_info)
+        with_all = [
+          # '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone',
+          # '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -passwd /Users/someone "TopSecret"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone UserShell "/bin/false"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone LastName "SPECIAL"',
+          # '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone RealName "Someone SPECIAL"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone UniqueID "9876543"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone PrimaryGroupID "1032"',
+          # '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone NFSHomeDirectory "/Volumes/Macintosh HD/Users/someone"',
+          # '/usr/bin/pwpolicy -a diradmin -p "TopSecret" -n /LDAPv3/127.0.0.1 -u someone -enableuser',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone FirstName "Someone"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone MailAttribute "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone EMailAddress "user@example.com"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone Relationships "87654"',
+          '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone OrganizationInfo "45678"',
+          '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -a someone -t user testgrp',
+        ]
+        expect( answer ).to eq( with_all )
       end
     end
 

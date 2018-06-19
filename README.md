@@ -7,10 +7,13 @@ One can also build custom DSCL commands and send them to the server as needed to
 
 ## Change Log
 
-* **v0.1.7** - 2018-06-20
+* **v0.1.8** - 2018-06-??
 - remove attribs[:value] side effect (return original attribs - always)
+* **v0.1.7** - 2018-06-19
 - add update user method
+- fix unused variable warnings
 - attributes separated from users_creation_delete_update
+- able to create and update accounts with relationships & OrganizationInfo
 * **v0.1.6** - 2018-06-18
 - fixed EMailAddress (was incorrectly EMailAttribute)
 * **v0.1.5**

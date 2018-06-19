@@ -75,15 +75,77 @@ module OpenDirectoryUtils
         attribs[:value] = nil
         answer         << user_set_first_name(attribs, dir_info)
       end
-      # skip email if non-sent
       if attribs[:email] or attribs[:mail] or attribs[:apple_user_mailattribute]
         attribs[:value] = nil
         answer         << user_set_email(attribs, dir_info)
       end
-      # TODO add to groups without error - if group present
-      # "<main> attribute status: eDSSchemaError\n" +
-      # "<dscl_cmd> DS Error: -14142 (eDSSchemaError)"]
-      # # enroll in a group membership if info present
+      if attribs[:relations] or attribs[:relationships]
+        attribs[:value] = nil
+        answer         << user_set_relationships(attribs, dir_info)
+      end
+      if attribs[:org_info] or attribs[:organization_info]
+        attribs[:value] = nil
+        answer         << user_set_organization_info(attribs, dir_info)
+      end
+      if attribs[:group_name] or attribs[:groupname] or attribs[:gid] or
+                        attribs[:group_membership] or attribs[:groupmembership]
+        attribs[:value] = nil
+        answer         << user_add_to_group(attribs, dir_info)
+      end
+
+      return answer.flatten
+    end
+
+    def user_update(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+
+      check_critical_attribute( attribs, :record_name )
+      # attribs           = tidy_attribs(attribs).dup
+      attribs           = tidy_attribs(attribs)
+
+      answer            = []
+      if attribs[:shell]
+        attribs[:value] = nil
+        answer         << user_set_shell(attribs, dir_info)
+      end
+      if attribs[:last_name] or attribs[:lastname] or attribs[:surname] or attribs[:sn]
+        attribs[:value] = nil
+        answer         << user_set_last_name(attribs, dir_info)
+      end
+      if attribs[:real_name] or attribs[:realname] or attribs[:fullname]
+        attribs[:value] = nil
+        answer         << user_set_real_name(attribs, dir_info)
+      end
+      if attribs[:unique_id] or attribs[:uniqueid] or attribs[:uidnumber]
+        attribs[:value] = nil
+        answer         << user_set_unique_id(attribs, dir_info)
+      end
+      if attribs[:primary_group_id] or attribs[:primarygroupid] or
+          attribs[:group_id] or attribs[:groupid] or attribs[:gidnumber]
+        attribs[:value] = nil
+        answer         << user_set_primary_group_id(attribs, dir_info)
+      end
+      if attribs[:nfs_home_directory] or attribs[:home_directory]
+        attribs[:value] = nil
+        answer         << user_set_nfs_home_directory(attribs, dir_info)
+      end
+      if attribs[:first_name] or attribs[:firstname] or attribs[:given_name] or
+                          attribs[:givenname]
+        attribs[:value] = nil
+        answer         << user_set_first_name(attribs, dir_info)
+      end
+      if attribs[:email] or attribs[:mail]
+        attribs[:value] = nil
+        answer         << user_set_email(attribs, dir_info)
+      end
+      if attribs[:relations] or attribs[:relationships]
+        attribs[:value] = nil
+        answer         << user_set_relationships(attribs, dir_info)
+      end
+      if attribs[:org_info] or attribs[:organization_info]
+        attribs[:value] = nil
+        answer         << user_set_organization_info(attribs, dir_info)
+      end
       if attribs[:group_name] or attribs[:groupname] or attribs[:gid] or
                         attribs[:group_membership] or attribs[:groupmembership]
         attribs[:value] = nil

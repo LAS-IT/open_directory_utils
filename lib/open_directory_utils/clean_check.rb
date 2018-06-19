@@ -16,7 +16,7 @@ module OpenDirectoryUtils
       assert{not attrib[key].eql? '{}'}
       assert{not attrib[key].include? ' '} if key.eql? :scope
       assert{not attrib[key].include? ' '} if [:uid, :username, :record_name].include? key
-      rescue NoMethodError, ArgumentError => error
+      rescue NoMethodError, ArgumentError # => error
         message  = "#{key}: '#{attrib[key].inspect}' invalid"
         message += ", value_name: :#{value}"  unless value.nil?
         raise ArgumentError, message

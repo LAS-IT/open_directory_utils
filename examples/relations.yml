@@ -1,0 +1,48 @@
+---
+# preferred with first name, last name, email and group membership
+# by default account is disabled unless enabled: true is present
+- :user_name: barrutp220
+  :relations: 511541
+# - :user_name: albuerl430
+#   :relations: 557430
+# - :user_name: rogersl264
+#   :relations: 558264
+# - :user_name: miklauc283
+#   :relations: 558283
+# - :user_name: portilc119
+#   :relations: 559119
+# - :user_name: aguilax190
+#   :relations: 559190
+# - :user_name: gonzalm208
+#   :relations: 559208
+#
+#  milesm866  | 564866
+#  galvanj568 | 565568
+#  tiradob869 | 565869
+#  changt870  | 566870
+#  nohm396    | 570396
+#  grigoli979 | 571979
+#  bedoyac063 | 573063
+#  mariglm633 | 575633
+#  yudinm437  | 576437
+#  fijogai896 | 577896
+#  zunzunj443 | 579443
+#  zhouw300   | 583300
+#  canavej018 | 585018
+#  xuz906     | 588906
+#  benetor857 | 590857
+#  flaskaa617 | 592617
+#  berengd044 | 593044
+#  guow690    | 593690
+#  lacerdm840 | 593840
+#  mussina201 | 599201
+#  binzegj915 | 599915
+#  borowyk252 | 600252
+#  mussina288 | 600288
+#  linj671    | 603671
+#  rizoorm894 | 603894
+#  gonzalg934 | 603934
+#  pieribe687 | 611687
+#  shukshm297 | 615297
+#  elizarf803 | 622803
+#  zuoj861    | 602861

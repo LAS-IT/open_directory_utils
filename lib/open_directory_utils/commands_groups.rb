@@ -44,7 +44,7 @@ module OpenDirectoryUtils
       # pp attribs
 
       attribs    = group_record_name_alternatives(attribs)
-      groupname  = attribs[:record_name]
+      # groupname  = attribs[:record_name]
       attribs[:value] = username
       # pp attribs
 
