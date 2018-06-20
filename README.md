@@ -10,7 +10,7 @@ One can also build custom DSCL commands and send them to the server as needed to
 * **v0.1.10** - 2018-06-??
 - remove attribs[:value] side effect (return original attribs - always)
 * **v0.1.9** - 2018-06-??
-- add address info in creation and updates
+- add address, town, city, state, postal_code, country, weblog and homepage, title, company added to user_create and user_update
 * **v0.1.8** - 2018-06-19
 - added department and keywords to user_create and user_update
 * **v0.1.7** - 2018-06-19
