@@ -656,6 +656,28 @@ module OpenDirectoryUtils
     alias_method :user_set_keyword, :user_set_keywords
 
     # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
+    def user_set_home_page(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+      check_critical_attribute( attribs, :record_name )
+
+      attribs[:value] = attribs[:value] || attribs[:home_page]
+      attribs[:value] = attribs[:value] || attribs[:homepage]
+      attribs[:value] = attribs[:value] || attribs[:web_page]
+      attribs[:value] = attribs[:value] || attribs[:webpage]
+      attribs[:value] = attribs[:value] || attribs[:url]
+
+      check_critical_attribute( attribs, :value, :home_page )
+      attribs    = tidy_attribs(attribs)
+
+      command    = {action: 'create', scope: 'Users', attribute: 'URL'}
+      user_attrs = attribs.merge(command)
+
+      answer = dscl( user_attrs, dir_info )
+      attribs[:value] = nil
+      return answer
+    end
+
+    # /usr/bin/dscl -u diradmin -P A-B1g-S3cret /LDAPv3/127.0.0.1 -append /Users/$shortname_USERNAME apple-keyword "$VALUE"
     def user_set_home_phone(attribs, dir_info)
       attribs = user_record_name_alternatives(attribs)
       check_critical_attribute( attribs, :record_name )

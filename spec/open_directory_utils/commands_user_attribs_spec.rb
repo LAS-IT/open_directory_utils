@@ -760,6 +760,47 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribs do
       end
     end
 
+    describe "Set user_set_home_page" do
+      it "with home_page" do
+        attribs[:home_page] = 'http://las.ch'
+        answer  = ext_od.send(:user_set_home_page, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone URL "http://las.ch"'
+        expect( answer ).to eq( correct )
+      end
+      it "with homepage" do
+        attribs[:home_page] = nil
+        attribs[:homepage]  = 'http://www.las.ch'
+        answer  = ext_od.send(:user_set_home_page, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone URL "http://www.las.ch"'
+        expect( answer ).to eq( correct )
+      end
+      it "with web_page" do
+        attribs[:home_page] = nil
+        attribs[:homepage]  = nil
+        attribs[:web_page]  = 'http://las.ch'
+        answer  = ext_od.send(:user_set_home_page, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone URL "http://las.ch"'
+        expect( answer ).to eq( correct )
+      end
+      it "with webpage" do
+        attribs[:home_page] = nil
+        attribs[:homepage]  = nil
+        attribs[:web_page]  = nil
+        attribs[:webpage]   = 'http://www.las.ch'
+        answer  = ext_od.send(:user_set_home_page, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -create /Users/someone URL "http://www.las.ch"'
+        expect( answer ).to eq( correct )
+      end
+      it "witout home_page" do
+        attribs[:home_page] = nil
+        attribs[:homepage]  = nil
+        attribs[:web_page]  = nil
+        attribs[:webpage]   = nil
+        expect { ext_od.send(:user_set_home_page, attribs, srv_info) }.
+          to raise_error(ArgumentError, /value: 'nil' invalid, value_name: :home_page/)
+      end
+    end
+
     describe "Set home_phone" do
       it "with home_phone" do
         answer  = ext_od.send(:user_set_home_phone, attribs, srv_info)

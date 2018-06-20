@@ -87,9 +87,33 @@ module OpenDirectoryUtils
         attribs[:value] = nil
         answer         << user_set_organization_info(attribs, dir_info)
       end
+      if attribs[:title]
+        attribs[:value] = nil
+        answer         << user_set_title(attribs, dir_info)
+      end
       if attribs[:department] or attribs[:departmentnumber] or attribs[:department_number]
         attribs[:value] = nil
         answer         << user_set_department(attribs, dir_info)
+      end
+      if attribs[:company]
+        attribs[:value] = nil
+        answer         << user_set_company(attribs, dir_info)
+      end
+      if attribs[:address]
+        attribs[:value] = nil
+        answer         << user_set_address(attribs, dir_info)
+      end
+      if attribs[:city] or attribs[:town]
+        attribs[:value] = nil
+        answer         << user_set_city(attribs, dir_info)
+      end
+      if attribs[:state]
+        attribs[:value] = nil
+        answer         << user_set_state(attribs, dir_info)
+      end
+      if attribs[:country]
+        attribs[:value] = nil
+        answer         << user_set_country(attribs, dir_info)
       end
       if attribs[:keyword] or attribs[:keywords]
         attribs[:value] = nil
@@ -154,13 +178,50 @@ module OpenDirectoryUtils
         attribs[:value] = nil
         answer         << user_set_organization_info(attribs, dir_info)
       end
+      if attribs[:title] or attribs[:job_title]
+        attribs[:value] = nil
+        answer         << user_set_title(attribs, dir_info)
+      end
       if attribs[:department] or attribs[:departmentnumber] or attribs[:department_number]
         attribs[:value] = nil
         answer         << user_set_department(attribs, dir_info)
       end
+      if attribs[:company]
+        attribs[:value] = nil
+        answer         << user_set_company(attribs, dir_info)
+      end
+      if attribs[:address]
+        attribs[:value] = nil
+        answer         << user_set_address(attribs, dir_info)
+      end
+      if attribs[:city] or attribs[:town]
+        attribs[:value] = nil
+        answer         << user_set_city(attribs, dir_info)
+      end
+      if attribs[:state]
+        attribs[:value] = nil
+        answer         << user_set_state(attribs, dir_info)
+      end
+      if attribs[:postal_code] or attribs[:zip_code] or attribs[:zip]
+        attribs[:value] = nil
+        answer         << user_set_postal_code(attribs, dir_info)
+      end
+      if attribs[:country]
+        attribs[:value] = nil
+        answer         << user_set_country(attribs, dir_info)
+      end
+      if attribs[:home_page] or attribs[:homepage] or
+          attribs[:web_page] or attribs[:webpage] or attribs[:url]
+        attribs[:value] = nil
+        answer         << user_set_home_page(attribs, dir_info)
+      end
       if attribs[:keyword] or attribs[:keywords]
         attribs[:value] = nil
         answer         << user_set_keywords(attribs, dir_info)
+      end
+      if attribs[:weblog] or attribs[:blog]
+        attribs[:value] = nil
+        answer         << user_set_weblog(attribs, dir_info)
       end
 
       return answer.flatten
