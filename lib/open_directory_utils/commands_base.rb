@@ -45,17 +45,18 @@ module OpenDirectoryUtils
     end
 
     # /usr/bin/pwpolicy -a diradmin -p "BigSecret" -u username -setpolicy "isDisabled=0"
-    def build_pwpolicy_command(params, dir_info)
+    def build_pwpolicy_command(attribs, dir_info)
       ans  = %Q[#{dir_info[:pwpol]}]
       ans += %Q[ -a #{dir_info[:username]}]    unless dir_info[:username].nil? or
                                                       dir_info[:username].empty?
       ans += %Q[ -p "#{dir_info[:password]}"]  unless dir_info[:password].nil? or
                                                       dir_info[:password].empty?
       ans += %Q[ -n #{dir_info[:data_path]}]
-      ans += %Q[ -u #{params[:record_name]}]
-      ans += %Q[ -#{params[:attribute]}]
-      ans += %Q[ "#{params[:value]}"]          unless params[:value].nil? or
-                                                      params[:value].empty?
+      ans += %Q[ -u #{attribs[:record_name]}]
+      ans += %Q[ -#{attribs[:attribute]}]
+      ans += %Q[ "#{attribs[:value]}"]         unless attribs[:value].nil? or
+                                                      attribs[:value].empty?
+      attribs[:value] = nil
       return ans
     end
 
@@ -86,6 +87,7 @@ module OpenDirectoryUtils
                                                       attribs[:attribute].empty?
       ans += %Q[ "#{attribs[:value]}"]         unless attribs[:value].nil? or
                                                       attribs[:value].empty?
+      attribs[:value] = nil
       return ans
     end
 
@@ -119,6 +121,8 @@ module OpenDirectoryUtils
         ans += %Q[ -t #{params[:type]}]            # type can be user or group
       end
       ans += %Q[ #{params[:value]}]   # the group to be manipulated
+      params[:value] = nil
+      return ans
     end
 
   end

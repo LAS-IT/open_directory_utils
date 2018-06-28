@@ -16,16 +16,16 @@ module OpenDirectoryUtils
       assert{not attrib[key].eql? '{}'}
       assert{not attrib[key].include? ' '} if key.eql? :scope
       assert{not attrib[key].include? ' '} if [:uid, :username, :record_name].include? key
-      rescue NoMethodError, ArgumentError => error
+      rescue NoMethodError, ArgumentError # => error
         message  = "#{key}: '#{attrib[key].inspect}' invalid"
         message += ", value_name: :#{value}"  unless value.nil?
         raise ArgumentError, message
     end
 
     def tidy_attribs(attribs)
-      user_attrs = {}
-      attribs.each{ |k,v| user_attrs[k] = v.to_s.strip }
-      return user_attrs
+      user_attribs = {}
+      attribs.each{ |k,v| user_attribs[k] = v.to_s.strip }
+      return user_attribs
     end
 
     def user_record_name_alternatives(attribs)

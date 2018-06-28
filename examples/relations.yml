@@ -1,0 +1,5 @@
+---
+# preferred with first name, last name, email and group membership
+# by default account is disabled unless enabled: true is present
+- :user_name: baertfgh220
+  :relations: 511541

@@ -1,11 +1,11 @@
 require 'spec_helper'
-require "open_directory_utils/commands_group_create_remove"
+require "open_directory_utils/commands_groups"
 
-RSpec.describe OpenDirectoryUtils::CommandsGroupCreateRemove do
+RSpec.describe OpenDirectoryUtils::CommandsGroups do
 
   context "build commands" do
 
-    let(:group)    { Object.new.extend(OpenDirectoryUtils::CommandsGroupCreateRemove) }
+    let(:group)    { Object.new.extend(OpenDirectoryUtils::CommandsGroups) }
     let(:srv_info) { {username: 'diradmin', password: 'TopSecret',
                       data_path: '/LDAPv3/127.0.0.1',
                       dscl: '/usr/bin/dscl',

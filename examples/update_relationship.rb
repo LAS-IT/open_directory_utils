@@ -20,7 +20,7 @@ pp od
 # get users
 users = []
 begin
-  users  = YAML.load( File.open('users.yml') )
+  users  = YAML.load( File.open('relations.yml') )
 rescue Errno::ENOENT, LoadError, Psych::SyntaxError, YAML::Error
   users = [
     {username: 'odtest1', usernumber: '87654321', primary_group_id: 1031},
@@ -42,7 +42,7 @@ end
 puts "\nCreating OD Accounts:"
 Array(users).each do |person|
   # show commands
-  pp od.send(:user_create, person, od.dir_info)
+  pp od.send(:user_set_relationships, person, od.dir_info)
   # Make Account
-  pp od.run(command: :user_create, params: person )  if make_accts.eql? true
+  pp od.run(command: :user_set_relationships, params: person )  if make_accts.eql? true
 end

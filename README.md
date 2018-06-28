@@ -7,13 +7,36 @@ One can also build custom DSCL commands and send them to the server as needed to
 
 ## Change Log
 
+<<<<<<< HEAD
 * **v0.1.6** - 2018-06-28 - add ability to delete an attribute from a record
 * **v0.1.5** - 2018-06-14 - add version number to connection for easy checking
 * **v0.1.4** - 2018-06-13 - changed the return hash to {response: xxx, status: 'success'}
 * **v0.1.3** - 2018-06-13 - able to sync all fields in typcial OD
+=======
+* **v0.1.10** - 2018-06-??
+- remove attribs[:value] side effect (return original attribs - always)
+* **v0.1.9** - 2018-06-??
+- add address, town, city, state, postal_code, country, weblog and homepage, title, company added to user_create and user_update
+* **v0.1.8** - 2018-06-19
+- added department and keywords to user_create and user_update
+* **v0.1.7** - 2018-06-19
+- add update user method
+- fix unused variable warnings
+- attributes separated from users_creation_delete_update
+- able to create and update accounts with relationships & OrganizationInfo
+* **v0.1.6** - 2018-06-18
+- fixed EMailAddress (was incorrectly EMailAttribute)
+* **v0.1.5**
+- 2018-06-14 - add version number to connection for easy checking
+* **v0.1.4** - 2018-06-13
+- changed the return hash to {response: xxx, status: 'success'}
+* **v0.1.3** - 2018-06-13
+- able to sync all fields in typcial OD
+>>>>>>> 12e169c3a50dc44006258b7f1e8bdda043094b3a
 - refactored results code (ssh_cmds have redacted passwords)
 - finished adding pre-built od commands for users - good for syncing accounts
-* **v0.1.2** - 2018-06-09 - all user creation features enabled
+* **v0.1.2** - 2018-06-09
+- all user creation features enabled
 - user creation will add user to a group if group_name present
 - new accounts disabled by default (w/ option to enable on creation)
 - now repo includes example code (to create accounts)
@@ -67,6 +90,8 @@ od = OpenDirectoryUtils::Connection.new(
           dir_password: 'directory_admin_password'
         }
       )
+# see gem version in use
+od.version
 
 user_params = { user_name: 'someone', user_number: 9876,
                 first_name: 'Someone', last__name: 'Special',
