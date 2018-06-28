@@ -7,6 +7,7 @@ One can also build custom DSCL commands and send them to the server as needed to
 
 ## Change Log
 
+* **v0.1.6** - 2018-06-28 - add ability to delete an attribute from a record
 * **v0.1.5** - 2018-06-14 - add version number to connection for easy checking
 * **v0.1.4** - 2018-06-13 - changed the return hash to {response: xxx, status: 'success'}
 * **v0.1.3** - 2018-06-13 - able to sync all fields in typcial OD
@@ -69,7 +70,8 @@ od = OpenDirectoryUtils::Connection.new(
 
 user_params = { user_name: 'someone', user_number: 9876,
                 first_name: 'Someone', last__name: 'Special',
-                group_number: 4321,group_name: 'employee'
+                group_number: 4321,group_name: 'employee',
+                mobile_phone: '+41 11 111 11 11'
               }
 group_params = {group_name: 'agroup', real_name: 'A Group',
                 group_number: 5432
@@ -111,6 +113,11 @@ od.run( command: :user_remove_from_group,
 
 # delete a group
 od.run( command: :group_delete, params: {group__name: 'agroup'})
+
+# delete an attribute
+# requires passing in a user_name to find the user record
+# and the name of the attribute you wish to delete
+od.run( command: :user_delete_attribute, params: {user_name: 'someone', attribute: 'MobilePhone'})
 
 # delete a user
 

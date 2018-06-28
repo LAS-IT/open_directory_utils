@@ -599,5 +599,14 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribs do
       end
     end
 
+    describe "Delete Attribute" do
+      it "with mobile phone" do
+        attribs[:attribute] = 'MobileNumber'
+        answer  = ext_od.send(:user_delete_attribute, attribs, srv_info)
+        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -delete /Users/someone MobileNumber'
+        expect(answer).to eq(correct)
+      end
+    end
+
   end
 end

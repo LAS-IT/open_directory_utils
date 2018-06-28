@@ -388,5 +388,18 @@ RSpec.describe "Integrated - User Attribs" do
       end
     end
 
+    describe "user_delete_attribute" do
+      it "works" do
+        addphone   = od.run(command: :user_set_mobile_number, params: new_user)
+        checkphone = od.run(command: :user_get_info, params: new_user)
+        new_user[:attribute] = 'MobileNumber'
+        setup  = od.run(command: :user_delete_attribute, params: new_user)
+        expect( setup[:status]).to match('success')
+        answer = od.run(command: :user_get_info, params: new_user)
+        correct = "MobileNumber"
+        expect( answer[:response].to_s.gsub(':\n', ':') ).not_to match(correct)
+      end
+    end
+
   end
 end

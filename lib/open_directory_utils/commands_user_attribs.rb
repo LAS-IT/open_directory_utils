@@ -437,5 +437,18 @@ module OpenDirectoryUtils
     alias_method :user_set_blog, :user_set_weblog
     # alias_method :las_sync_date, :user_set_weblog
 
+    def user_delete_attribute(attribs, dir_info)
+      attribs = user_record_name_alternatives(attribs)
+      check_critical_attribute( attribs, :record_name )
+
+      attribs         = tidy_attribs(attribs)
+      attribute       = attribs[:attribute]
+      attribs[:value] = nil
+
+      command    = {action: 'delete', scope: 'Users', attribute: attribute}
+      user_attrs = attribs.merge(command)
+
+      dscl(user_attrs, dir_info)
+    end
   end
 end
