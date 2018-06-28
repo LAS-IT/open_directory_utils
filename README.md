@@ -7,6 +7,8 @@ One can also build custom DSCL commands and send them to the server as needed to
 
 ## Change Log
 
+* **v0.1.11** - 2018-06-28
+- add attribute delete method for user
 * **v0.1.10** - 2018-06-??
 - remove attribs[:value] side effect (return original attribs - always)
 * **v0.1.9** - 2018-06-??
@@ -135,9 +137,10 @@ od.run( command: :group_delete, params: {group__name: 'agroup'})
 # delete an attribute
 # requires passing in a user_name to find the user record
 # and the name of the attribute you wish to delete
-od.run( command: :user_delete_attribute, params: {user_name: 'someone', attribute: 'MobilePhone'})
+od.run( command: :user_delete_attribute, params: {user_name: 'someone', attribute: 'MobileNumber'})
 
 # delete a user
+od.run( command: :user_delete, params: user_params)
 
 ```
 
