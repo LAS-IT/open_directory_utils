@@ -1011,14 +1011,6 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribs do
       end
     end
 
-<<<<<<< HEAD
-    describe "Delete Attribute" do
-      it "with mobile phone" do
-        attribs[:attribute] = 'MobileNumber'
-        answer  = ext_od.send(:user_delete_attribute, attribs, srv_info)
-        correct = '/usr/bin/dscl -u diradmin -P "TopSecret" /LDAPv3/127.0.0.1 -delete /Users/someone MobileNumber'
-        expect(answer).to eq(correct)
-=======
     describe "user_add_to_group" do
       it "with user_name & group_membership" do
         attribs = {user_name: 'someone', group_membership: 'student'}
@@ -1070,7 +1062,6 @@ RSpec.describe OpenDirectoryUtils::CommandsUserAttribs do
         answer  = ext_od.send(:user_remove_from_group, attribs, srv_info)
         correct = '/usr/sbin/dseditgroup -o edit -u diradmin -P "TopSecret" -n /LDAPv3/127.0.0.1 -d someone -t user student'
         expect( answer ).to eq( correct )
->>>>>>> 12e169c3a50dc44006258b7f1e8bdda043094b3a
       end
     end
 

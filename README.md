@@ -7,12 +7,6 @@ One can also build custom DSCL commands and send them to the server as needed to
 
 ## Change Log
 
-<<<<<<< HEAD
-* **v0.1.6** - 2018-06-28 - add ability to delete an attribute from a record
-* **v0.1.5** - 2018-06-14 - add version number to connection for easy checking
-* **v0.1.4** - 2018-06-13 - changed the return hash to {response: xxx, status: 'success'}
-* **v0.1.3** - 2018-06-13 - able to sync all fields in typcial OD
-=======
 * **v0.1.10** - 2018-06-??
 - remove attribs[:value] side effect (return original attribs - always)
 * **v0.1.9** - 2018-06-??
@@ -32,7 +26,6 @@ One can also build custom DSCL commands and send them to the server as needed to
 - changed the return hash to {response: xxx, status: 'success'}
 * **v0.1.3** - 2018-06-13
 - able to sync all fields in typcial OD
->>>>>>> 12e169c3a50dc44006258b7f1e8bdda043094b3a
 - refactored results code (ssh_cmds have redacted passwords)
 - finished adding pre-built od commands for users - good for syncing accounts
 * **v0.1.2** - 2018-06-09
