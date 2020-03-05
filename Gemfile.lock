@@ -28,10 +28,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 1.16)
+  bundler (~> 2.1)
   open_directory_utils!
   rake (~> 12.3)
   rspec (~> 3.7)
 
 BUNDLED WITH
-   1.16.2
+   2.1.2
