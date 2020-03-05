@@ -1,3 +1,5 @@
+[![Codeship Status for LAS-IT/open_directory_utils](https://app.codeship.com/projects/d4f57810-3f90-0138-2c24-7ef95a7c016e/status?branch=master)](https://app.codeship.com/projects/387675)
+
 # OpenDirectoryUtils
 
 This Gem allows one to build or send pre-built commands to control
@@ -6,7 +8,8 @@ This Gem allows one to build or send pre-built commands to control
 One can also build custom DSCL commands and send them to the server as needed too.
 
 ## Change Log
-
+* **v0.1.12** - 2020-03-05
+- update dependencies
 * **v0.1.11** - 2018-06-28
 - add attribute delete method for user
 * **v0.1.10** - 2018-06-??
